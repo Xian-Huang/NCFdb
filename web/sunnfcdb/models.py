@@ -6,7 +6,7 @@ from django.conf import settings
 class DownloadFile(models.Model):
     title = models.CharField(max_length=100,unique=True,verbose_name="文件名",blank=True)
     description = models.TextField(null=True,blank=True,verbose_name="文件描述")
-    size = models.IntegerField(null=True,blank=True,verbose_name="文件大小")
+    size = models.BigIntegerField(null=True,blank=True,verbose_name="文件大小")
     format = models.CharField(max_length=100,null=True,blank=True,verbose_name="文件格式")
     downloads = models.IntegerField(default=0,verbose_name="下载次数")
     create_time = models.DateTimeField(auto_now_add=True,verbose_name="创建时间")
