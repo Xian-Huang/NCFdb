@@ -1,56 +1,20 @@
 import { Download, Search, Database, FileText } from "lucide-react";
+import { useState, useEffect } from "react";
+import { fetchDownloadFiles } from "../../apis/data_apis";
 
 export function Data() {
-  const datasets = [
-    {
-      title: "Reference Genome Assembly",
-      version: "HanXRQr2.0-SUNRISE",
-      size: "3.5 Gb",
-      format: "FASTA",
-      description: "High-quality reference genome assembly with chromosome-level scaffolds",
-      downloads: "12,543",
-    },
-    {
-      title: "Gene Annotations",
-      version: "v2.1",
-      size: "156 MB",
-      format: "GFF3",
-      description: "Comprehensive gene structure and functional annotations",
-      downloads: "8,721",
-    },
-    {
-      title: "Transcriptome Data",
-      version: "Multi-tissue RNA-seq",
-      size: "2.3 TB",
-      format: "BAM/FastQ",
-      description: "RNA-seq data from 15 different tissue types and developmental stages",
-      downloads: "4,932",
-    },
-    {
-      title: "Protein Sequences",
-      version: "v2.1",
-      size: "89 MB",
-      format: "FASTA",
-      description: "Predicted protein sequences for all annotated genes",
-      downloads: "9,456",
-    },
-    {
-      title: "Genetic Variants",
-      version: "Pan-genome v1.0",
-      size: "1.2 GB",
-      format: "VCF",
-      description: "SNPs and structural variants from 500+ sunflower accessions",
-      downloads: "3,214",
-    },
-    {
-      title: "Metabolomics Data",
-      version: "Seed composition",
-      size: "45 MB",
-      format: "CSV/Excel",
-      description: "Metabolite profiles and oil composition data",
-      downloads: "2,187",
-    },
-  ];
+  
+  const [datasetsFiles, setDatasetsFiles] = useState<any[]>([]);
+  
+  useEffect(() => {
+    fetchDownloadFiles().then((data: any[]) => {
+      console.log("datasetsFiles:", data);
+      setDatasetsFiles(data);
+    });
+  }, []);
+
+  
+  
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -103,7 +67,7 @@ export function Data() {
       {/* Datasets Grid */}
       <div className="space-y-6">
         <h2 className="text-2xl font-semibold mb-4">Available Datasets</h2>
-        {datasets.map((dataset, index) => (
+        {datasetsFiles.map((dataset, index) => (
           <div
             key={index}
             className="bg-white p-6 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow"
@@ -127,10 +91,10 @@ export function Data() {
                   {dataset.downloads} downloads
                 </div>
               </div>
-              <button className="flex items-center px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition-colors ml-4">
+              <a href={`/api${dataset.file_url}`} target="_blank" rel="noopener noreferrer" download className="flex items-center px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition-colors ml-4">
                 <Download className="h-4 w-4 mr-2" />
                 Download
-              </button>
+              </a>
             </div>
           </div>
         ))}
