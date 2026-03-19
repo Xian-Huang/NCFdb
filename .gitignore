@@ -5,3 +5,4 @@ dist
 web/media
 *.pyc
 __pycache__
+web/.env
