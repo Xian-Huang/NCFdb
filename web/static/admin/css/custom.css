@@ -1,0 +1,230 @@
+/* 自定义 Admin 美化样式 */
+
+/* 登录页面美化 */
+.login-container {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+}
+
+.login-card {
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+/* 顶部导航栏美化 */
+.navbar {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* 侧边栏美化 */
+.sidebar {
+    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+}
+
+.sidebar-dark-amber {
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+}
+
+/* 卡片样式 */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: none;
+}
+
+.card-header {
+    background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+}
+
+/* 表格样式 */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(245, 158, 11, 0.05);
+}
+
+/* 按钮美化 */
+.btn-primary {
+    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #d97706 0%, #b45309 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+/* 表单美化 */
+.form-control, .form-select {
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* 面包屑导航 */
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+}
+
+.breadcrumb-item a {
+    color: #f59e0b;
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: #6b7280;
+}
+
+/* 分页美化 */
+.pagination {
+    gap: 5px;
+}
+
+.page-item .page-link {
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    margin: 0 2px;
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+    border-color: #f59e0b;
+}
+
+/* 模型列表页 */
+.object-tools {
+    float: right;
+    margin-top: -45px;
+}
+
+.object-tools li a {
+    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+    border-radius: 6px;
+    padding: 8px 15px;
+    color: white !important;
+    font-weight: 500;
+}
+
+/* 消息提示 */
+.messages {
+    list-style: none;
+    padding: 0;
+}
+
+.messages li {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.messages li.success {
+    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.messages li.error {
+    background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.messages li.warning {
+    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+/* 搜索框 */
+#search-bar {
+    border-radius: 20px;
+    padding-left: 20px;
+}
+
+/* 模块图标 */
+.module-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    color: white;
+    font-size: 18px;
+}
+
+/* 进度条 */
+.progress {
+    border-radius: 10px;
+    height: 8px;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+}
+
+/* 日期时间选择器 */
+.calendarbox, .clockbox {
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+/* 选择框美化 */
+.select2-container--default .select2-selection--multiple {
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* 折叠面板 */
+.collapse {
+    transition: all 0.3s ease;
+}
+
+/* 表格行hover效果 */
+tbody tr:hover {
+    background-color: #fef3c7 !important;
+}
+
+/* 标题样式 */
+h1, h2, h3 {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+/* 链接样式 */
+a {
+    color: #f59e0b;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #d97706;
+}

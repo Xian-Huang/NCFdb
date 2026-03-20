@@ -145,16 +145,20 @@ export function Home() {
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
             {changelog.map((item) => (
-              <div key={item.id} className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+              <Link 
+                key={item.id} 
+                to={`/changelog/${item.id}`}
+                className="bg-white p-6 rounded-lg shadow-md border border-gray-200 hover:shadow-lg hover:border-amber-300 transition-all duration-300"
+              >
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-sm text-amber-600">{formatDate(item.release_date)}</div>
                   <span className="px-2 py-1 bg-amber-100 text-amber-800 text-xs rounded-full">
                     v{item.version}
                   </span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                <h3 className="text-xl font-semibold mb-2 hover:text-amber-600">{item.title}</h3>
                 <p className="text-gray-600">{item.content}</p>
-              </div>
+              </Link>
             ))}
           </div>
         )}

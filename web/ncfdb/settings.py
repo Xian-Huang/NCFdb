@@ -127,7 +127,31 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Jazzmin settings - 简化配置提升性能
+JAZZMIN_SETTINGS = {
+    "site_title": "NCFdb Admin",
+    "site_header": "NCFdb Database",
+    "site_brand": "NCFdb",
+    "welcome_sign": "Welcome to NCFdb Admin",
+    "copyright": "NCFdb Project",
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "order_with_respect_to": ["sunnfcdb", "auth"],
+    "use_google_fonts_cdn": False,
+    "show_ui_tweaks": True,
+    "related_modal_active": False,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar": "navbar-dark bg-dark",
+    "sidebar": "sidebar-dark-primary",
+}
