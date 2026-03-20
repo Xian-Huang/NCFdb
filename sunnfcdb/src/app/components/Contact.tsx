@@ -88,7 +88,7 @@ export function Contact() {
                 <Mail className="h-6 w-6 text-amber-500 mr-3 mt-1" />
                 <div>
                   <div className="font-medium">Email</div>
-                  <div className="text-gray-600">sesamehsrc@gmail.com</div>
+                  <div className="text-gray-600">sunflower@example.com</div>
                 </div>
               </div>
               <div className="flex items-start">
