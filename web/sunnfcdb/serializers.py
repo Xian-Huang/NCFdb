@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.conf import settings
-from .models import DownloadFile
+from .models import DownloadFile, News, Changelog
 
 class DownloadFileSerializer(serializers.ModelSerializer):
     
@@ -13,3 +13,15 @@ class DownloadFileSerializer(serializers.ModelSerializer):
         model = DownloadFile
         fields = '__all__'
         read_only_fields = ['file_url']
+
+
+class NewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = News
+        fields = '__all__'
+
+
+class ChangelogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Changelog
+        fields = '__all__'

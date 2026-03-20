@@ -1,8 +1,41 @@
 import { ArrowRight, Database, Users, BookOpen } from "lucide-react";
 import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { useEffect, useState } from "react";
+
+interface ChangelogItem {
+  id: number;
+  version: string;
+  title: string;
+  content: string;
+  changes: string[];
+  release_date: string;
+  is_published: boolean;
+}
 
 export function Home() {
+  const [changelog, setChangelog] = useState<ChangelogItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/sunflower/changelog/")
+      .then((res) => res.json())
+      .then((data) => {
+        setChangelog(data.slice(0, 4));
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch changelog:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  };
+
   return (
     <div>
       {/* Hero Section */}
@@ -107,26 +140,24 @@ export function Home() {
       {/* Latest Updates */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h2 className="text-3xl font-bold mb-8">Latest Updates</h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-            <div className="text-sm text-amber-600 mb-2">February 20, 2026</div>
-            <h3 className="text-xl font-semibold mb-2">
-              New Transcriptome Data Released
-            </h3>
-            <p className="text-gray-600">
-              RNA-seq data from 15 tissue types now available for download and analysis
-            </p>
+        {loading ? (
+          <p className="text-gray-500">Loading...</p>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-6">
+            {changelog.map((item) => (
+              <div key={item.id} className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-sm text-amber-600">{formatDate(item.release_date)}</div>
+                  <span className="px-2 py-1 bg-amber-100 text-amber-800 text-xs rounded-full">
+                    v{item.version}
+                  </span>
+                </div>
+                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                <p className="text-gray-600">{item.content}</p>
+              </div>
+            ))}
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-            <div className="text-sm text-amber-600 mb-2">February 15, 2026</div>
-            <h3 className="text-xl font-semibold mb-2">
-              Genome Browser Update
-            </h3>
-            <p className="text-gray-600">
-              Enhanced visualization tools with improved performance and new annotation tracks
-            </p>
-          </div>
-        </div>
+        )}
       </section>
     </div>
   );
