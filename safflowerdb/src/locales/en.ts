@@ -8,8 +8,8 @@ export const en = {
     contact: "Contact"
   },
   home: {
-    title: "Sesame Genomic Database",
-    subtitle: "Integrating sesame genome, transcriptome, phenome and other omics data to provide comprehensive data support for sesame genetic breeding research",
+    title: "SafNCFdb - Safflower Nutritional Composition and Chemical Fingerprint Database",
+    subtitle: "Integrating safflower nutritional composition, chemical fingerprint and other omics data to provide comprehensive data support for safflower genetic breeding research",
     explore: "Explore Data",
     stats: {
       varieties: "Varieties",
@@ -18,18 +18,18 @@ export const en = {
       partners: "Partners"
     },
     services: "Database Services",
-    genomicData: "Genomic Data",
-    genomicDataDesc: "Reference genome, gene annotations, variation data download",
+    genomicData: "Nutritional Data",
+    genomicDataDesc: "Safflower nutritional composition and chemical fingerprint data download",
     varieties: "Varieties",
-    varietiesDesc: "Sesame variety phenotypic data, quality analysis",
+    varietiesDesc: "Safflower variety phenotypic data, quality analysis",
     analysisTools: "Analysis Tools",
-    analysisToolsDesc: "BLAST search, genome browser, gene query",
+    analysisToolsDesc: "BLAST search, data browser, data query",
     newsUpdates: "Latest Updates",
     loading: "Loading..."
   },
   data: {
     title: "Data Resource Center",
-    subtitle: "Browse and download sesame genome data resources",
+    subtitle: "Browse and download safflower data resources",
     search: "Search datasets...",
     stats: {
       datasets: "Datasets",
@@ -47,7 +47,7 @@ export const en = {
   },
   news: {
     title: "News & Updates",
-    subtitle: "Stay updated with the latest sesame genomics research",
+    subtitle: "Stay updated with the latest safflower research",
     categories: {
       all: "All",
       research: "Research",
@@ -60,7 +60,7 @@ export const en = {
   },
   events: {
     title: "Events & Workshops",
-    subtitle: "Academic events and technical training in sesame genomics",
+    subtitle: "Academic events and technical training in safflower research",
     upcoming: "Upcoming Events",
     past: "Past Events",
     register: "Register Now",
@@ -69,19 +69,19 @@ export const en = {
   },
   tools: {
     title: "Analysis Tools",
-    subtitle: "Powerful bioinformatics tools for exploring sesame genomic data",
+    subtitle: "Powerful bioinformatics tools for exploring safflower data",
     blast: "BLAST Search",
-    blastDesc: "Perform sequence similarity searches against sesame genome and transcriptome databases",
-    browser: "Genome Browser",
-    browserDesc: "Interactive visualization of genome assemblies, annotations, and experimental data",
-    geneSearch: "Gene Search",
-    geneSearchDesc: "Query genes by ID, name, function, or GO term",
+    blastDesc: "Perform sequence similarity searches against safflower database",
+    browser: "Data Browser",
+    browserDesc: "Interactive visualization and browsing of data",
+    geneSearch: "Data Search",
+    geneSearchDesc: "Query data by ID or name",
     expression: "Expression Atlas",
-    expressionDesc: "Explore gene expression patterns across tissues and conditions",
+    expressionDesc: "Explore data across tissues and conditions",
     variant: "Variant Browser",
-    variantDesc: "Browse and analyze genetic variants from sesame germplasm",
+    variantDesc: "Browse and analyze genetic variants from safflower germplasm",
     api: "API Access",
-    apiDesc: "Programmatic access to genomic data for custom analysis pipelines",
+    apiDesc: "Programmatic access to data for custom analysis pipelines",
     launch: "Launch Tool",
     blastSearch: "Quick BLAST Search",
     sequence: "Sequence (FASTA format)",
@@ -95,7 +95,7 @@ export const en = {
   },
   contact: {
     title: "Contact Us",
-    subtitle: "Questions about sesame genomics data? We'd love to hear from you!",
+    subtitle: "Questions about safflower data? We'd love to hear from you!",
     form: "Send Message",
     name: "Name",
     email: "Email",
@@ -109,6 +109,6 @@ export const en = {
     collaborators: "Collaborating Institutions"
   },
   footer: {
-    copyright: "© 2026 SesameDB - Sesame Genomic Database"
+    copyright: "© 2026 SafNCFdb - Safflower Nutritional Composition and Chemical Fingerprint Database"
   }
 };

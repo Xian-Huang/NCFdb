@@ -8,7 +8,7 @@ export const en = {
     contact: "Contact"
   },
   home: {
-    title: "Sesame Genomic Database",
+    title: "SinNCFdb - Sesame Nutritional Composition and Chemical Fingerprint Database",
     subtitle: "Integrating sesame genome, transcriptome, phenome and other omics data to provide comprehensive data support for sesame genetic breeding research",
     explore: "Explore Data",
     stats: {
@@ -109,6 +109,6 @@ export const en = {
     collaborators: "Collaborating Institutions"
   },
   footer: {
-    copyright: "© 2026 SesameDB - Sesame Genomic Database"
+    copyright: "© 2026 SinNCFdb - Sesame Nutritional Composition and Chemical Fingerprint Database"
   }
 };

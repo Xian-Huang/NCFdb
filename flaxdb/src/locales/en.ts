@@ -8,7 +8,7 @@ export const en = {
     contact: "Contact"
   },
   home: {
-    title: "Flax Genomic Database",
+    title: "FlaxNCFdb - Flax Nutritional Composition and Chemical Fingerprint Database",
     subtitle: "Integrating flax genome, transcriptome, phenome and other omics data to provide comprehensive data support for flax genetic breeding research",
     explore: "Explore Data",
     stats: {
@@ -109,6 +109,6 @@ export const en = {
     collaborators: "Collaborating Institutions"
   },
   footer: {
-    copyright: "© 2026 FlaxDB - Flax Genomic Database"
+    copyright: "© 2026 FlaxNCFdb - Flax Nutritional Composition and Chemical Fingerprint Database"
   }
 };

@@ -229,7 +229,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.author}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.category}</td>
                   <td className="px-6 py-4">
-                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -383,7 +383,7 @@ export function Admin() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -419,28 +419,28 @@ export function Admin() {
                 type="checkbox"
                 checked={formData[key] || false}
                 onChange={(e) => setFormData({ ...formData, [key]: e.target.checked })}
-                className="h-4 w-4 text-green-500"
+                className="h-4 w-4 text-red-500"
               />
             ) : key === 'region' || key === 'institution' || key === 'gene' || key === 'variety' ? (
               <input
                 type="number"
                 value={formData[key] || ''}
                 onChange={(e) => setFormData({ ...formData, [key]: parseInt(e.target.value) || null })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
               />
             ) : (
               <input
                 type="text"
                 value={formData[key] || ''}
                 onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
               />
             )}
           </div>
         ))}
         <div className="flex justify-end gap-3 pt-4">
           <button type="button" onClick={closeModal} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
-          <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+          <button type="submit" className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
             {editingItem ? 'Save Changes' : 'Add'}
           </button>
         </div>
@@ -450,7 +450,7 @@ export function Admin() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <header className="bg-gradient-to-r from-green-600 to-emerald-500 text-white shadow-lg">
+      <header className="bg-gradient-to-r from-red-600 to-rose-500 text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -478,7 +478,7 @@ export function Admin() {
                   onClick={() => setActiveType(key as DataType)}
                   className={`flex items-center gap-2 px-6 py-4 whitespace-nowrap border-b-2 transition-colors ${
                     activeType === key
-                      ? 'border-green-500 text-green-600 bg-green-50'
+                      ? 'border-red-500 text-red-600 bg-red-50'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -501,13 +501,13 @@ export function Admin() {
                   placeholder="Search..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 />
               </div>
             </div>
             <button
               onClick={() => openModal()}
-              className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+              className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
             >
               <Plus className="h-5 w-5" /> Add {dataTypeConfig[activeType].title.slice(0, -1)}
             </button>

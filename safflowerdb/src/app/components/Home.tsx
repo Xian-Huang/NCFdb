@@ -1,4 +1,4 @@
-import { ArrowRight, Database, Users, BookOpen } from "lucide-react";
+import { ArrowRight, Database, Users, BookOpen, Droplets, Sun } from "lucide-react";
 import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
@@ -40,139 +40,161 @@ export function Home() {
 
   return (
     <div>
-      {/* Hero Section */}
-      <section className="relative h-[350px] overflow-hidden rounded-xl shadow-lg mb-8">
-        <ImageWithFallback
-          src="https://images.unsplash.com/photo-1595854341625-f71831d39e71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1200"
-          alt="Sesame"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-green-900/85 to-green-600/60 flex items-center">
+      {/* Hero Section - Diagonal Split */}
+      <section className="relative h-[380px] overflow-hidden mb-8 rounded-xl shadow-xl">
+        <div className="absolute inset-0">
+          <ImageWithFallback
+            src="https://images.unsplash.com/photo-1595854341625-f71831d39e71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1200"
+            alt="Safflower"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-red-900/90 via-red-800/60 to-transparent flex items-center">
           <div className="container mx-auto px-8">
             <div className="max-w-xl">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="px-3 py-1 bg-red-500/80 text-white text-sm font-medium rounded-full backdrop-blur-sm">
+                  Database
+                </span>
+              </div>
               <h1 className="text-4xl font-bold text-white mb-3">
                 {t("home.title")}
               </h1>
-              <p className="text-lg text-green-100 mb-5">
+              <p className="text-lg text-red-100 mb-5">
                 {t("home.subtitle")}
               </p>
               <Link
                 to="/data"
-                className="inline-flex items-center px-5 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
+                className="inline-flex items-center px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium shadow-lg"
               >
                 {t("home.explore")}
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl shadow-md mb-8">
-        <div className="grid grid-cols-4 divide-x divide-green-400">
-          <div className="p-4 text-center">
-            <div className="text-2xl font-bold text-white">25</div>
-            <div className="text-xs text-green-100">{t("home.stats.varieties")}</div>
+      {/* Stats Section - Horizontal Cards */}
+      <section className="mb-8">
+        <div className="grid grid-cols-4 divide-x divide-red-200 bg-white rounded-xl shadow-md p-6">
+          <div className="text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mx-auto mb-2">
+              <Droplets className="h-6 w-6 text-red-600" />
+            </div>
+            <div className="text-2xl font-bold text-gray-800">25</div>
+            <div className="text-xs text-gray-500">{t("home.stats.varieties")}</div>
           </div>
-          <div className="p-4 text-center">
-            <div className="text-2xl font-bold text-white">35K+</div>
-            <div className="text-xs text-green-100">{t("home.stats.genes")}</div>
+          <div className="text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mx-auto mb-2">
+              <Sun className="h-6 w-6 text-red-600" />
+            </div>
+            <div className="text-2xl font-bold text-gray-800">35K+</div>
+            <div className="text-xs text-gray-500">{t("home.stats.genes")}</div>
           </div>
-          <div className="p-4 text-center">
-            <div className="text-2xl font-bold text-white">50</div>
-            <div className="text-xs text-green-100">{t("home.stats.regions")}</div>
+          <div className="text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mx-auto mb-2">
+              <Users className="h-6 w-6 text-red-600" />
+            </div>
+            <div className="text-2xl font-bold text-gray-800">50</div>
+            <div className="text-xs text-gray-500">{t("home.stats.regions")}</div>
           </div>
-          <div className="p-4 text-center">
-            <div className="text-2xl font-bold text-white">20+</div>
-            <div className="text-xs text-green-100">{t("home.stats.partners")}</div>
+          <div className="text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mx-auto mb-2">
+              <Database className="h-6 w-6 text-red-600" />
+            </div>
+            <div className="text-2xl font-bold text-gray-800">20+</div>
+            <div className="text-xs text-gray-500">{t("home.stats.partners")}</div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
+      {/* Features - 2 Columns with Large Icons */}
       <section className="mb-8">
-        <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-500 inline-block">{t("home.services")}</h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          <Link to="/data" className="group bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-300 transition-all">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors">
-                <Database className="h-6 w-6 text-green-600 group-hover:text-white" />
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t("home.services")}</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          <Link to="/data" className="group bg-gradient-to-r from-red-50 to-white p-6 rounded-xl border border-red-100 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-red-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <Database className="h-8 w-8 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-800 mb-1 group-hover:text-green-700">{t("home.genomicData")}</h3>
+                <h3 className="font-bold text-lg text-gray-800 mb-1 group-hover:text-red-700">{t("home.genomicData")}</h3>
                 <p className="text-sm text-gray-500">{t("home.genomicDataDesc")}</p>
               </div>
-              <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-green-500" />
+              <ArrowRight className="h-6 w-6 text-red-300 group-hover:text-red-500 group-hover:translate-x-1 transition-all" />
             </div>
           </Link>
 
-          <Link to="/data" className="group bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-300 transition-all">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors">
-                <BookOpen className="h-6 w-6 text-green-600 group-hover:text-white" />
+          <Link to="/data" className="group bg-gradient-to-r from-red-50 to-white p-6 rounded-xl border border-red-100 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-red-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <Droplets className="h-8 w-8 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-800 mb-1 group-hover:text-green-700">{t("home.varieties")}</h3>
+                <h3 className="font-bold text-lg text-gray-800 mb-1 group-hover:text-red-700">{t("home.varieties")}</h3>
                 <p className="text-sm text-gray-500">{t("home.varietiesDesc")}</p>
               </div>
-              <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-green-500" />
+              <ArrowRight className="h-6 w-6 text-red-300 group-hover:text-red-500 group-hover:translate-x-1 transition-all" />
             </div>
           </Link>
 
-          <Link to="/tools" className="group bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-300 transition-all">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors">
-                <Users className="h-6 w-6 text-green-600 group-hover:text-white" />
+          <Link to="/tools" className="group bg-gradient-to-r from-red-50 to-white p-6 rounded-xl border border-red-100 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-red-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <Users className="h-8 w-8 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-800 mb-1 group-hover:text-green-700">{t("home.analysisTools")}</h3>
+                <h3 className="font-bold text-lg text-gray-800 mb-1 group-hover:text-red-700">{t("home.analysisTools")}</h3>
                 <p className="text-sm text-gray-500">{t("home.analysisToolsDesc")}</p>
               </div>
-              <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-green-500" />
+              <ArrowRight className="h-6 w-6 text-red-300 group-hover:text-red-500 group-hover:translate-x-1 transition-all" />
             </div>
           </Link>
 
-          <Link to="/news" className="group bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-300 transition-all">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors">
-                <BookOpen className="h-6 w-6 text-green-600 group-hover:text-white" />
+          <Link to="/news" className="group bg-gradient-to-r from-red-50 to-white p-6 rounded-xl border border-red-100 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-red-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <BookOpen className="h-8 w-8 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-800 mb-1 group-hover:text-green-700">{t("nav.news")}</h3>
-                <p className="text-sm text-gray-500">{t("home.genomicDataDesc")}</p>
+                <h3 className="font-bold text-lg text-gray-800 mb-1 group-hover:text-red-700">{t("nav.news")}</h3>
+                <p className="text-sm text-gray-500">{t("home.newsUpdates")}</p>
               </div>
-              <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-green-500" />
+              <ArrowRight className="h-6 w-6 text-red-300 group-hover:text-red-500 group-hover:translate-x-1 transition-all" />
             </div>
           </Link>
         </div>
       </section>
 
-      {/* Latest Updates */}
+      {/* Latest Updates - Horizontal List */}
       <section className="mb-8">
-        <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-500 inline-block">{t("home.newsUpdates")}</h2>
-        {loading ? (
-          <p className="text-gray-500">{t("home.loading")}</p>
-        ) : (
-          <div className="grid md:grid-cols-3 gap-4">
-            {changelog.map((item) => (
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t("home.newsUpdates")}</h2>
+        <div className="space-y-4">
+          {loading ? (
+            <p className="text-gray-500">{t("home.loading")}</p>
+          ) : (
+            changelog.map((item) => (
               <Link 
                 key={item.id} 
                 to={`/changelog/${item.id}`}
-                className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-300 transition-all"
+                className="flex items-center bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-red-200 transition-all group"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
-                    v{item.version}
-                  </span>
-                  <span className="text-xs text-gray-400">{formatDate(item.release_date)}</span>
+                <div className="w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                  <span className="text-red-600 font-bold">v{item.version}</span>
                 </div>
-                <h3 className="font-medium text-gray-800 mb-1 line-clamp-1">{item.title}</h3>
-                <p className="text-sm text-gray-500 line-clamp-2">{item.content}</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-gray-800 group-hover:text-red-700 truncate">{item.title}</h3>
+                  <p className="text-sm text-gray-500 truncate">{item.content}</p>
+                </div>
+                <div className="ml-4 flex items-center text-gray-400 group-hover:text-red-500">
+                  <span className="text-sm mr-2">{formatDate(item.release_date)}</span>
+                  <ArrowRight className="h-5 w-5" />
+                </div>
               </Link>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </section>
     </div>
   );

@@ -34,7 +34,7 @@ export function Navigation() {
             </div>
             <div>
               <span className="text-xl font-bold text-gray-900">{t("home.title")}</span>
-              <span className="text-xs text-purple-600 block">PerillaDB</span>
+              <span className="text-xs text-purple-600 block">PerNCFdb</span>
             </div>
           </Link>
           

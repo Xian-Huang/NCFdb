@@ -8,7 +8,7 @@ export const zh = {
     contact: "联系我们"
   },
   home: {
-    title: "芝麻基因组数据库",
+    title: "芝麻特征营养成分与指纹图谱数据库",
     subtitle: "整合芝麻基因组、转录组、表型组等多组学数据，为芝麻遗传育种研究提供全面的数据支撑",
     explore: "探索数据",
     stats: {
@@ -109,6 +109,6 @@ export const zh = {
     collaborators: "合作机构"
   },
   footer: {
-    copyright: "© 2026 SesameDB - 芝麻基因组数据库"
+    copyright: "© 2026 SinNCFdb - 芝麻特征营养成分与指纹图谱数据库"
   }
 };

@@ -8,7 +8,7 @@ export const zh = {
     contact: "联系"
   },
   home: {
-    title: "亚麻籽基因组数据库",
+    title: "胡麻（亚麻籽）特征营养成分与指纹图谱数据库",
     subtitle: "整合亚麻籽基因组、转录组、表型组等组学数据，为亚麻籽遗传育种研究提供全面的数据支持",
     explore: "浏览数据",
     stats: {
@@ -109,6 +109,6 @@ export const zh = {
     collaborators: "合作机构"
   },
   footer: {
-    copyright: "© 2026 FlaxDB - 亚麻籽基因组数据库"
+    copyright: "© 2026 FlaxNCFdb - 胡麻（亚麻籽）特征营养成分与指纹图谱数据库"
   }
 };

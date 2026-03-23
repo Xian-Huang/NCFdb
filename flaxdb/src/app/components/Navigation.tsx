@@ -34,7 +34,7 @@ export function Navigation() {
             </div>
             <div>
               <span className="text-xl font-bold text-gray-900">{t("home.title")}</span>
-              <span className="text-xs text-blue-600 block">FlaxDB</span>
+              <span className="text-xs text-blue-600 block">FlaxNCFdb</span>
             </div>
           </Link>
           

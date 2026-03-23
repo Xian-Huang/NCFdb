@@ -49,7 +49,7 @@ export function Home() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div className="max-w-2xl">
               <h1 className="text-5xl font-bold text-white mb-4">
-              Sunflower Haplotype Genome Database
+              SunNCFdb - Sunflower Nutritional Composition and Chemical Fingerprint Database
               </h1>
               <p className="text-xl text-gray-200 mb-8">
                 A comprehensive resource for sunflower genomic data, research tools, and collaborative science
