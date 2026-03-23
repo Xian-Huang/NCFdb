@@ -19,7 +19,7 @@ export function Contact() {
               <label className="block text-sm font-medium text-gray-700 mb-1">{t("contact.name")}</label>
               <input
                 type="text"
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
                 placeholder={t("contact.name")}
               />
             </div>
@@ -27,7 +27,7 @@ export function Contact() {
               <label className="block text-sm font-medium text-gray-700 mb-1">{t("contact.email")}</label>
               <input
                 type="email"
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
                 placeholder="your@email.com"
               />
             </div>
@@ -35,7 +35,7 @@ export function Contact() {
               <label className="block text-sm font-medium text-gray-700 mb-1">{t("contact.subject")}</label>
               <input
                 type="text"
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
                 placeholder={t("contact.subject")}
               />
             </div>
@@ -43,13 +43,13 @@ export function Contact() {
               <label className="block text-sm font-medium text-gray-700 mb-1">{t("contact.message")}</label>
               <textarea
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
                 placeholder={t("contact.message")}
               />
             </div>
             <button
               type="submit"
-              className="w-full bg-green-500 text-white py-2.5 rounded-lg hover:bg-green-600 transition-colors text-sm font-medium"
+              className="w-full bg-red-500 text-white py-2.5 rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
             >
               {t("contact.send")}
             </button>
@@ -61,31 +61,31 @@ export function Contact() {
             <h2 className="text-lg font-medium text-gray-800 mb-4">{t("contact.info")}</h2>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-green-500 mt-0.5" />
+                <MapPin className="h-5 w-5 text-red-500 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-gray-800 text-sm">{t("contact.address")}</h3>
                   <p className="text-gray-500 text-sm">Beijing, China</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Mail className="h-5 w-5 text-green-500 mt-0.5" />
+                <Mail className="h-5 w-5 text-red-500 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-gray-800 text-sm">{t("contact.email")}</h3>
-                  <p className="text-gray-500 text-sm">contact@sesamedb.org</p>
+                  <p className="text-gray-500 text-sm">contact@safflowerncfdb.org</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Phone className="h-5 w-5 text-green-500 mt-0.5" />
+                <Phone className="h-5 w-5 text-red-500 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-gray-800 text-sm">{t("contact.phone")}</h3>
                   <p className="text-gray-500 text-sm">+86 10 1234 5678</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Globe className="h-5 w-5 text-green-500 mt-0.5" />
+                <Globe className="h-5 w-5 text-red-500 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-gray-800 text-sm">{t("contact.website")}</h3>
-                  <p className="text-gray-500 text-sm">www.sesamedb.org</p>
+                  <p className="text-gray-500 text-sm">www.safflowerncfdb.org</p>
                 </div>
               </div>
             </div>
@@ -95,8 +95,8 @@ export function Contact() {
             <h2 className="text-lg font-medium text-gray-800 mb-3">{t("contact.collaborators")}</h2>
             <ul className="space-y-2 text-sm text-gray-500">
               <li>• Chinese Academy of Agricultural Sciences</li>
-              <li>• National Sesame Improvement Center</li>
-              <li>• International Sesame Research Network</li>
+              <li>• National Safflower Improvement Center</li>
+              <li>• International Safflower Research Network</li>
             </ul>
           </div>
         </div>

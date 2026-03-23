@@ -73,7 +73,7 @@ export function Tools() {
                   className={`px-2 py-0.5 text-xs rounded ${
                     tool.status === "Available"
                       ? "bg-green-50 text-green-700"
-                      : "bg-blue-50 text-blue-700"
+                      : "bg-green-50 text-green-700"
                   }`}
                 >
                   {tool.status}

@@ -61,8 +61,8 @@ export function News() {
             onClick={() => setSelectedCategory(category)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               selectedCategory === category
-                ? "bg-green-500 text-white"
-                : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200"
+                ? "bg-blue-500 text-white"
+                : "bg-white text-gray-600 hover:bg-blue-50 border border-gray-200"
             }`}
           >
             {t(`news.categories.${category}`)}
@@ -82,7 +82,7 @@ export function News() {
             <Link
               key={item.id}
               to={`/news/${item.id}`}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-300 transition-all overflow-hidden"
+              className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-300 transition-all overflow-hidden"
             >
               {item.image && (
                 <div className="h-40 overflow-hidden">
@@ -96,7 +96,7 @@ export function News() {
               <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   {item.category && (
-                    <span className="px-2 py-0.5 bg-green-50 text-green-700 text-xs rounded">
+                    <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded">
                       {t(`news.categories.${item.category}`)}
                     </span>
                   )}
@@ -105,7 +105,7 @@ export function News() {
                     {item.views}
                   </div>
                 </div>
-                <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 hover:text-green-600">
+                <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 hover:text-blue-600">
                   {item.title}
                 </h3>
                 <div className="flex items-center justify-between text-xs text-gray-400">
@@ -113,7 +113,7 @@ export function News() {
                     <Calendar className="h-3 w-3 mr-1" />
                     {formatDate(item.publish_time || item.create_time)}
                   </div>
-                  <ArrowRight className="h-4 w-4 text-green-500" />
+                  <ArrowRight className="h-4 w-4 text-blue-500" />
                 </div>
               </div>
             </Link>

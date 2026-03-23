@@ -63,17 +63,17 @@ export function Tools() {
           return (
             <div
               key={index}
-              className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-300 transition-all"
+              className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-red-300 transition-all"
             >
               <div className="flex items-start justify-between mb-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Icon className="h-5 w-5 text-green-600" />
+                <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Icon className="h-5 w-5 text-red-600" />
                 </div>
                 <span
                   className={`px-2 py-0.5 text-xs rounded ${
                     tool.status === "Available"
-                      ? "bg-green-50 text-green-700"
-                      : "bg-blue-50 text-blue-700"
+                      ? "bg-red-50 text-red-700"
+                      : "bg-amber-50 text-amber-700"
                   }`}
                 >
                   {tool.status}
@@ -91,7 +91,7 @@ export function Tools() {
                   </span>
                 ))}
               </div>
-              <button className="w-full px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm">
+              <button className="w-full px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm">
                 {t("tools.launch")}
               </button>
             </div>
@@ -102,7 +102,7 @@ export function Tools() {
       {/* BLAST Section */}
       <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
         <h2 className="text-lg font-medium text-gray-800 mb-4 flex items-center gap-2">
-          <Search className="h-5 w-5 text-green-500" />
+          <Search className="h-5 w-5 text-red-500" />
           {t("tools.blastSearch")}
         </h2>
         <div className="space-y-4">
@@ -111,14 +111,14 @@ export function Tools() {
               {t("tools.sequence")}
             </label>
             <textarea
-              className="w-full h-24 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+              className="w-full h-24 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
               placeholder=">seq1&#10;ATCGATCGATCGATCG..."
             />
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">{t("tools.program")}</label>
-              <select className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm">
+              <select className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm">
                 <option>BLASTN (nucleotide vs nucleotide)</option>
                 <option>BLASTP (protein vs protein)</option>
                 <option>BLASTX (nucleotide vs protein)</option>
@@ -127,7 +127,7 @@ export function Tools() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">{t("tools.database")}</label>
-              <select className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm">
+              <select className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm">
                 <option>Reference Genome</option>
                 <option>Transcriptome</option>
                 <option>Protein Sequences</option>
@@ -135,14 +135,14 @@ export function Tools() {
               </select>
             </div>
           </div>
-          <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm">
+          <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm">
             {t("tools.run")}
           </button>
         </div>
       </section>
 
       {/* Tutorials */}
-      <section className="bg-green-50 rounded-xl p-6">
+      <section className="bg-red-50 rounded-xl p-6">
         <h2 className="font-medium text-gray-800 mb-4">{t("tools.tutorials")}</h2>
         <div className="grid md:grid-cols-3 gap-3">
           <button className="px-4 py-3 bg-white text-gray-700 rounded-lg hover:shadow-md transition-shadow text-sm border border-gray-100">

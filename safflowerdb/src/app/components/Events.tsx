@@ -6,50 +6,50 @@ export function Events() {
   
   const upcomingEvents = [
     {
-      title: "International Sesame Genomics Symposium 2026",
-      date: "July 20-23, 2026",
+      title: "International Safflower Genomics Symposium 2026",
+      date: "September 15-18, 2026",
       time: "9:00 - 17:00",
-      location: "Beijing, China",
+      location: "Gansu, China",
       type: "Conference",
-      attendees: "300+",
+      attendees: "200+",
       format: "Hybrid",
     },
     {
-      title: "Bioinformatics Workshop: Sesame Genome Analysis",
-      date: "April 15, 2026",
+      title: "Bioinformatics Workshop: Safflower Genome Analysis",
+      date: "June 20, 2026",
       time: "14:00 - 17:00",
       location: "Online",
       type: "Workshop",
-      attendees: "150+",
+      attendees: "100+",
       format: "Virtual",
     },
     {
-      title: "Sesame Breeding Innovation Forum",
-      date: "May 10, 2026",
+      title: "Safflower Breeding Innovation Forum",
+      date: "July 10, 2026",
       time: "10:00 - 12:00",
       location: "Online",
       type: "Webinar",
-      attendees: "200+",
+      attendees: "150+",
       format: "Virtual",
     },
   ];
 
   const pastEvents = [
     {
-      title: "Sesame Genome Consortium Meeting 2025",
-      date: "December 10-12, 2025",
-      location: "Shanghai, China",
+      title: "Safflower Research Conference 2025",
+      date: "October 15-17, 2025",
+      location: "Beijing, China",
       type: "Conference",
     },
     {
-      title: "High-Throughput Phenotyping Workshop",
-      date: "November 8, 2025",
+      title: "Functional Genomics Workshop",
+      date: "July 8, 2025",
       location: "Online",
       type: "Workshop",
     },
     {
       title: "Database Launch & Training Webinar",
-      date: "October 20, 2025",
+      date: "April 1, 2025",
       location: "Online",
       type: "Webinar",
     },
@@ -74,10 +74,10 @@ export function Events() {
               <div className="flex flex-col md:flex-row md:justify-between md:items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2 py-0.5 bg-green-50 text-green-700 text-xs rounded">
+                    <span className="px-2 py-0.5 bg-red-50 text-red-700 text-xs rounded">
                       {event.type}
                     </span>
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded">
+                    <span className="px-2 py-0.5 bg-orange-50 text-orange-700 text-xs rounded">
                       {event.format}
                     </span>
                   </div>
@@ -94,7 +94,7 @@ export function Events() {
                     </span>
                   </div>
                 </div>
-                <button className="mt-3 md:mt-0 md:ml-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm">
+                <button className="mt-3 md:mt-0 md:ml-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm">
                   {t("events.register")}
                 </button>
               </div>
@@ -125,12 +125,12 @@ export function Events() {
       </section>
 
       {/* Subscribe */}
-      <section className="bg-green-50 rounded-xl p-6">
+      <section className="bg-red-50 rounded-xl p-6">
         <div className="text-center">
-          <Calendar className="h-10 w-10 text-green-500 mx-auto mb-3" />
+          <Calendar className="h-10 w-10 text-red-500 mx-auto mb-3" />
           <h2 className="font-semibold text-gray-800 mb-2">{t("events.subscribe")}</h2>
           <p className="text-sm text-gray-500 mb-4">{t("events.subscribeDesc")}</p>
-          <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm">
+          <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm">
             {t("events.subscribe")}
           </button>
         </div>
