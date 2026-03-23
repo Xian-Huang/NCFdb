@@ -24,7 +24,7 @@ export function News() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
   useEffect(() => {
-    fetch("/api/sunflower/news/")
+    fetch("/sunflower/news/")
       .then((res) => res.json())
       .then((data) => {
         setNews(data);

@@ -1,7 +1,7 @@
 import { Download, Search, Database, FileText } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { fetchSesameDownloadFiles } from "../../apis/data_apis";
+import { fetchSafflowerDownloadFiles } from "../../apis/data_apis";
 
 export function Data() {
   const { t } = useTranslation();
@@ -9,7 +9,7 @@ export function Data() {
   const [searchTerm, setSearchTerm] = useState("");
   
   useEffect(() => {
-    fetchSesameDownloadFiles().then((data: any[]) => {
+    fetchSafflowerDownloadFiles().then((data: any[]) => {
       setDatasetsFiles(data);
     });
   }, []);

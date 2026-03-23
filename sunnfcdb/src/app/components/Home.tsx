@@ -18,7 +18,7 @@ export function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/sunflower/changelog/")
+    fetch("/sunflower/changelog/")
       .then((res) => res.json())
       .then((data) => {
         setChangelog(data.slice(0, 4));

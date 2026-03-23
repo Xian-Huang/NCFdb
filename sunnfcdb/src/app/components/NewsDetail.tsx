@@ -25,7 +25,7 @@ export function NewsDetail() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/sunflower/news/${id}/`)
+    fetch(`/sunflower/news/${id}/`)
       .then((res) => res.json())
       .then((data) => {
         setNews(data);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import { Calendar, Eye, ArrowLeft, User } from "lucide-react";
-import { fetchSesameNewsById } from "../../apis/data_apis";
+import { fetchSafflowerNewsById } from "../../apis/data_apis";
 
 interface NewsItem {
   id: number;
@@ -23,7 +23,7 @@ export function NewsDetail() {
 
   useEffect(() => {
     if (id) {
-      fetchSesameNewsById(parseInt(id))
+      fetchSafflowerNewsById(parseInt(id))
         .then((data: NewsItem) => {
           setNews(data);
           setLoading(false);

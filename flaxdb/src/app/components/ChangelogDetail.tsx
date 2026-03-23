@@ -19,7 +19,7 @@ export function ChangelogDetail() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/flax/changelogs/${id}/`)
+    fetch(`/api/changelogs/${id}/`)
       .then((res) => res.json())
       .then((data) => {
         setChangelog(data);

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import { Calendar, Eye, ArrowLeft, User } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { fetchPerillaNewsById } from "../../apis/data_apis";
+
 
 interface NewsItem {
   id: number;

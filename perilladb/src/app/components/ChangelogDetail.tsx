@@ -1,6 +1,7 @@
 import { Calendar, ArrowLeft, Tag } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
+import { fetchChangelog } from "../../apis/data_apis";
 
 interface ChangelogItem {
   id: number;
@@ -19,13 +20,12 @@ export function ChangelogDetail() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/perilla/changelogs/${id}/`)
-      .then((res) => res.json())
-      .then((data) => {
+    fetchChangelog()
+      .then((data: ChangelogItem) => {
         setChangelog(data);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error("Failed to fetch changelog:", err);
         setLoading(false);
       });

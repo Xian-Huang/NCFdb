@@ -19,7 +19,7 @@ export function ChangelogDetail() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/sunflower/changelog/${id}/`)
+    fetch(`/sunflower/changelog/${id}/`)
       .then((res) => res.json())
       .then((data) => {
         setChangelog(data);

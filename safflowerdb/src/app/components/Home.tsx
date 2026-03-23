@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { fetchSafflowerChangelog } from "../../apis/data_apis";
 
 interface ChangelogItem {
   id: number;
@@ -20,8 +21,7 @@ export function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/safflower/changelogs/")
-      .then((res) => res.json())
+    fetchSafflowerChangelog()
       .then((data) => {
         setChangelog(data.slice(0, 3));
         setLoading(false);

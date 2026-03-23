@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { Calendar, Eye, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { fetchSesameNews } from "../../apis/data_apis";
+import { fetchSafflowerNews } from "../../apis/data_apis";
 
 interface NewsItem {
   id: number;
@@ -24,7 +24,7 @@ export function News() {
   const [selectedCategory, setSelectedCategory] = useState("all");
 
   useEffect(() => {
-    fetchSesameNews()
+    fetchSafflowerNews()
       .then((data: NewsItem[]) => {
         setNews(data);
         setLoading(false);
