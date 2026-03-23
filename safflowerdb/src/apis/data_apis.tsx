@@ -65,3 +65,122 @@ export const fetchSafflowerChangelog = async () => {
   return await response.json();
 };
 
+export const createSafflowerNews = async (data: any) => {
+  const response = await fetchRequest("/api/news/", "POST", data);
+  return await response.json();
+};
+
+export const updateSafflowerNews = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/news/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteSafflowerNews = async (id: number) => {
+  const response = await fetchRequest(`/api/news/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createSafflowerChangelog = async (data: any) => {
+  const response = await fetchRequest("/api/changelogs/", "POST", data);
+  return await response.json();
+};
+
+export const updateSafflowerChangelog = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/changelogs/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteSafflowerChangelog = async (id: number) => {
+  const response = await fetchRequest(`/api/changelogs/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createSafflowerRegion = async (data: any) => {
+  const response = await fetchRequest("/api/regions/", "POST", data);
+  return await response.json();
+};
+
+export const updateSafflowerRegion = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/regions/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteSafflowerRegion = async (id: number) => {
+  const response = await fetchRequest(`/api/regions/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createSafflowerVariety = async (data: any) => {
+  const response = await fetchRequest("/api/varieties/", "POST", data);
+  return await response.json();
+};
+
+export const updateSafflowerVariety = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/varieties/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteSafflowerVariety = async (id: number) => {
+  const response = await fetchRequest(`/api/varieties/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createSafflowerGene = async (data: any) => {
+  const response = await fetchRequest("/api/genes/", "POST", data);
+  return await response.json();
+};
+
+export const updateSafflowerGene = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/genes/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteSafflowerGene = async (id: number) => {
+  const response = await fetchRequest(`/api/genes/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createSafflowerInstitution = async (data: any) => {
+  const response = await fetchRequest("/api/institutions/", "POST", data);
+  return await response.json();
+};
+
+export const updateSafflowerInstitution = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/institutions/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteSafflowerInstitution = async (id: number) => {
+  const response = await fetchRequest(`/api/institutions/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createSafflowerAnnouncement = async (data: any) => {
+  const response = await fetchRequest("/api/announcements/", "POST", data);
+  return await response.json();
+};
+
+export const updateSafflowerAnnouncement = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/announcements/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteSafflowerAnnouncement = async (id: number) => {
+  const response = await fetchRequest(`/api/announcements/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createSafflowerDownloadFile = async (data: any) => {
+  const response = await fetchRequest("/api/download/files/", "POST", data);
+  return await response.json();
+};
+
+export const updateSafflowerDownloadFile = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/download/files/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteSafflowerDownloadFile = async (id: number) => {
+  const response = await fetchRequest(`/api/download/files/${id}/`, "DELETE");
+  return await response.json();
+};

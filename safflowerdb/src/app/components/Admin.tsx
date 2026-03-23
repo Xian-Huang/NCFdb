@@ -5,6 +5,40 @@ import {
   FileText, MapPin, Leaf, Dna, Building, Bell,
   Search, RefreshCw, Download, Beaker
 } from "lucide-react";
+import {
+  fetchSafflowerNews,
+  fetchSafflowerChangelogs,
+  fetchSafflowerRegions,
+  fetchSafflowerVarieties,
+  fetchSafflowerGenes,
+  fetchSafflowerInstitutions,
+  fetchSafflowerAnnouncements,
+  fetchSafflowerDownloadFiles,
+  createSafflowerNews,
+  updateSafflowerNews,
+  deleteSafflowerNews,
+  createSafflowerChangelog,
+  updateSafflowerChangelog,
+  deleteSafflowerChangelog,
+  createSafflowerRegion,
+  updateSafflowerRegion,
+  deleteSafflowerRegion,
+  createSafflowerVariety,
+  updateSafflowerVariety,
+  deleteSafflowerVariety,
+  createSafflowerGene,
+  updateSafflowerGene,
+  deleteSafflowerGene,
+  createSafflowerInstitution,
+  updateSafflowerInstitution,
+  deleteSafflowerInstitution,
+  createSafflowerAnnouncement,
+  updateSafflowerAnnouncement,
+  deleteSafflowerAnnouncement,
+  createSafflowerDownloadFile,
+  updateSafflowerDownloadFile,
+  deleteSafflowerDownloadFile,
+} from "../../apis/data_apis";
 
 type DataType = "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "institutions" | "announcements" | "downloads";
 
@@ -78,17 +112,87 @@ interface AnnouncementData {
   publish_date: string;
 }
 
-const dataTypeConfig: Record<DataType, { title: string; icon: React.ElementType; endpoint: string }> = {
-  news: { title: "News", icon: FileText, endpoint: "news/" },
-  changelog: { title: "Updates", icon: RefreshCw, endpoint: "changelogs/" },
-  regions: { title: "Regions", icon: MapPin, endpoint: "regions/" },
-  varieties: { title: "Varieties", icon: Leaf, endpoint: "varieties/" },
-  genes: { title: "Genes", icon: Dna, endpoint: "genes/" },
-  gene_expressions: { title: "Gene Expressions", icon: Dna, endpoint: "gene-expressions/" },
-  environmental_factors: { title: "Environmental Factors", icon: Beaker, endpoint: "environmental-factors/" },
-  institutions: { title: "Institutions", icon: Building, endpoint: "institutions/" },
-  announcements: { title: "Announcements", icon: Bell, endpoint: "announcements/" },
-  downloads: { title: "Downloads", icon: Download, endpoint: "download/files/" },
+const dataTypeConfig: Record<DataType, { title: string; icon: React.ElementType; fetchFn: () => Promise<any[]>; createFn: (data: any) => Promise<any>; updateFn: (id: number, data: any) => Promise<any>; deleteFn: (id: number) => Promise<any> }> = {
+  news: { 
+    title: "News", 
+    icon: FileText, 
+    fetchFn: fetchSafflowerNews,
+    createFn: createSafflowerNews,
+    updateFn: updateSafflowerNews,
+    deleteFn: deleteSafflowerNews,
+  },
+  changelog: { 
+    title: "Updates", 
+    icon: RefreshCw, 
+    fetchFn: fetchSafflowerChangelogs,
+    createFn: createSafflowerChangelog,
+    updateFn: updateSafflowerChangelog,
+    deleteFn: deleteSafflowerChangelog,
+  },
+  regions: { 
+    title: "Regions", 
+    icon: MapPin, 
+    fetchFn: fetchSafflowerRegions,
+    createFn: createSafflowerRegion,
+    updateFn: updateSafflowerRegion,
+    deleteFn: deleteSafflowerRegion,
+  },
+  varieties: { 
+    title: "Varieties", 
+    icon: Leaf, 
+    fetchFn: fetchSafflowerVarieties,
+    createFn: createSafflowerVariety,
+    updateFn: updateSafflowerVariety,
+    deleteFn: deleteSafflowerVariety,
+  },
+  genes: { 
+    title: "Genes", 
+    icon: Dna, 
+    fetchFn: fetchSafflowerGenes,
+    createFn: createSafflowerGene,
+    updateFn: updateSafflowerGene,
+    deleteFn: deleteSafflowerGene,
+  },
+  gene_expressions: { 
+    title: "Gene Expressions", 
+    icon: Dna, 
+    fetchFn: async () => [],
+    createFn: async () => {},
+    updateFn: async () => {},
+    deleteFn: async () => {},
+  },
+  environmental_factors: { 
+    title: "Environmental Factors", 
+    icon: Beaker, 
+    fetchFn: async () => [],
+    createFn: async () => {},
+    updateFn: async () => {},
+    deleteFn: async () => {},
+  },
+  institutions: { 
+    title: "Institutions", 
+    icon: Building, 
+    fetchFn: fetchSafflowerInstitutions,
+    createFn: createSafflowerInstitution,
+    updateFn: updateSafflowerInstitution,
+    deleteFn: deleteSafflowerInstitution,
+  },
+  announcements: { 
+    title: "Announcements", 
+    icon: Bell, 
+    fetchFn: fetchSafflowerAnnouncements,
+    createFn: createSafflowerAnnouncement,
+    updateFn: updateSafflowerAnnouncement,
+    deleteFn: deleteSafflowerAnnouncement,
+  },
+  downloads: { 
+    title: "Downloads", 
+    icon: Download, 
+    fetchFn: fetchSafflowerDownloadFiles,
+    createFn: createSafflowerDownloadFile,
+    updateFn: updateSafflowerDownloadFile,
+    deleteFn: deleteSafflowerDownloadFile,
+  },
 };
 
 export function Admin() {
@@ -108,19 +212,16 @@ export function Admin() {
     fetchData();
   }, [activeType]);
 
-  const fetchData = () => {
+  const fetchData = async () => {
     setLoading(true);
-    const endpoint = dataTypeConfig[activeType].endpoint;
-    fetch(`/api/safflower/${endpoint}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch data:", err);
-        setLoading(false);
-      });
+    try {
+      const result = await dataTypeConfig[activeType].fetchFn();
+      setData(result);
+    } catch (err) {
+      console.error("Failed to fetch data:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogout = () => {
@@ -173,31 +274,30 @@ export function Admin() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const endpoint = dataTypeConfig[activeType].endpoint;
-    const url = editingItem ? `/api/safflower/${endpoint}${editingItem.id}/` : `/api/safflower/${endpoint}`;
-    const method = editingItem ? "PUT" : "POST";
-
-    fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        fetchData();
-        closeModal();
-      })
-      .catch((err) => console.error("Failed to save:", err));
+    const config = dataTypeConfig[activeType];
+    try {
+      if (editingItem) {
+        await config.updateFn(editingItem.id, formData);
+      } else {
+        await config.createFn(formData);
+      }
+      await fetchData();
+      closeModal();
+    } catch (err) {
+      console.error("Failed to save:", err);
+    }
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this item?")) return;
-    const endpoint = dataTypeConfig[activeType].endpoint;
-    fetch(`/api/safflower/${endpoint}${id}/`, { method: "DELETE" })
-      .then(() => fetchData())
-      .catch((err) => console.error("Failed to delete:", err));
+    try {
+      await dataTypeConfig[activeType].deleteFn(id);
+      await fetchData();
+    } catch (err) {
+      console.error("Failed to delete:", err);
+    }
   };
 
   const filteredData = data.filter((item: any) => {

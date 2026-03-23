@@ -5,6 +5,40 @@ import {
   FileText, MapPin, Leaf, Dna, Building, Bell,
   Search, RefreshCw, Download, Beaker
 } from "lucide-react";
+import {
+  fetchPerillaNews,
+  fetchPerillaChangelogs,
+  fetchPerillaRegions,
+  fetchPerillaVarieties,
+  fetchPerillaGenes,
+  fetchPerillaInstitutions,
+  fetchPerillaAnnouncements,
+  fetchPerillaDownloadFiles,
+  createPerillaNews,
+  updatePerillaNews,
+  deletePerillaNews,
+  createPerillaChangelog,
+  updatePerillaChangelog,
+  deletePerillaChangelog,
+  createPerillaRegion,
+  updatePerillaRegion,
+  deletePerillaRegion,
+  createPerillaVariety,
+  updatePerillaVariety,
+  deletePerillaVariety,
+  createPerillaGene,
+  updatePerillaGene,
+  deletePerillaGene,
+  createPerillaInstitution,
+  updatePerillaInstitution,
+  deletePerillaInstitution,
+  createPerillaAnnouncement,
+  updatePerillaAnnouncement,
+  deletePerillaAnnouncement,
+  createPerillaDownloadFile,
+  updatePerillaDownloadFile,
+  deletePerillaDownloadFile,
+} from "../../apis/data_apis";
 
 type DataType = "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "institutions" | "announcements" | "downloads";
 
@@ -78,17 +112,87 @@ interface AnnouncementData {
   publish_date: string;
 }
 
-const dataTypeConfig: Record<DataType, { title: string; icon: React.ElementType; endpoint: string }> = {
-  news: { title: "News", icon: FileText, endpoint: "news/" },
-  changelog: { title: "Updates", icon: RefreshCw, endpoint: "changelogs/" },
-  regions: { title: "Regions", icon: MapPin, endpoint: "regions/" },
-  varieties: { title: "Varieties", icon: Leaf, endpoint: "varieties/" },
-  genes: { title: "Genes", icon: Dna, endpoint: "genes/" },
-  gene_expressions: { title: "Gene Expressions", icon: Dna, endpoint: "gene-expressions/" },
-  environmental_factors: { title: "Environmental Factors", icon: Beaker, endpoint: "environmental-factors/" },
-  institutions: { title: "Institutions", icon: Building, endpoint: "institutions/" },
-  announcements: { title: "Announcements", icon: Bell, endpoint: "announcements/" },
-  downloads: { title: "Downloads", icon: Download, endpoint: "download/files/" },
+const dataTypeConfig: Record<DataType, { title: string; icon: React.ElementType; fetchFn: () => Promise<any[]>; createFn: (data: any) => Promise<any>; updateFn: (id: number, data: any) => Promise<any>; deleteFn: (id: number) => Promise<any> }> = {
+  news: { 
+    title: "News", 
+    icon: FileText, 
+    fetchFn: fetchPerillaNews,
+    createFn: createPerillaNews,
+    updateFn: updatePerillaNews,
+    deleteFn: deletePerillaNews,
+  },
+  changelog: { 
+    title: "Updates", 
+    icon: RefreshCw, 
+    fetchFn: fetchPerillaChangelogs,
+    createFn: createPerillaChangelog,
+    updateFn: updatePerillaChangelog,
+    deleteFn: deletePerillaChangelog,
+  },
+  regions: { 
+    title: "Regions", 
+    icon: MapPin, 
+    fetchFn: fetchPerillaRegions,
+    createFn: createPerillaRegion,
+    updateFn: updatePerillaRegion,
+    deleteFn: deletePerillaRegion,
+  },
+  varieties: { 
+    title: "Varieties", 
+    icon: Leaf, 
+    fetchFn: fetchPerillaVarieties,
+    createFn: createPerillaVariety,
+    updateFn: updatePerillaVariety,
+    deleteFn: deletePerillaVariety,
+  },
+  genes: { 
+    title: "Genes", 
+    icon: Dna, 
+    fetchFn: fetchPerillaGenes,
+    createFn: createPerillaGene,
+    updateFn: updatePerillaGene,
+    deleteFn: deletePerillaGene,
+  },
+  gene_expressions: { 
+    title: "Gene Expressions", 
+    icon: Dna, 
+    fetchFn: async () => [],
+    createFn: async () => {},
+    updateFn: async () => {},
+    deleteFn: async () => {},
+  },
+  environmental_factors: { 
+    title: "Environmental Factors", 
+    icon: Beaker, 
+    fetchFn: async () => [],
+    createFn: async () => {},
+    updateFn: async () => {},
+    deleteFn: async () => {},
+  },
+  institutions: { 
+    title: "Institutions", 
+    icon: Building, 
+    fetchFn: fetchPerillaInstitutions,
+    createFn: createPerillaInstitution,
+    updateFn: updatePerillaInstitution,
+    deleteFn: deletePerillaInstitution,
+  },
+  announcements: { 
+    title: "Announcements", 
+    icon: Bell, 
+    fetchFn: fetchPerillaAnnouncements,
+    createFn: createPerillaAnnouncement,
+    updateFn: updatePerillaAnnouncement,
+    deleteFn: deletePerillaAnnouncement,
+  },
+  downloads: { 
+    title: "Downloads", 
+    icon: Download, 
+    fetchFn: fetchPerillaDownloadFiles,
+    createFn: createPerillaDownloadFile,
+    updateFn: updatePerillaDownloadFile,
+    deleteFn: deletePerillaDownloadFile,
+  },
 };
 
 export function Admin() {
@@ -108,19 +212,16 @@ export function Admin() {
     fetchData();
   }, [activeType]);
 
-  const fetchData = () => {
+  const fetchData = async () => {
     setLoading(true);
-    const endpoint = dataTypeConfig[activeType].endpoint;
-    fetch(`/api/perilla/${endpoint}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch data:", err);
-        setLoading(false);
-      });
+    try {
+      const result = await dataTypeConfig[activeType].fetchFn();
+      setData(result);
+    } catch (err) {
+      console.error("Failed to fetch data:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogout = () => {
@@ -173,31 +274,30 @@ export function Admin() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const endpoint = dataTypeConfig[activeType].endpoint;
-    const url = editingItem ? `/api/perilla/${endpoint}${editingItem.id}/` : `/api/perilla/${endpoint}`;
-    const method = editingItem ? "PUT" : "POST";
-
-    fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        fetchData();
-        closeModal();
-      })
-      .catch((err) => console.error("Failed to save:", err));
+    const config = dataTypeConfig[activeType];
+    try {
+      if (editingItem) {
+        await config.updateFn(editingItem.id, formData);
+      } else {
+        await config.createFn(formData);
+      }
+      await fetchData();
+      closeModal();
+    } catch (err) {
+      console.error("Failed to save:", err);
+    }
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this item?")) return;
-    const endpoint = dataTypeConfig[activeType].endpoint;
-    fetch(`/api/perilla/${endpoint}${id}/`, { method: "DELETE" })
-      .then(() => fetchData())
-      .catch((err) => console.error("Failed to delete:", err));
+    try {
+      await dataTypeConfig[activeType].deleteFn(id);
+      await fetchData();
+    } catch (err) {
+      console.error("Failed to delete:", err);
+    }
   };
 
   const filteredData = data.filter((item: any) => {

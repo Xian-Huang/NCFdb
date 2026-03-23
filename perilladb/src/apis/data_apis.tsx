@@ -60,7 +60,6 @@ export const fetchPerillaChangelogById = async (id: number) => {
   return await response.json();
 };
 
-
 export const fetchChangelog = async () => {
   const response = await fetchRequest("/api/changelogs/", "GET");
   return await response.json();
@@ -68,5 +67,125 @@ export const fetchChangelog = async () => {
 
 export const fetchChangelogById = async (id: number) => {
   const response = await fetchRequest(`/api/changelogs/${id}/`, "GET");
+  return await response.json();
+};
+
+export const createPerillaNews = async (data: any) => {
+  const response = await fetchRequest("/api/news/", "POST", data);
+  return await response.json();
+};
+
+export const updatePerillaNews = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/news/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deletePerillaNews = async (id: number) => {
+  const response = await fetchRequest(`/api/news/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createPerillaChangelog = async (data: any) => {
+  const response = await fetchRequest("/api/changelogs/", "POST", data);
+  return await response.json();
+};
+
+export const updatePerillaChangelog = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/changelogs/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deletePerillaChangelog = async (id: number) => {
+  const response = await fetchRequest(`/api/changelogs/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createPerillaRegion = async (data: any) => {
+  const response = await fetchRequest("/api/regions/", "POST", data);
+  return await response.json();
+};
+
+export const updatePerillaRegion = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/regions/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deletePerillaRegion = async (id: number) => {
+  const response = await fetchRequest(`/api/regions/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createPerillaVariety = async (data: any) => {
+  const response = await fetchRequest("/api/varieties/", "POST", data);
+  return await response.json();
+};
+
+export const updatePerillaVariety = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/varieties/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deletePerillaVariety = async (id: number) => {
+  const response = await fetchRequest(`/api/varieties/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createPerillaGene = async (data: any) => {
+  const response = await fetchRequest("/api/genes/", "POST", data);
+  return await response.json();
+};
+
+export const updatePerillaGene = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/genes/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deletePerillaGene = async (id: number) => {
+  const response = await fetchRequest(`/api/genes/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createPerillaInstitution = async (data: any) => {
+  const response = await fetchRequest("/api/institutions/", "POST", data);
+  return await response.json();
+};
+
+export const updatePerillaInstitution = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/institutions/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deletePerillaInstitution = async (id: number) => {
+  const response = await fetchRequest(`/api/institutions/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createPerillaAnnouncement = async (data: any) => {
+  const response = await fetchRequest("/api/announcements/", "POST", data);
+  return await response.json();
+};
+
+export const updatePerillaAnnouncement = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/announcements/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deletePerillaAnnouncement = async (id: number) => {
+  const response = await fetchRequest(`/api/announcements/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const createPerillaDownloadFile = async (data: any) => {
+  const response = await fetchRequest("/api/download/files/", "POST", data);
+  return await response.json();
+};
+
+export const updatePerillaDownloadFile = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/download/files/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deletePerillaDownloadFile = async (id: number) => {
+  const response = await fetchRequest(`/api/download/files/${id}/`, "DELETE");
   return await response.json();
 };

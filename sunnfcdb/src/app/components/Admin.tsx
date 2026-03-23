@@ -124,7 +124,7 @@ export function Admin() {
   const fetchData = () => {
     setLoading(true);
     const endpoint = dataTypeConfig[activeType].endpoint;
-    fetch(`/sunflower/${endpoint}`)
+    fetch(`/api/${endpoint}`)
       .then((res) => res.json())
       .then((data) => {
         setData(data);
@@ -204,7 +204,7 @@ export function Admin() {
   const handleDelete = (id: number) => {
     if (!confirm("Are you sure you want to delete this item?")) return;
     const endpoint = dataTypeConfig[activeType].endpoint;
-    fetch(`/sunflower/${endpoint}${id}/`, { method: "DELETE" })
+    fetch(`/api/${endpoint}${id}/`, { method: "DELETE" })
       .then(() => fetchData())
       .catch((err) => console.error("Failed to delete:", err));
   };
