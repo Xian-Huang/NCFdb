@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Sprout, Eye, EyeOff } from "lucide-react";
+import { fetchloginSesameRegions } from "../../apis/user_api";
 
 export function Login() {
   const [username, setUsername] = useState("");
@@ -16,17 +17,14 @@ export function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/sesame/auth/login/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-
+      console.log("login:", username, password);
+      const response = await fetchloginSesameRegions({username, password});
       const data = await response.json();
-
+      
       if (response.ok) {
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("token", data.token || "session");
+        console.log("success login:", username);
         navigate("/admin");
       } else {
         setError(data.error || "Invalid credentials");

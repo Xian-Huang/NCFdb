@@ -24,9 +24,4 @@ urlpatterns = [
     path('institutions/<int:pk>/', views.InstitutionDetailView.as_view()),
     path('announcements/', views.AnnouncementView.as_view()),
     path('announcements/<int:pk>/', views.AnnouncementDetailView.as_view()),
-    path('users/', views.UserListView.as_view()),
-    path('users/<int:pk>/', views.UserDetailView.as_view()),
-    path('auth/login/', views.LoginView.as_view()),
-    path('auth/logout/', views.LogoutView.as_view()),
-    path('auth/current-user/', views.CurrentUserView.as_view()),
 ]

@@ -1,16 +1,20 @@
 import { Link, useLocation } from "react-router";
-import { Sprout } from "lucide-react";
+import { Sprout, Menu, X } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function Navigation() {
+  const { t } = useTranslation();
   const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
   
   const navItems = [
-    { path: "/", label: "Home" },
-    { path: "/data", label: "Data" },
-    { path: "/news", label: "News" },
-    { path: "/events", label: "Events" },
-    { path: "/tools", label: "Tools" },
-    { path: "/contact", label: "Contact" },
+    { path: "/", label: t("nav.home") },
+    { path: "/data", label: t("nav.data") },
+    { path: "/news", label: t("nav.news") },
+    { path: "/events", label: t("nav.events") },
+    { path: "/tools", label: t("nav.tools") },
+    { path: "/contact", label: t("nav.contact") },
   ];
 
   const isActive = (path: string) => {
@@ -21,32 +25,61 @@ export function Navigation() {
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b border-green-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="bg-white shadow-md border-t-4 border-green-600">
+      <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center space-x-2">
-            <Sprout className="h-8 w-8 text-green-600" />
-            <span className="text-xl font-semibold text-gray-900">
-              SesameDB
-            </span>
+          <Link to="/" className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+              <Sprout className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <span className="text-xl font-bold text-gray-900">{t("home.title")}</span>
+              <span className="text-xs text-green-600 block">SesameDB</span>
+            </div>
           </Link>
           
-          <div className="flex space-x-1">
+          <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-4 py-2 rounded-md transition-colors ${
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   isActive(item.path)
-                    ? "bg-green-600 text-white"
-                    : "text-gray-700 hover:bg-green-100"
+                    ? "bg-green-100 text-green-800 border-b-2 border-green-600"
+                    : "text-gray-600 hover:bg-green-50 hover:text-green-700"
                 }`}
               >
                 {item.label}
               </Link>
             ))}
           </div>
+
+          <button
+            className="md:hidden p-2 text-gray-600"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+
+        {isOpen && (
+          <div className="md:hidden pb-4 space-y-1">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`block px-4 py-3 rounded-md text-sm font-medium ${
+                  isActive(item.path)
+                    ? "bg-green-100 text-green-800"
+                    : "text-gray-600 hover:bg-green-50"
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </nav>
   );

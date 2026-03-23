@@ -27,6 +27,7 @@ SECRET_KEY = 'django-insecure-1)b+!lk(ki40+g05tm8r&d-lwj!nxi8)#67-fojnb50l%+r@dj
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "t","True")
+print(DEBUG)
 
 ALLOWED_HOSTS = ["*"]
 
@@ -40,8 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "rest_framework",
     "sunnfcdb",
-    "sesame"
+    "sesame",
+    "flaxdb",
+    "safflower",
+    "perilla",
+    "users"
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -52,6 +58,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+}
 
 ROOT_URLCONF = 'ncfdb.urls'
 

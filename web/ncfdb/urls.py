@@ -23,4 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('sunflower/', include('sunnfcdb.urls')),
     path('sesame/', include('sesame.urls')),
+    path('flax/', include('flaxdb.urls')),
+    path('safflower/', include('safflower.urls')),
+    path('perilla/', include('perilla.urls')),
+    path('users/', include('users.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

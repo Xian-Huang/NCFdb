@@ -2,6 +2,7 @@ import { ArrowRight, Database, Users, BookOpen } from "lucide-react";
 import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ChangelogItem {
   id: number;
@@ -14,6 +15,7 @@ interface ChangelogItem {
 }
 
 export function Home() {
+  const { t } = useTranslation();
   const [changelog, setChangelog] = useState<ChangelogItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +23,7 @@ export function Home() {
     fetch("/api/sesame/changelogs/")
       .then((res) => res.json())
       .then((data) => {
-        setChangelog(data.slice(0, 4));
+        setChangelog(data.slice(0, 3));
         setLoading(false);
       })
       .catch((err) => {
@@ -39,125 +41,134 @@ export function Home() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative h-[500px] overflow-hidden">
+      <section className="relative h-[350px] overflow-hidden rounded-xl shadow-lg mb-8">
         <ImageWithFallback
-          src="https://images.unsplash.com/photo-1595854341625-f71831d39e71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzZXNhbWUlMjBzZWVkc3xleDF8fHx8MTc3MjAwMDAwMHww&ixlib=rb-4.1.0&q=80&w=1080"
+          src="https://images.unsplash.com/photo-1595854341625-f71831d39e71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1200"
           alt="Sesame"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-green-900/80 to-green-700/50 flex items-center">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <div className="max-w-2xl">
-              <h1 className="text-5xl font-bold text-white mb-4">
-              Sesame Genomic Database
+        <div className="absolute inset-0 bg-gradient-to-r from-green-900/85 to-green-600/60 flex items-center">
+          <div className="container mx-auto px-8">
+            <div className="max-w-xl">
+              <h1 className="text-4xl font-bold text-white mb-3">
+                {t("home.title")}
               </h1>
-              <p className="text-xl text-green-100 mb-8">
-                A comprehensive resource for sesame genomic data, breeding information, and collaborative science
+              <p className="text-lg text-green-100 mb-5">
+                {t("home.subtitle")}
               </p>
               <Link
                 to="/data"
-                className="inline-flex items-center px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                className="inline-flex items-center px-5 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
               >
-                Explore Data
-                <ArrowRight className="ml-2 h-5 w-5" />
+                {t("home.explore")}
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-white p-6 rounded-lg shadow-md border border-green-100 hover:shadow-lg transition-shadow">
-            <Database className="h-12 w-12 text-green-500 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Genomic Data</h3>
-            <p className="text-gray-600 mb-4">
-              Access comprehensive sesame genome sequences, annotations, and expression data
-            </p>
-            <Link
-              to="/data"
-              className="text-green-600 hover:text-green-700 font-medium inline-flex items-center"
-            >
-              Browse Data <ArrowRight className="ml-1 h-4 w-4" />
-            </Link>
+      {/* Stats Section */}
+      <section className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl shadow-md mb-8">
+        <div className="grid grid-cols-4 divide-x divide-green-400">
+          <div className="p-4 text-center">
+            <div className="text-2xl font-bold text-white">25</div>
+            <div className="text-xs text-green-100">{t("home.stats.varieties")}</div>
           </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-md border border-green-100 hover:shadow-lg transition-shadow">
-            <BookOpen className="h-12 w-12 text-green-500 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Breeding Resources</h3>
-            <p className="text-gray-600 mb-4">
-              Explore sesame varieties, traits, and breeding information for crop improvement
-            </p>
-            <Link
-              to="/data"
-              className="text-green-600 hover:text-green-700 font-medium inline-flex items-center"
-            >
-              View Varieties <ArrowRight className="ml-1 h-4 w-4" />
-            </Link>
+          <div className="p-4 text-center">
+            <div className="text-2xl font-bold text-white">35K+</div>
+            <div className="text-xs text-green-100">{t("home.stats.genes")}</div>
           </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-md border border-green-100 hover:shadow-lg transition-shadow">
-            <Users className="h-12 w-12 text-green-500 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Community</h3>
-            <p className="text-gray-600 mb-4">
-              Join researchers worldwide in advancing sesame genomics and crop science
-            </p>
-            <Link
-              to="/contact"
-              className="text-green-600 hover:text-green-700 font-medium inline-flex items-center"
-            >
-              Contact Us <ArrowRight className="ml-1 h-4 w-4" />
-            </Link>
+          <div className="p-4 text-center">
+            <div className="text-2xl font-bold text-white">50</div>
+            <div className="text-xs text-green-100">{t("home.stats.regions")}</div>
+          </div>
+          <div className="p-4 text-center">
+            <div className="text-2xl font-bold text-white">20+</div>
+            <div className="text-xs text-green-100">{t("home.stats.partners")}</div>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold mb-2">25</div>
-              <div className="text-green-100">Varieties</div>
+      {/* Features */}
+      <section className="mb-8">
+        <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-500 inline-block">{t("home.services")}</h2>
+        <div className="grid md:grid-cols-2 gap-4">
+          <Link to="/data" className="group bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-300 transition-all">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors">
+                <Database className="h-6 w-6 text-green-600 group-hover:text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-800 mb-1 group-hover:text-green-700">{t("home.genomicData")}</h3>
+                <p className="text-sm text-gray-500">{t("home.genomicDataDesc")}</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-green-500" />
             </div>
-            <div>
-              <div className="text-4xl font-bold mb-2">35K+</div>
-              <div className="text-green-100">Genes</div>
+          </Link>
+
+          <Link to="/data" className="group bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-300 transition-all">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors">
+                <BookOpen className="h-6 w-6 text-green-600 group-hover:text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-800 mb-1 group-hover:text-green-700">{t("home.varieties")}</h3>
+                <p className="text-sm text-gray-500">{t("home.varietiesDesc")}</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-green-500" />
             </div>
-            <div>
-              <div className="text-4xl font-bold mb-2">50</div>
-              <div className="text-green-100">Regions</div>
+          </Link>
+
+          <Link to="/tools" className="group bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-300 transition-all">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors">
+                <Users className="h-6 w-6 text-green-600 group-hover:text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-800 mb-1 group-hover:text-green-700">{t("home.analysisTools")}</h3>
+                <p className="text-sm text-gray-500">{t("home.analysisToolsDesc")}</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-green-500" />
             </div>
-            <div>
-              <div className="text-4xl font-bold mb-2">20+</div>
-              <div className="text-green-100">Publications</div>
+          </Link>
+
+          <Link to="/news" className="group bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-300 transition-all">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors">
+                <BookOpen className="h-6 w-6 text-green-600 group-hover:text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-800 mb-1 group-hover:text-green-700">{t("nav.news")}</h3>
+                <p className="text-sm text-gray-500">{t("home.genomicDataDesc")}</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-green-500" />
             </div>
-          </div>
+          </Link>
         </div>
       </section>
 
       {/* Latest Updates */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-bold mb-8">Latest Updates</h2>
+      <section className="mb-8">
+        <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-500 inline-block">{t("home.newsUpdates")}</h2>
         {loading ? (
-          <p className="text-gray-500">Loading...</p>
+          <p className="text-gray-500">{t("home.loading")}</p>
         ) : (
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-3 gap-4">
             {changelog.map((item) => (
               <Link 
                 key={item.id} 
                 to={`/changelog/${item.id}`}
-                className="bg-white p-6 rounded-lg shadow-md border border-gray-200 hover:shadow-lg hover:border-green-300 transition-all duration-300"
+                className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-300 transition-all"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm text-green-600">{formatDate(item.release_date)}</div>
-                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                  <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
                     v{item.version}
                   </span>
+                  <span className="text-xs text-gray-400">{formatDate(item.release_date)}</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2 hover:text-green-600">{item.title}</h3>
-                <p className="text-gray-600">{item.content}</p>
+                <h3 className="font-medium text-gray-800 mb-1 line-clamp-1">{item.title}</h3>
+                <p className="text-sm text-gray-500 line-clamp-2">{item.content}</p>
               </Link>
             ))}
           </div>
