@@ -501,86 +501,82 @@ export function Admin() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-amber-600 to-orange-500 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Shield className="h-8 w-8" />
-              <h1 className="text-2xl font-bold">NCFdb Admin</h1>
+    <div className="container mx-auto px-4 py-6">
+      {/* Left Sidebar */}
+      <aside className="w-64 bg-gradient-to-b from-amber-600 to-amber-800 text-white flex-shrink-0 flex flex-col h-screen fixed">
+        <div className="p-4 border-b border-amber-500/30">
+          <div className="flex items-center gap-3">
+            <Shield className="h-8 w-8" />
+            <div>
+              <h1 className="text-xl font-bold">SunNCFdb</h1>
+              <p className="text-xs text-amber-200">Admin Panel</p>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm">Welcome, {currentUser?.username || 'Admin'}</span>
-              <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 bg-white/20 rounded-lg hover:bg-white/30">
-                <LogOut className="h-4 w-4" /> Logout
+          </div>
+        </div>
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          {Object.entries(dataTypeConfig).map(([key, config]) => {
+            const Icon = config.icon;
+            return (
+              <button
+                key={key}
+                onClick={() => setActiveType(key as DataType)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  activeType === key
+                    ? 'bg-white/20 text-white'
+                    : 'text-amber-100 hover:bg-white/10'
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {config.title}
+              </button>
+            );
+          })}
+        </nav>
+        <div className="p-4 border-t border-amber-500/30">
+          <div className="text-sm text-amber-200 mb-2">Welcome, {currentUser?.username || 'Admin'}</div>
+          <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg hover:bg-white/20 w-full">
+            <LogOut className="h-4 w-4" /> Logout
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 bg-gray-100 p-6 ml-64">
+        <div className="bg-white rounded-lg shadow">
+            <div className="p-4 border-b flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <h2 className="text-xl font-semibold">{dataTypeConfig[activeType].title} Management</h2>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              <button
+                onClick={() => openModal()}
+                className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600"
+              >
+                <Plus className="h-5 w-5" /> Add {dataTypeConfig[activeType].title.slice(0, -1)}
               </button>
             </div>
-          </div>
-        </div>
-      </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Navigation Tabs */}
-        <div className="bg-white rounded-lg shadow mb-6">
-          <div className="flex overflow-x-auto">
-            {Object.entries(dataTypeConfig).map(([key, config]) => {
-              const Icon = config.icon;
-              return (
-                <button
-                  key={key}
-                  onClick={() => setActiveType(key as DataType)}
-                  className={`flex items-center gap-2 px-6 py-4 whitespace-nowrap border-b-2 transition-colors ${
-                    activeType === key
-                      ? 'border-amber-500 text-amber-600 bg-amber-50'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <Icon className="h-5 w-5" />
-                  {config.title}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="bg-white rounded-lg shadow">
-          {/* Toolbar */}
-          <div className="p-4 border-b flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h2 className="text-xl font-semibold">{dataTypeConfig[activeType].title} Management</h2>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                />
-              </div>
+            <div className="overflow-x-auto">
+              {loading ? (
+                <div className="p-8 text-center text-gray-500">Loading...</div>
+              ) : filteredData.length === 0 ? (
+                <div className="p-8 text-center text-gray-500">No data available</div>
+              ) : (
+                renderTable()
+              )}
             </div>
-            <button
-              onClick={() => openModal()}
-              className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600"
-            >
-              <Plus className="h-5 w-5" /> Add {dataTypeConfig[activeType].title.slice(0, -1)}
-            </button>
           </div>
-
-          {/* Table */}
-          <div className="overflow-x-auto">
-            {loading ? (
-              <div className="p-8 text-center text-gray-500">Loading...</div>
-            ) : filteredData.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">No data available</div>
-            ) : (
-              renderTable()
-            )}
-          </div>
-        </div>
-      </div>
+        
+      </main>
 
       {/* Modal */}
       {showModal && (

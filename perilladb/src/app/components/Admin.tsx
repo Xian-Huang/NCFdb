@@ -329,7 +329,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.author}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.category}</td>
                   <td className="px-6 py-4">
-                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -483,7 +483,7 @@ export function Admin() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -519,28 +519,28 @@ export function Admin() {
                 type="checkbox"
                 checked={formData[key] || false}
                 onChange={(e) => setFormData({ ...formData, [key]: e.target.checked })}
-                className="h-4 w-4 text-green-500"
+                className="h-4 w-4 text-purple-500"
               />
             ) : key === 'region' || key === 'institution' || key === 'gene' || key === 'variety' ? (
               <input
                 type="number"
                 value={formData[key] || ''}
                 onChange={(e) => setFormData({ ...formData, [key]: parseInt(e.target.value) || null })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
               />
             ) : (
               <input
                 type="text"
                 value={formData[key] || ''}
                 onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
               />
             )}
           </div>
         ))}
         <div className="flex justify-end gap-3 pt-4">
           <button type="button" onClick={closeModal} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
-          <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+          <button type="submit" className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600">
             {editingItem ? 'Save Changes' : 'Add'}
           </button>
         </div>
@@ -549,47 +549,47 @@ export function Admin() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-gradient-to-r from-green-600 to-emerald-500 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Shield className="h-8 w-8" />
-              <h1 className="text-2xl font-bold">PerillaDB Admin</h1>
+    <div className="min-h-screen flex">
+      {/* Left Sidebar */}
+      <aside className="w-64 bg-gradient-to-b from-purple-600 to-purple-800 text-white flex-shrink-0 flex flex-col h-screen fixed">
+        <div className="p-4 border-b border-purple-500/30">
+          <div className="flex items-center gap-3">
+            <Shield className="h-8 w-8" />
+            <div>
+              <h1 className="text-xl font-bold">PerNCFdb</h1>
+              <p className="text-xs text-purple-200">Admin Panel</p>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm">Welcome, {currentUser?.username || 'Admin'}</span>
-              <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 bg-white/20 rounded-lg hover:bg-white/30">
-                <LogOut className="h-4 w-4" /> Logout
+          </div>
+        </div>
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          {Object.entries(dataTypeConfig).map(([key, config]) => {
+            const Icon = config.icon;
+            return (
+              <button
+                key={key}
+                onClick={() => setActiveType(key as DataType)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  activeType === key
+                    ? 'bg-white/20 text-white'
+                    : 'text-purple-100 hover:bg-white/10'
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {config.title}
               </button>
-            </div>
-          </div>
+            );
+          })}
+        </nav>
+        <div className="p-4 border-t border-purple-500/30">
+          <div className="text-sm text-purple-200 mb-2">Welcome, {currentUser?.username || 'Admin'}</div>
+          <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg hover:bg-white/20 w-full">
+            <LogOut className="h-4 w-4" /> Logout
+          </button>
         </div>
-      </header>
+      </aside>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="bg-white rounded-lg shadow mb-6">
-          <div className="flex overflow-x-auto">
-            {Object.entries(dataTypeConfig).map(([key, config]) => {
-              const Icon = config.icon;
-              return (
-                <button
-                  key={key}
-                  onClick={() => setActiveType(key as DataType)}
-                  className={`flex items-center gap-2 px-6 py-4 whitespace-nowrap border-b-2 transition-colors ${
-                    activeType === key
-                      ? 'border-green-500 text-green-600 bg-green-50'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <Icon className="h-5 w-5" />
-                  {config.title}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
+      {/* Main Content */}
+      <main className="flex-1 bg-gray-100 p-6 ml-64">
         <div className="bg-white rounded-lg shadow">
           <div className="p-4 border-b flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -601,13 +601,13 @@ export function Admin() {
                   placeholder="Search..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
             </div>
             <button
               onClick={() => openModal()}
-              className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+              className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
             >
               <Plus className="h-5 w-5" /> Add {dataTypeConfig[activeType].title.slice(0, -1)}
             </button>
@@ -623,7 +623,7 @@ export function Admin() {
             )}
           </div>
         </div>
-      </div>
+      </main>
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

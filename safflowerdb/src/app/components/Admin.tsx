@@ -549,47 +549,47 @@ export function Admin() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-gradient-to-r from-red-600 to-rose-500 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Shield className="h-8 w-8" />
-              <h1 className="text-2xl font-bold">SafflowerDB Admin</h1>
+    <div className="min-h-screen flex">
+      {/* Left Sidebar */}
+      <aside className="w-64 bg-gradient-to-b from-red-600 to-red-800 text-white flex-shrink-0 flex flex-col h-screen fixed">
+        <div className="p-4 border-b border-red-500/30">
+          <div className="flex items-center gap-3">
+            <Shield className="h-8 w-8" />
+            <div>
+              <h1 className="text-xl font-bold">SafNCFdb</h1>
+              <p className="text-xs text-red-200">Admin Panel</p>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm">Welcome, {currentUser?.username || 'Admin'}</span>
-              <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 bg-white/20 rounded-lg hover:bg-white/30">
-                <LogOut className="h-4 w-4" /> Logout
+          </div>
+        </div>
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          {Object.entries(dataTypeConfig).map(([key, config]) => {
+            const Icon = config.icon;
+            return (
+              <button
+                key={key}
+                onClick={() => setActiveType(key as DataType)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  activeType === key
+                    ? 'bg-white/20 text-white'
+                    : 'text-red-100 hover:bg-white/10'
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {config.title}
               </button>
-            </div>
-          </div>
+            );
+          })}
+        </nav>
+        <div className="p-4 border-t border-red-500/30">
+          <div className="text-sm text-red-200 mb-2">Welcome, {currentUser?.username || 'Admin'}</div>
+          <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg hover:bg-white/20 w-full">
+            <LogOut className="h-4 w-4" /> Logout
+          </button>
         </div>
-      </header>
+      </aside>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="bg-white rounded-lg shadow mb-6">
-          <div className="flex overflow-x-auto">
-            {Object.entries(dataTypeConfig).map(([key, config]) => {
-              const Icon = config.icon;
-              return (
-                <button
-                  key={key}
-                  onClick={() => setActiveType(key as DataType)}
-                  className={`flex items-center gap-2 px-6 py-4 whitespace-nowrap border-b-2 transition-colors ${
-                    activeType === key
-                      ? 'border-red-500 text-red-600 bg-red-50'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <Icon className="h-5 w-5" />
-                  {config.title}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
+      {/* Main Content */}
+      <main className="flex-1 bg-gray-100 p-6 ml-64">
         <div className="bg-white rounded-lg shadow">
           <div className="p-4 border-b flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -623,7 +623,7 @@ export function Admin() {
             )}
           </div>
         </div>
-      </div>
+      </main>
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
