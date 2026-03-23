@@ -1,24 +1,27 @@
 import { Mail, MapPin, Phone, Send } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function Contact() {
+  const { t } = useTranslation();
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
+        <h1 className="text-4xl font-bold mb-4">{t("contact.title")}</h1>
         <p className="text-lg text-gray-600">
-          Get in touch with our team for questions, collaborations, or technical support
+          {t("contact.subtitle")}
         </p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
         {/* Contact Form */}
         <div className="bg-white rounded-lg shadow-md p-8 border border-gray-200">
-          <h2 className="text-2xl font-semibold mb-6">Send us a Message</h2>
+          <h2 className="text-2xl font-semibold mb-6">{t("contact.form")}</h2>
           <form className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Name *
+                {t("contact.name")} *
               </label>
               <input
                 type="text"
@@ -28,7 +31,7 @@ export function Contact() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email *
+                {t("contact.email")} *
               </label>
               <input
                 type="email"
@@ -48,7 +51,7 @@ export function Contact() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Subject *
+                {t("contact.subject")} *
               </label>
               <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none">
                 <option>General Inquiry</option>
@@ -61,7 +64,7 @@ export function Contact() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Message *
+                {t("contact.message")} *
               </label>
               <textarea
                 rows={6}
@@ -74,7 +77,7 @@ export function Contact() {
               className="w-full flex items-center justify-center px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
             >
               <Send className="h-5 w-5 mr-2" />
-              Send Message
+              {t("contact.send")}
             </button>
           </form>
         </div>
@@ -82,19 +85,19 @@ export function Contact() {
         {/* Contact Information */}
         <div className="space-y-6">
           <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-            <h2 className="text-2xl font-semibold mb-6">Contact Information</h2>
+            <h2 className="text-2xl font-semibold mb-6">{t("contact.info")}</h2>
             <div className="space-y-4">
               <div className="flex items-start">
                 <Mail className="h-6 w-6 text-amber-500 mr-3 mt-1" />
                 <div>
-                  <div className="font-medium">Email</div>
+                  <div className="font-medium">{t("contact.email")}</div>
                   <div className="text-gray-600">sunflower@example.com</div>
                 </div>
               </div>
               <div className="flex items-start">
                 <Phone className="h-6 w-6 text-amber-500 mr-3 mt-1" />
                 <div>
-                  <div className="font-medium">Phone</div>
+                  <div className="font-medium">{t("contact.phone")}</div>
                   <div className="text-gray-600">+86-371-65720774 (China)</div>
                   <div className="text-sm text-gray-500">Monday - Friday, 9:00 AM - 5:00 PM (China Standard Time)</div>
                 </div>
@@ -102,7 +105,7 @@ export function Contact() {
               <div className="flex items-start">
                 <MapPin className="h-6 w-6 text-amber-500 mr-3 mt-1" />
                 <div>
-                  <div className="font-medium">Address</div>
+                  <div className="font-medium">{t("contact.address")}</div>
                   <div className="text-gray-600">
                   Specialty Oil Crops R&D Center<br />
                   National Specialty Oil Crops Industry Technology System<br />

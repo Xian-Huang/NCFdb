@@ -1,16 +1,19 @@
 import { Link, useLocation } from "react-router";
 import { Sun } from "lucide-react";
+import { Sprout, Menu, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function Navigation() {
   const location = useLocation();
+  const { t } = useTranslation();
   
   const navItems = [
-    { path: "/", label: "Home" },
-    { path: "/data", label: "Data" },
-    { path: "/news", label: "News" },
-    { path: "/events", label: "Events" },
-    { path: "/tools", label: "Tools" },
-    { path: "/contact", label: "Contact" },
+    { path: "/", label: t("nav.home") },
+    { path: "/data", label: t("nav.data") },
+    { path: "/news", label: t("nav.news") },
+    { path: "/events", label: t("nav.events") },
+    { path: "/tools", label: t("nav.tools") },
+    { path: "/contact", label: t("nav.contact") },
   ];
 
   const isActive = (path: string) => {
@@ -24,11 +27,14 @@ export function Navigation() {
     <nav className="bg-white shadow-sm border-b border-amber-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center space-x-2">
-            <Sun className="h-8 w-8 text-amber-500" />
-            <span className="text-xl font-semibold text-gray-900">
-              SHGD
-            </span>
+           <Link to="/" className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+              <Sun className="h-8 w-8 text-amber-500" />
+            </div>
+            <div>
+              <span className="text-xl font-bold text-gray-900">{t("home.title")}</span>
+              <span className="text-xs text-blue-600 block">SunNCFdb</span>
+            </div>
           </Link>
           
           <div className="flex space-x-1">

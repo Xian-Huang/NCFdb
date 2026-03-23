@@ -1,6 +1,9 @@
 import { Calendar, MapPin, Clock, Users, Video } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function Events() {
+  const { t } = useTranslation();
+
   const upcomingEvents = [
     {
       title: "International Sunflower Genomics Symposium 2026",
@@ -72,15 +75,15 @@ export function Events() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">Events & Workshops</h1>
+        <h1 className="text-4xl font-bold mb-4">{t("events.title")}</h1>
         <p className="text-lg text-gray-600">
-          Connect with the sunflower genomics community through conferences, workshops, and webinars
+          {t("events.subtitle")}
         </p>
       </div>
 
       {/* Upcoming Events */}
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-6">Upcoming Events</h2>
+        <h2 className="text-2xl font-semibold mb-6">{t("events.upcoming")}</h2>
         <div className="space-y-6">
           {upcomingEvents.map((event, index) => (
             <div
@@ -123,7 +126,7 @@ export function Events() {
                   <p className="text-gray-600">{event.description}</p>
                 </div>
                 <button className="mt-4 md:mt-0 md:ml-6 px-6 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition-colors whitespace-nowrap">
-                  Register Now
+                  {t("events.register")}
                 </button>
               </div>
             </div>
@@ -133,7 +136,7 @@ export function Events() {
 
       {/* Past Events */}
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-6">Past Events</h2>
+        <h2 className="text-2xl font-semibold mb-6">{t("events.past")}</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {pastEvents.map((event, index) => (
             <div
@@ -169,10 +172,10 @@ export function Events() {
           <Calendar className="h-16 w-16 text-amber-500 mx-auto mb-4" />
           <h2 className="text-2xl font-semibold mb-4">Stay Updated</h2>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Subscribe to our event calendar to receive notifications about upcoming workshops, webinars, and conferences
+            {t("events.subscribeDesc")}
           </p>
           <button className="px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors">
-            Subscribe to Calendar
+            {t("events.subscribe")}
           </button>
         </div>
       </section>

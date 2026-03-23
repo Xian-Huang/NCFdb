@@ -2,6 +2,7 @@ import { ArrowRight, Database, Users, BookOpen } from "lucide-react";
 import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ChangelogItem {
   id: number;
@@ -16,6 +17,7 @@ interface ChangelogItem {
 export function Home() {
   const [changelog, setChangelog] = useState<ChangelogItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetch("/sunflower/changelog/")
@@ -49,16 +51,16 @@ export function Home() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div className="max-w-2xl">
               <h1 className="text-5xl font-bold text-white mb-4">
-              SunNCFdb - Sunflower Nutritional Composition and Chemical Fingerprint Database
+                {t("home.title")}
               </h1>
               <p className="text-xl text-gray-200 mb-8">
-                A comprehensive resource for sunflower genomic data, research tools, and collaborative science
+                {t("home.subtitle")}
               </p>
               <Link
                 to="/data"
                 className="inline-flex items-center px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
               >
-                Explore Data
+                {t("home.explore")}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </div>
@@ -71,43 +73,43 @@ export function Home() {
         <div className="grid md:grid-cols-3 gap-8">
           <div className="bg-white p-6 rounded-lg shadow-md border border-amber-100 hover:shadow-lg transition-shadow">
             <Database className="h-12 w-12 text-amber-500 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Genomic Data</h3>
+            <h3 className="text-xl font-semibold mb-2">{t("home.genomicData")}</h3>
             <p className="text-gray-600 mb-4">
-              Access comprehensive sunflower genome sequences, annotations, and expression data
+              {t("home.genomicDataDesc")}
             </p>
             <Link
               to="/data"
               className="text-amber-600 hover:text-amber-700 font-medium inline-flex items-center"
             >
-              Browse Data <ArrowRight className="ml-1 h-4 w-4" />
+              {t("nav.data")} <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-md border border-amber-100 hover:shadow-lg transition-shadow">
             <BookOpen className="h-12 w-12 text-amber-500 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Research Tools</h3>
+            <h3 className="text-xl font-semibold mb-2">{t("home.analysisTools")}</h3>
             <p className="text-gray-600 mb-4">
-              Utilize powerful bioinformatics tools for sequence analysis and data visualization
+              {t("home.analysisToolsDesc")}
             </p>
             <Link
               to="/tools"
               className="text-amber-600 hover:text-amber-700 font-medium inline-flex items-center"
             >
-              Use Tools <ArrowRight className="ml-1 h-4 w-4" />
+              {t("nav.tools")} <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-md border border-amber-100 hover:shadow-lg transition-shadow">
             <Users className="h-12 w-12 text-amber-500 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Community</h3>
+            <h3 className="text-xl font-semibold mb-2">{t("home.varieties")}</h3>
             <p className="text-gray-600 mb-4">
-              Join researchers worldwide in advancing sunflower genomics and crop science
+              {t("home.varietiesDesc")}
             </p>
             <Link
               to="/events"
               className="text-amber-600 hover:text-amber-700 font-medium inline-flex items-center"
             >
-              View Events <ArrowRight className="ml-1 h-4 w-4" />
+              {t("nav.events")} <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
         </div>
@@ -139,9 +141,9 @@ export function Home() {
 
       {/* Latest Updates */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-bold mb-8">Latest Updates</h2>
+        <h2 className="text-3xl font-bold mb-8">{t("home.newsUpdates")}</h2>
         {loading ? (
-          <p className="text-gray-500">Loading...</p>
+          <p className="text-gray-500">{t("home.loading")}</p>
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
             {changelog.map((item) => (

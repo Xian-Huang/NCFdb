@@ -1,46 +1,49 @@
 import { Search, Code, BarChart3, Microscope, Database, FileSearch } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function Tools() {
+  const { t } = useTranslation();
+
   const tools = [
     {
       icon: Search,
-      name: "BLAST Search",
-      description: "Perform sequence similarity searches against sunflower genome and transcriptome databases",
+      name: t("tools.blast"),
+      description: t("tools.blastDesc"),
       features: ["BLASTN", "BLASTP", "BLASTX", "tBLASTn"],
       status: "Available",
     },
     {
       icon: Database,
-      name: "Genome Browser",
-      description: "Interactive visualization of genome assemblies, annotations, and experimental data",
+      name: t("tools.browser"),
+      description: t("tools.browserDesc"),
       features: ["JBrowse 2", "Track customization", "Comparative view"],
       status: "Available",
     },
     {
       icon: FileSearch,
-      name: "Gene Search",
-      description: "Query genes by ID, name, function, or GO term and retrieve detailed information",
+      name: t("tools.geneSearch"),
+      description: t("tools.geneSearchDesc"),
       features: ["Advanced filters", "Batch search", "Export results"],
       status: "Available",
     },
     {
       icon: BarChart3,
-      name: "Expression Atlas",
-      description: "Explore gene expression patterns across tissues and conditions",
+      name: t("tools.expression"),
+      description: t("tools.expressionDesc"),
       features: ["Heatmaps", "Co-expression", "Differential expression"],
       status: "Available",
     },
     {
       icon: Microscope,
-      name: "Variant Browser",
-      description: "Browse and analyze genetic variants from the sunflower pangenome",
+      name: t("tools.variant"),
+      description: t("tools.variantDesc"),
       features: ["SNP viewer", "Structural variants", "Population data"],
       status: "Available",
     },
     {
       icon: Code,
-      name: "API Access",
-      description: "Programmatic access to genomic data for custom analysis pipelines",
+      name: t("tools.api"),
+      description: t("tools.apiDesc"),
       features: ["REST API", "Python SDK", "Documentation"],
       status: "Beta",
     },
@@ -50,9 +53,9 @@ export function Tools() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">Bioinformatics Tools</h1>
+        <h1 className="text-4xl font-bold mb-4">{t("tools.title")}</h1>
         <p className="text-lg text-gray-600">
-          Powerful analysis tools for exploring sunflower genomic data
+          {t("tools.subtitle")}
         </p>
       </div>
 
@@ -92,7 +95,7 @@ export function Tools() {
                 </div>
               </div>
               <button className="w-full px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition-colors">
-                Launch Tool
+                {t("tools.launch")}
               </button>
             </div>
           );
@@ -103,7 +106,7 @@ export function Tools() {
       <section className="bg-white rounded-lg shadow-md p-8 mb-8 border border-gray-200">
         <h2 className="text-2xl font-semibold mb-4 flex items-center">
           <Search className="h-7 w-7 text-amber-500 mr-3" />
-          Quick BLAST Search
+          {t("tools.blastSearch")}
         </h2>
         <p className="text-gray-600 mb-6">
           Paste your sequence below to perform a BLAST search against the sunflower genome
@@ -111,7 +114,7 @@ export function Tools() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Sequence (FASTA format)
+              {t("tools.sequence")}
             </label>
             <textarea
               className="w-full h-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none"
@@ -121,7 +124,7 @@ export function Tools() {
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Program
+                {t("tools.program")}
               </label>
               <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none">
                 <option>BLASTN (nucleotide vs nucleotide)</option>
@@ -132,7 +135,7 @@ export function Tools() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Database
+                {t("tools.database")}
               </label>
               <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none">
                 <option>Reference Genome</option>
@@ -143,26 +146,26 @@ export function Tools() {
             </div>
           </div>
           <button className="px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors">
-            Run BLAST Search
+            {t("tools.run")}
           </button>
         </div>
       </section>
 
       {/* Tutorials & Documentation */}
       <section className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-8">
-        <h2 className="text-2xl font-semibold mb-4">Tutorials & Documentation</h2>
+        <h2 className="text-2xl font-semibold mb-4">{t("tools.tutorials")}</h2>
         <p className="text-gray-600 mb-6">
           Learn how to make the most of our bioinformatics tools with comprehensive guides and video tutorials
         </p>
         <div className="grid md:grid-cols-3 gap-4">
           <button className="px-4 py-3 bg-white text-gray-700 rounded-lg hover:shadow-md transition-shadow border border-gray-200">
-            📖 User Guides
+            📖 {t("tools.guides")}
           </button>
           <button className="px-4 py-3 bg-white text-gray-700 rounded-lg hover:shadow-md transition-shadow border border-gray-200">
-            🎥 Video Tutorials
+            🎥 {t("tools.videos")}
           </button>
           <button className="px-4 py-3 bg-white text-gray-700 rounded-lg hover:shadow-md transition-shadow border border-gray-200">
-            💻 API Documentation
+            💻 {t("tools.apiDocs")}
           </button>
         </div>
       </section>
