@@ -5,6 +5,20 @@ import {
   FileText, MapPin, Leaf, Dna, Building, Bell,
   Search, RefreshCw, Download, Beaker
 } from "lucide-react";
+import {
+  fetchUsers, createUser, updateUser, deleteUser,
+  fetchNews, createNews, updateNews, deleteNews,
+  fetchChangelog, createChangelog, updateChangelog, deleteChangelog,
+  fetchRegions, createRegion, updateRegion, deleteRegion,
+  fetchVarieties, createVariety, updateVariety, deleteVariety,
+  fetchGenes, createGene, updateGene, deleteGene,
+  fetchGeneExpressions, createGeneExpression, updateGeneExpression, deleteGeneExpression,
+  fetchEnvironmentalFactors, createEnvironmentalFactor, updateEnvironmentalFactor, deleteEnvironmentalFactor,
+  fetchNutrition, createNutrition, updateNutrition, deleteNutrition,
+  fetchInstitutions, createInstitution, updateInstitution, deleteInstitution,
+  fetchAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement,
+  fetchDownloadFiles, createDownloadFile, updateDownloadFile, deleteDownloadFile,
+} from "../../apis/data_apis";
 
 type DataType = "users" | "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "nutrition" | "institutions" | "announcements" | "downloads";
 
@@ -121,19 +135,54 @@ export function Admin() {
     fetchData();
   }, [activeType]);
 
-  const fetchData = () => {
+  const fetchData = async () => {
     setLoading(true);
-    const endpoint = dataTypeConfig[activeType].endpoint;
-    fetch(`/api/${endpoint}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch data:", err);
-        setLoading(false);
-      });
+    try {
+      let result: any[] = [];
+      switch (activeType) {
+        case "users":
+          result = await fetchUsers();
+          break;
+        case "news":
+          result = await fetchNews();
+          break;
+        case "changelog":
+          result = await fetchChangelog();
+          break;
+        case "regions":
+          result = await fetchRegions();
+          break;
+        case "varieties":
+          result = await fetchVarieties();
+          break;
+        case "genes":
+          result = await fetchGenes();
+          break;
+        case "gene_expressions":
+          result = await fetchGeneExpressions();
+          break;
+        case "environmental_factors":
+          result = await fetchEnvironmentalFactors();
+          break;
+        case "nutrition":
+          result = await fetchNutrition();
+          break;
+        case "institutions":
+          result = await fetchInstitutions();
+          break;
+        case "announcements":
+          result = await fetchAnnouncements();
+          break;
+        case "downloads":
+          result = await fetchDownloadFiles();
+          break;
+      }
+      setData(result);
+    } catch (err) {
+      console.error("Failed to fetch data:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogout = () => {
@@ -182,31 +231,147 @@ export function Admin() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const endpoint = dataTypeConfig[activeType].endpoint;
-    const url = editingItem ? `/sunflower/${endpoint}${editingItem.id}/` : `/sunflower/${endpoint}`;
-    const method = editingItem ? "PUT" : "POST";
-
-    fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        fetchData();
-        closeModal();
-      })
-      .catch((err) => console.error("Failed to save:", err));
+    try {
+      switch (activeType) {
+        case "users":
+          if (editingItem) {
+            await updateUser(editingItem.id, formData);
+          } else {
+            await createUser(formData);
+          }
+          break;
+        case "news":
+          if (editingItem) {
+            await updateNews(editingItem.id, formData);
+          } else {
+            await createNews(formData);
+          }
+          break;
+        case "changelog":
+          if (editingItem) {
+            await updateChangelog(editingItem.id, formData);
+          } else {
+            await createChangelog(formData);
+          }
+          break;
+        case "regions":
+          if (editingItem) {
+            await updateRegion(editingItem.id, formData);
+          } else {
+            await createRegion(formData);
+          }
+          break;
+        case "varieties":
+          if (editingItem) {
+            await updateVariety(editingItem.id, formData);
+          } else {
+            await createVariety(formData);
+          }
+          break;
+        case "genes":
+          if (editingItem) {
+            await updateGene(editingItem.id, formData);
+          } else {
+            await createGene(formData);
+          }
+          break;
+        case "gene_expressions":
+          if (editingItem) {
+            await updateGeneExpression(editingItem.id, formData);
+          } else {
+            await createGeneExpression(formData);
+          }
+          break;
+        case "environmental_factors":
+          if (editingItem) {
+            await updateEnvironmentalFactor(editingItem.id, formData);
+          } else {
+            await createEnvironmentalFactor(formData);
+          }
+          break;
+        case "nutrition":
+          if (editingItem) {
+            await updateNutrition(editingItem.id, formData);
+          } else {
+            await createNutrition(formData);
+          }
+          break;
+        case "institutions":
+          if (editingItem) {
+            await updateInstitution(editingItem.id, formData);
+          } else {
+            await createInstitution(formData);
+          }
+          break;
+        case "announcements":
+          if (editingItem) {
+            await updateAnnouncement(editingItem.id, formData);
+          } else {
+            await createAnnouncement(formData);
+          }
+          break;
+        case "downloads":
+          if (editingItem) {
+            await updateDownloadFile(editingItem.id, formData);
+          } else {
+            await createDownloadFile(formData);
+          }
+          break;
+      }
+      fetchData();
+      closeModal();
+    } catch (err) {
+      console.error("Failed to save:", err);
+    }
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this item?")) return;
-    const endpoint = dataTypeConfig[activeType].endpoint;
-    fetch(`/api/${endpoint}${id}/`, { method: "DELETE" })
-      .then(() => fetchData())
-      .catch((err) => console.error("Failed to delete:", err));
+    try {
+      switch (activeType) {
+        case "users":
+          await deleteUser(id);
+          break;
+        case "news":
+          await deleteNews(id);
+          break;
+        case "changelog":
+          await deleteChangelog(id);
+          break;
+        case "regions":
+          await deleteRegion(id);
+          break;
+        case "varieties":
+          await deleteVariety(id);
+          break;
+        case "genes":
+          await deleteGene(id);
+          break;
+        case "gene_expressions":
+          await deleteGeneExpression(id);
+          break;
+        case "environmental_factors":
+          await deleteEnvironmentalFactor(id);
+          break;
+        case "nutrition":
+          await deleteNutrition(id);
+          break;
+        case "institutions":
+          await deleteInstitution(id);
+          break;
+        case "announcements":
+          await deleteAnnouncement(id);
+          break;
+        case "downloads":
+          await deleteDownloadFile(id);
+          break;
+      }
+      fetchData();
+    } catch (err) {
+      console.error("Failed to delete:", err);
+    }
   };
 
   const filteredData = data.filter((item: any) => {
@@ -452,47 +617,292 @@ export function Admin() {
   };
 
   const renderForm = () => {
+    const formFields = Object.keys(formData).filter(k => k !== 'id' && k !== 'create_time' && k !== 'update_time' && k !== 'date_joined');
+    
+    // Define options for select fields
+    const importanceOptions = [
+      { value: 'low', label: 'Low' },
+      { value: 'normal', label: 'Normal' },
+      { value: 'high', label: 'High' },
+    ];
+    
+    const institutionTypeOptions = [
+      { value: 'university', label: 'University' },
+      { value: 'research', label: 'Research Institute' },
+      { value: 'company', label: 'Company' },
+      { value: 'other', label: 'Other' },
+    ];
+    
+    const announcementTypeOptions = [
+      { value: 'event', label: 'Event' },
+      { value: 'news', label: 'News' },
+      { value: 'alert', label: 'Alert' },
+      { value: 'other', label: 'Other' },
+    ];
+    
     return (
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {Object.keys(formData).filter(k => k !== 'id' && k !== 'create_time' && k !== 'update_time' && k !== 'date_joined').map((key) => (
-          <div key={key}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </label>
-            {key === 'content' || key === 'description' || key === 'function' ? (
-              <textarea
-                value={formData[key] || ''}
-                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
-                rows={4}
-              />
-            ) : key === 'is_active' || key === 'is_published' ? (
-              <input
-                type="checkbox"
-                checked={formData[key] || false}
-                onChange={(e) => setFormData({ ...formData, [key]: e.target.checked })}
-                className="h-4 w-4 text-amber-500"
-              />
-            ) : key === 'region' || key === 'institution' ? (
-              <input
-                type="number"
-                value={formData[key] || ''}
-                onChange={(e) => setFormData({ ...formData, [key]: parseInt(e.target.value) || null })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
-              />
-            ) : (
-              <input
-                type={key.includes('date') ? 'date' : key.includes('content') ? 'text' : 'text'}
-                value={formData[key] || ''}
-                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
-              />
-            )}
-          </div>
-        ))}
-        <div className="flex justify-end gap-3 pt-4">
-          <button type="button" onClick={closeModal} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
-          <button type="submit" className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Form Fields Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {formFields.map((key) => (
+            <div key={key} className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label 
+                  htmlFor={key} 
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </label>
+                {/* Required field indicator */}
+                {['title', 'name', 'username', 'email'].includes(key) && (
+                  <span className="text-red-500 font-medium">*</span>
+                )}
+              </div>
+              
+              {/* Textarea for long text fields */}
+              {key === 'content' || key === 'description' || key === 'function' ? (
+                <div className="relative">
+                  <textarea
+                    id={key}
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 resize-none shadow-sm"
+                    rows={5}
+                    placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
+                  />
+                </div>
+              )
+              
+              {/* Switch for boolean fields */}
+              : key === 'is_active' || key === 'is_published' ? (
+                <div className="flex items-center space-x-3">
+                  <label 
+                    htmlFor={key} 
+                    className="text-sm text-gray-600 cursor-pointer flex-1"
+                  >
+                    {key === 'is_active' ? 'Active' : 'Published'}
+                  </label>
+                  <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out">
+                    <input
+                      id={key}
+                      type="checkbox"
+                      checked={formData[key] || false}
+                      onChange={(e) => setFormData({ ...formData, [key]: e.target.checked })}
+                      className="sr-only"
+                    />
+                    <span 
+                      className={`inline-block w-12 h-6 rounded-full transition duration-200 ease-in-out ${formData[key] ? 'bg-amber-500' : 'bg-gray-200'}`}
+                    >
+                      <span 
+                        className={`inline-block w-5 h-5 mt-0.5 ml-0.5 rounded-full bg-white transition duration-200 ease-in-out transform ${formData[key] ? 'translate-x-6' : 'translate-x-0'}`}
+                      />
+                    </span>
+                  </div>
+                </div>
+              )
+              
+              {/* Number input for ID fields */}
+              : key === 'region' || key === 'institution' ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    #
+                  </span>
+                  <input
+                    id={key}
+                    type="number"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: parseInt(e.target.value) || null })}
+                    className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    placeholder={`${key.replace(/_/g, ' ').toLowerCase()} ID`}
+                  />
+                </div>
+              )
+              
+              {/* Password input */}
+              : key.includes('password') ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    ••••
+                  </span>
+                  <input
+                    id={key}
+                    type="password"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    placeholder="Enter password"
+                  />
+                </div>
+              )
+              
+              {/* Email input */}
+              : key.includes('email') ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    @
+                  </span>
+                  <input
+                    id={key}
+                    type="email"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    placeholder="Enter email address"
+                  />
+                </div>
+              )
+              
+              {/* Date input */}
+              : key.includes('date') ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    📅
+                  </span>
+                  <input
+                    id={key}
+                    type="date"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                  />
+                </div>
+              )
+              
+              {/* URL input */}
+              : key.includes('url') || key.includes('website') ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    🔗
+                  </span>
+                  <input
+                    id={key}
+                    type="url"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    placeholder="Enter URL"
+                  />
+                </div>
+              )
+              
+              {/* Select for importance */}
+              : key === 'importance' ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    ⭐
+                  </span>
+                  <select
+                    id={key}
+                    value={formData[key] || 'normal'}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                  >
+                    {importanceOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                    ▼
+                  </span>
+                </div>
+              )
+              
+              {/* Select for institution type */}
+              : key === 'institution_type' ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    🏢
+                  </span>
+                  <select
+                    id={key}
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                  >
+                    <option value="">Select institution type</option>
+                    {institutionTypeOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                    ▼
+                  </span>
+                </div>
+              )
+              
+              {/* Select for announcement type */}
+              : key === 'announcement_type' ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    📢
+                  </span>
+                  <select
+                    id={key}
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                  >
+                    <option value="">Select announcement type</option>
+                    {announcementTypeOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                    ▼
+                  </span>
+                </div>
+              )
+              
+              {/* Number input for numeric fields */}
+              : key.includes('content') || key.includes('value') || key.includes('days') || key.includes('size') || key.includes('height') || key.includes('yield') ? (
+                <div className="relative">
+                  <input
+                    id={key}
+                    type="number"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
+                  />
+                </div>
+              )
+              
+              {/* Default text input */}
+              : (
+                <div className="relative">
+                  <input
+                    id={key}
+                    type="text"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        
+        {/* Form Actions */}
+        <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-gray-200">
+          <button 
+            type="button" 
+            onClick={closeModal} 
+            className="px-8 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 flex-1 sm:flex-none font-medium shadow-sm hover:shadow"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            className="px-8 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-200 flex-1 sm:flex-none font-medium shadow-sm hover:shadow"
+          >
             {editingItem ? 'Save Changes' : 'Add'}
           </button>
         </div>
@@ -501,9 +911,9 @@ export function Admin() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6">
+      <div className="min-h-screen flex">
       {/* Left Sidebar */}
-      <aside className="w-64 bg-gradient-to-b from-amber-600 to-amber-800 text-white flex-shrink-0 flex flex-col h-screen fixed">
+      <aside className="w-64 bg-gradient-to-b from-amber-600 to-amber-800 text-white flex-shrink-0 flex flex-col h-screen absolute">
         <div className="p-4 border-b border-amber-500/30">
           <div className="flex items-center gap-3">
             <Shield className="h-8 w-8" />

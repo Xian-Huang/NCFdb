@@ -551,7 +551,7 @@ export function Admin() {
   return (
     <div className="min-h-screen flex">
       {/* Left Sidebar */}
-      <aside className="w-64 bg-gradient-to-b from-green-600 to-green-800 text-white flex-shrink-0 flex flex-col h-screen fixed">
+      <aside className="w-64 bg-gradient-to-b from-green-600 to-green-800 text-white flex-shrink-0 flex flex-col h-screen absolute">
         <div className="p-4 border-b border-green-500/30">
           <div className="flex items-center gap-3">
             <Shield className="h-8 w-8" />

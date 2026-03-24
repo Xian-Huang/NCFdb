@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { fetchChangelog } from "../../apis/data_apis";
 
 interface ChangelogItem {
   id: number;
@@ -20,13 +21,12 @@ export function Home() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    fetch("/sunflower/changelog/")
-      .then((res) => res.json())
-      .then((data) => {
+    fetchChangelog()
+      .then((data: ChangelogItem[]) => {
         setChangelog(data.slice(0, 4));
         setLoading(false);
       })
-      .catch((err) => {
+      .catch((err:any) => {
         console.error("Failed to fetch changelog:", err);
         setLoading(false);
       });

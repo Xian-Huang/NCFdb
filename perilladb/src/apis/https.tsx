@@ -1,4 +1,4 @@
-const API_BASE_URL = '/api/';
+const API_BASE_URL = '/perilla/api/';
 
 function getCSRFToken() {
   const name = 'csrftoken';
@@ -38,9 +38,9 @@ export async function fetchRequest(endpoint: string, method: string, body?: any,
     headers,
   };
   
-  if (method.toUpperCase() === 'POST'&&body) {
+  if ((method.toUpperCase() === 'POST' || method.toUpperCase() === 'PUT') && body) {
     options.body = JSON.stringify(body);
-  } else if (method.toUpperCase() === 'GET'&&body) {
+  } else if (method.toUpperCase() === 'GET' && body) {
      url = `${url}?${new URLSearchParams(body).toString()}`;
   }
 

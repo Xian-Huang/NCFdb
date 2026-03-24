@@ -5,11 +5,11 @@ export const zh = {
     news: "新闻",
     events: "活动",
     tools: "工具",
-    contact: "联系"
+    contact: "联系我们"
   },
   home: {
-    title: "胡麻（亚麻籽）特征营养成分与指纹图谱数据库",
-    subtitle: "整合亚麻籽基因组、转录组、表型组等组学数据，为亚麻籽遗传育种研究提供全面的数据支持",
+    title: "FlaxNCFdb",
+    subtitle: "特征营养成分与指纹图谱数据库",
     explore: "浏览数据",
     stats: {
       varieties: "品种",
@@ -20,34 +20,34 @@ export const zh = {
     services: "数据库服务",
     genomicData: "基因组数据",
     genomicDataDesc: "参考基因组、基因注释、变异数据下载",
-    varieties: "品种资源",
-    varietiesDesc: "亚麻籽品种表型数据、品质分析",
+    varieties: "品种",
+    varietiesDesc: "亚麻品种表型数据、品质分析",
     analysisTools: "分析工具",
     analysisToolsDesc: "BLAST搜索、基因组浏览器、基因查询",
-    newsUpdates: "最新更新",
+    newsUpdates: "最新资讯",
     loading: "加载中..."
   },
   data: {
     title: "数据中心",
-    subtitle: "浏览和下载亚麻籽基因组数据资源",
+    subtitle: "浏览和下载亚麻基因组数据资源",
     search: "搜索数据集...",
     stats: {
       datasets: "数据集",
       totalSize: "总大小",
-      downloads: "下载量",
+      downloads: "下载次数",
       genes: "基因"
     },
     availableDatasets: "可用数据集",
     noData: "暂无数据",
     download: "下载",
     notice: {
-      title: "数据使用声明",
-      content: "所有数据仅供研究和教育目的使用。如在 publications 中使用本数据库数据，请引用相关数据来源。"
+      title: "数据使用说明",
+      content: "所有数据均可用于研究和教育目的。在出版物中使用本数据库数据时，请引用适当的数据来源。"
     }
   },
   news: {
     title: "新闻动态",
-    subtitle: "了解亚麻籽基因组学最新研究进展",
+    subtitle: "了解亚麻基因组学最新研究进展",
     categories: {
       all: "全部",
       research: "研究",
@@ -59,8 +59,8 @@ export const zh = {
     noNews: "暂无新闻"
   },
   events: {
-    title: "学术活动",
-    subtitle: "亚麻基因组学学术会议和技术培训",
+    title: "活动与研讨会",
+    subtitle: "亚麻基因组学学术活动和技术培训",
     upcoming: "即将举办",
     past: "往期活动",
     register: "立即报名",
@@ -69,9 +69,9 @@ export const zh = {
   },
   tools: {
     title: "分析工具",
-    subtitle: "强大的生物信息学工具助力亚麻籽基因组数据探索",
+    subtitle: "强大的生物信息学工具，助力探索亚麻基因组数据",
     blast: "BLAST搜索",
-    blastDesc: "对亚麻籽基因组和转录组数据库进行序列相似性搜索",
+    blastDesc: "对亚麻基因组和转录组数据库进行序列相似性搜索",
     browser: "基因组浏览器",
     browserDesc: "基因组组装、注释和实验数据的交互式可视化",
     geneSearch: "基因搜索",
@@ -79,9 +79,9 @@ export const zh = {
     expression: "表达图谱",
     expressionDesc: "探索基因在不同组织和条件下的表达模式",
     variant: "变异浏览器",
-    variantDesc: "浏览和分析亚麻籽种质资源中的遗传变异",
+    variantDesc: "浏览和分析亚麻种质资源中的遗传变异",
     api: "API访问",
-    apiDesc: "通过编程方式访问基因组数据用于自定义分析流程",
+    apiDesc: "通过编程方式访问基因组数据，用于自定义分析流程",
     launch: "启动工具",
     blastSearch: "快速BLAST搜索",
     sequence: "序列 (FASTA格式)",
@@ -95,7 +95,7 @@ export const zh = {
   },
   contact: {
     title: "联系我们",
-    subtitle: "有关亚麻籽基因组数据的问题？我们期待您的来信！",
+    subtitle: "有关亚麻基因组数据的问题？我们很乐意收到您的来信！",
     form: "发送消息",
     name: "姓名",
     email: "邮箱",

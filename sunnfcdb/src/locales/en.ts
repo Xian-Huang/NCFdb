@@ -8,8 +8,8 @@ export const en = {
     contact: "Contact"
   },
   home: {
-    title: "SunNCFdb - Sunflower Nutritional Composition and Functional Characteristic Database",
-    subtitle: "Integrating sunflower genome, transcriptome, phenome and other omics data to provide comprehensive data support for sunflower genetic breeding research",
+    title: "SunNCFdb",
+    subtitle: "Nutritional Composition and Functional Characteristic Database",
     explore: "Explore Data",
     stats: {
       varieties: "Varieties",

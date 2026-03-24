@@ -3,6 +3,7 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { fetchNews } from "../../apis/data_apis";
 
 interface NewsItem {
   id: number;
@@ -26,13 +27,12 @@ export function News() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    fetch("/sunflower/news/")
-      .then((res) => res.json())
-      .then((data) => {
+    fetchNews()
+      .then((data: NewsItem[]) => {
         setNews(data);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error("Failed to fetch news:", err);
         setLoading(false);
       });

@@ -500,47 +500,277 @@ export function Admin() {
   };
 
   const renderForm = () => {
+    const formFields = Object.keys(formData).filter(k => k !== 'id' && k !== 'create_time' && k !== 'update_time');
+    
+    // Define options for select fields
+    const importanceOptions = [
+      { value: 'low', label: 'Low' },
+      { value: 'normal', label: 'Normal' },
+      { value: 'high', label: 'High' },
+    ];
+    
+    const institutionTypeOptions = [
+      { value: 'university', label: 'University' },
+      { value: 'research', label: 'Research Institute' },
+      { value: 'company', label: 'Company' },
+      { value: 'other', label: 'Other' },
+    ];
+    
+    const announcementTypeOptions = [
+      { value: 'event', label: 'Event' },
+      { value: 'news', label: 'News' },
+      { value: 'alert', label: 'Alert' },
+      { value: 'other', label: 'Other' },
+    ];
+    
     return (
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {Object.keys(formData).filter(k => k !== 'id' && k !== 'create_time' && k !== 'update_time').map((key) => (
-          <div key={key}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </label>
-            {key === 'content' || key === 'description' ? (
-              <textarea
-                value={formData[key] || ''}
-                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
-                rows={4}
-              />
-            ) : key === 'is_active' || key === 'is_published' ? (
-              <input
-                type="checkbox"
-                checked={formData[key] || false}
-                onChange={(e) => setFormData({ ...formData, [key]: e.target.checked })}
-                className="h-4 w-4 text-purple-500"
-              />
-            ) : key === 'region' || key === 'institution' || key === 'gene' || key === 'variety' ? (
-              <input
-                type="number"
-                value={formData[key] || ''}
-                onChange={(e) => setFormData({ ...formData, [key]: parseInt(e.target.value) || null })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-              />
-            ) : (
-              <input
-                type="text"
-                value={formData[key] || ''}
-                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-              />
-            )}
-          </div>
-        ))}
-        <div className="flex justify-end gap-3 pt-4">
-          <button type="button" onClick={closeModal} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
-          <button type="submit" className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Form Fields Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {formFields.map((key) => (
+            <div key={key} className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label 
+                  htmlFor={key} 
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </label>
+                {/* Required field indicator */}
+                {['title', 'name', 'username', 'email'].includes(key) && (
+                  <span className="text-red-500 font-medium">*</span>
+                )}
+              </div>
+              
+              {key === 'content' || key === 'description' || key === 'function' ? (
+                <div className="relative">
+                  <textarea
+                    id={key}
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 resize-none shadow-sm"
+                    rows={5}
+                    placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
+                  />
+                </div>
+              )
+              
+              : key === 'is_active' || key === 'is_published' ? (
+                <div className="flex items-center space-x-3">
+                  <label 
+                    htmlFor={key} 
+                    className="text-sm text-gray-600 cursor-pointer flex-1"
+                  >
+                    {key === 'is_active' ? 'Active' : 'Published'}
+                  </label>
+                  <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out">
+                    <input
+                      id={key}
+                      type="checkbox"
+                      checked={formData[key] || false}
+                      onChange={(e) => setFormData({ ...formData, [key]: e.target.checked })}
+                      className="sr-only"
+                    />
+                    <span 
+                      className={`inline-block w-12 h-6 rounded-full transition duration-200 ease-in-out ${formData[key] ? 'bg-purple-500' : 'bg-gray-200'}`}
+                    >
+                      <span 
+                        className={`inline-block w-5 h-5 mt-0.5 ml-0.5 rounded-full bg-white transition duration-200 ease-in-out transform ${formData[key] ? 'translate-x-6' : 'translate-x-0'}`}
+                      />
+                    </span>
+                  </div>
+                </div>
+              )
+              
+
+              : key === 'region' || key === 'institution' || key === 'gene' || key === 'variety' ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    #
+                  </span>
+                  <input
+                    id={key}
+                    type="number"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: parseInt(e.target.value) || null })}
+                    className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    placeholder={`${key.replace(/_/g, ' ').toLowerCase()} ID`}
+                  />
+                </div>
+              )
+
+              : key.includes('password') ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    ••••
+                  </span>
+                  <input
+                    id={key}
+                    type="password"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    placeholder="Enter password"
+                  />
+                </div>
+              )
+              
+              : key.includes('email') ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    @
+                  </span>
+                  <input
+                    id={key}
+                    type="email"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    placeholder="Enter email address"
+                  />
+                </div>
+              )
+
+              : key.includes('date') ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    📅
+                  </span>
+                  <input
+                    id={key}
+                    type="date"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                  />
+                </div>
+              )
+              
+              : key.includes('url') || key.includes('website') ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    🔗
+                  </span>
+                  <input
+                    id={key}
+                    type="url"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    placeholder="Enter URL"
+                  />
+                </div>
+              )
+              
+              : key === 'importance' ? ( // Select for importance
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    ⭐
+                  </span>
+                  <select
+                    id={key}
+                    value={formData[key] || 'normal'}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                  >
+                    {importanceOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                    ▼
+                  </span>
+                </div>
+              )
+              
+              : key === 'institution_type' ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    🏢
+                  </span>
+                  <select
+                    id={key}
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                  >
+                    <option value="">Select institution type</option>
+                    {institutionTypeOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                    ▼
+                  </span>
+                </div>
+              ) : key === 'announcement_type' ? ( // Select for announcement type
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    📢
+                  </span>
+                  <select
+                    id={key}
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                  >
+                    <option value="">Select announcement type</option>
+                    {announcementTypeOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                    ▼
+                  </span>
+                </div>
+              )
+              
+              : key.includes('content') || key.includes('value') || key.includes('days') || key.includes('size') || key.includes('height') || key.includes('yield') ? ( // Number input for numeric fields
+                <div className="relative">
+                  <input
+                    id={key}
+                    type="number"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
+                  />
+                </div>
+              )
+              : (
+                <div className="relative">
+                  <input
+                    id={key}
+                    type="text"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        
+        <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-gray-200">
+          <button 
+            type="button" 
+            onClick={closeModal} 
+            className="px-8 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 flex-1 sm:flex-none font-medium shadow-sm hover:shadow"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            className="px-8 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-all duration-200 flex-1 sm:flex-none font-medium shadow-sm hover:shadow"
+          >
             {editingItem ? 'Save Changes' : 'Add'}
           </button>
         </div>
@@ -551,7 +781,7 @@ export function Admin() {
   return (
     <div className="min-h-screen flex">
       {/* Left Sidebar */}
-      <aside className="w-64 bg-gradient-to-b from-purple-600 to-purple-800 text-white flex-shrink-0 flex flex-col h-screen fixed">
+      <aside className="w-64 bg-gradient-to-b from-purple-600 to-purple-800 text-white flex-shrink-0 flex flex-col h-screen absolute">
         <div className="p-4 border-b border-purple-500/30">
           <div className="flex items-center gap-3">
             <Shield className="h-8 w-8" />

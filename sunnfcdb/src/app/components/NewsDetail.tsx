@@ -2,6 +2,7 @@ import { Calendar, User, Tag, ArrowLeft, Eye } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
+import { fetchNewsDetail } from "../../apis/data_apis";
 
 interface NewsItem {
   id: number;
@@ -25,13 +26,12 @@ export function NewsDetail() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/sunflower/news/${id}/`)
-      .then((res) => res.json())
-      .then((data) => {
+    fetchNewsDetail(parseInt(id))
+      .then((data: NewsItem) => {
         setNews(data);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error("Failed to fetch news:", err);
         setLoading(false);
       });

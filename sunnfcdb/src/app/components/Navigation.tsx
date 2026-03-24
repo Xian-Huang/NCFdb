@@ -28,12 +28,12 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
            <Link to="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center">
               <Sun className="h-8 w-8 text-amber-500" />
             </div>
             <div>
-              <span className="text-xl font-bold text-gray-900">{t("home.title")}</span>
-              <span className="text-xs text-blue-600 block">SunNCFdb</span>
+              <span className="text-xl font-bold">{t("home.title")}</span>
+              <span className="text-xs text-black-600 block">{t("home.subtitle")}</span>
             </div>
           </Link>
           

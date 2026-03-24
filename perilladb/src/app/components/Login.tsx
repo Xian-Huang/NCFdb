@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Sprout, Eye, EyeOff } from "lucide-react";
-import { fetchloginSesameRegions } from "../../apis/user_api";
+import { fetchloginPerillaRegions } from "../../apis/user_api";
 
 export function Login() {
   const [username, setUsername] = useState("");
@@ -18,14 +18,18 @@ export function Login() {
 
     try {
       console.log("login:", username, password);
-      const response = await fetchloginSesameRegions({username, password});
+      const response = await fetchloginPerillaRegions({username, password});
       const data = await response.json();
       
       if (response.ok) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("token", data.token || "session");
-        console.log("success login:", username);
-        navigate("/admin");
+        if (data.token) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+          localStorage.setItem("token", data.token);
+          console.log("success login:", username);
+          navigate("/admin");
+        } else {
+          setError("Login failed: No token received");
+        }
       } else {
         setError(data.error || "Invalid credentials");
       }

@@ -1,12 +1,10 @@
 import { Link, useLocation } from "react-router";
-import { Sprout, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Sprout } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function Navigation() {
-  const { t } = useTranslation();
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation();
   
   const navItems = [
     { path: "/", label: t("nav.home") },
@@ -25,61 +23,35 @@ export function Navigation() {
   };
 
   return (
-    <nav className="bg-white shadow-md border-t-4 border-green-600">
-      <div className="container mx-auto px-4">
+    <nav className="bg-white shadow-sm border-b border-green-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
-              <Sprout className="h-6 w-6 text-white" />
+            <div className="w-10 h-10 rounded-full flex items-center justify-center">
+              <Sprout className="h-8 w-8 text-green-600" />
             </div>
             <div>
-              <span className="text-xl font-bold text-gray-900">{t("home.title")}</span>
-              <span className="text-xs text-green-600 block">SinNCFdb</span>
+              <span className="text-xl font-bold">{t("home.title")}</span>
+              <span className="text-xs text-black-600 block">{t("home.subtitle")}</span>
             </div>
           </Link>
           
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="flex space-x-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-md transition-colors ${
                   isActive(item.path)
-                    ? "bg-green-100 text-green-800 border-b-2 border-green-600"
-                    : "text-gray-600 hover:bg-green-50 hover:text-green-700"
+                    ? "bg-green-500 text-white"
+                    : "text-gray-700 hover:bg-green-100"
                 }`}
               >
                 {item.label}
               </Link>
             ))}
           </div>
-
-          <button
-            className="md:hidden p-2 text-gray-600"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
         </div>
-
-        {isOpen && (
-          <div className="md:hidden pb-4 space-y-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`block px-4 py-3 rounded-md text-sm font-medium ${
-                  isActive(item.path)
-                    ? "bg-green-100 text-green-800"
-                    : "text-gray-600 hover:bg-green-50"
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        )}
       </div>
     </nav>
   );

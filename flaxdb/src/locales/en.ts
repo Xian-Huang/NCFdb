@@ -8,8 +8,8 @@ export const en = {
     contact: "Contact"
   },
   home: {
-    title: "FlaxNCFdb - Flax Nutritional Composition and Chemical Fingerprint Database",
-    subtitle: "Integrating flax genome, transcriptome, phenome and other omics data to provide comprehensive data support for flax genetic breeding research",
+    title: "FlaxNCFdb",
+    subtitle: "Nutritional Composition and Chemical Fingerprint Database",
     explore: "Explore Data",
     stats: {
       varieties: "Varieties",

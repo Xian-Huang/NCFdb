@@ -8,8 +8,8 @@ export const en = {
     contact: "Contact"
   },
   home: {
-    title: "SinNCFdb - Sesame Nutritional Composition and Chemical Fingerprint Database",
-    subtitle: "Integrating sesame genome, transcriptome, phenome and other omics data to provide comprehensive data support for sesame genetic breeding research",
+    title: "SinNCFdb",
+    subtitle: "Nutritional Composition and Chemical Fingerprint Database",
     explore: "Explore Data",
     stats: {
       varieties: "Varieties",

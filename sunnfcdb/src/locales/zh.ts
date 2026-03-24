@@ -8,8 +8,8 @@ export const zh = {
     contact: "联系我们"
   },
   home: {
-    title: "SunNCFdb - 向日葵营养成分与功能特征数据库",
-    subtitle: "整合向日葵基因组、转录组、表型组等多组学数据，为向日葵遗传育种研究提供全面的数据支持",
+    title: "SunNCFdb",
+    subtitle: "营养成分与功能特征数据库",
     explore: "探索数据",
     stats: {
       varieties: "品种",
