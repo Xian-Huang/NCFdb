@@ -43,9 +43,20 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class NewsSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+    
+    def get_image_url(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
+    
     class Meta:
         model = News
         fields = '__all__'
+        read_only_fields = ['image_url']
 
 class ChangelogSerializer(serializers.ModelSerializer):
     class Meta:

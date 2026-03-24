@@ -11,6 +11,7 @@ interface NewsItem {
   content: string;
   author: string;
   image: string;
+  image_url: string;
   category: string;
   tags: string;
   views: number;
@@ -77,9 +78,9 @@ export function NewsDetail() {
       </Link>
 
       <article>
-        {news.image && (
+        {(news.image_url || news.image) && (
           <img
-            src={news.image}
+            src={news.image_url || news.image}
             alt={news.title}
             className="w-full h-96 object-cover rounded-lg mb-8"
           />

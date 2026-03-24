@@ -45,11 +45,11 @@ class DownloadFilesView(APIView):
 class NewsView(APIView):
     def get(self, request, format=None):
         news = News.objects.all()
-        serializer = NewsSerializer(news, many=True)
+        serializer = NewsSerializer(news, many=True, context={'request': request})
         return Response(serializer.data)
     
     def post(self, request, format=None):
-        serializer = NewsSerializer(data=request.data)
+        serializer = NewsSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -59,7 +59,7 @@ class NewsDetailView(APIView):
     def get(self, request, pk, format=None):
         try:
             news = News.objects.get(pk=pk)
-            serializer = NewsSerializer(news)
+            serializer = NewsSerializer(news, context={'request': request})
             return Response(serializer.data)
         except News.DoesNotExist:
             return Response({"error": "News not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -67,7 +67,7 @@ class NewsDetailView(APIView):
     def put(self, request, pk, format=None):
         try:
             news = News.objects.get(pk=pk)
-            serializer = NewsSerializer(news, data=request.data, partial=True)
+            serializer = NewsSerializer(news, data=request.data, partial=True, context={'request': request})
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)

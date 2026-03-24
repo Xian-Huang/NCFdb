@@ -1,3 +1,5 @@
+from email.mime import image
+
 from rest_framework import serializers
 from .models import DownloadFile, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, Institution, Announcement, News, Changelog
 
@@ -43,9 +45,20 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class NewsSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+    
+    def get_image_url(self, obj):
+        if obj.image and hasattr(obj.image, 'url'):
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
+    
     class Meta:
         model = News
         fields = '__all__'
+        read_only_fields = ['image_url']
 
 class ChangelogSerializer(serializers.ModelSerializer):
     class Meta:

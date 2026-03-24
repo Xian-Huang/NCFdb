@@ -239,7 +239,7 @@ class News(models.Model):
     title = models.CharField(max_length=200, verbose_name="标题",blank=True,null=True)
     content = models.TextField(verbose_name="内容",blank=True,null=True)
     author = models.CharField(max_length=100, null=True, blank=True, verbose_name="作者")
-    image = models.URLField(null=True, blank=True, verbose_name="封面图片")
+    image = models.ImageField(upload_to='news_images', null=True, blank=True, verbose_name="封面图片")
     category = models.CharField(max_length=50, null=True, blank=True, verbose_name="分类")
     tags = models.CharField(max_length=200, null=True, blank=True, verbose_name="标签")
     views = models.IntegerField(default=0, verbose_name="浏览量")

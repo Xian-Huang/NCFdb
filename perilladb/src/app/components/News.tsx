@@ -10,6 +10,7 @@ interface NewsItem {
   content: string;
   author: string;
   image: string;
+  image_url: string;
   category: string;
   tags: string;
   views: number;
@@ -26,6 +27,7 @@ export function News() {
   useEffect(() => {
     fetchPerillaNews()
       .then((data: NewsItem[]) => {
+        console.log(data)
         setNews(data);
         setLoading(false);
       })
@@ -84,10 +86,10 @@ export function News() {
               to={`/news/${item.id}`}
               className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-purple-300 transition-all overflow-hidden"
             >
-              {item.image && (
+              {(item.image_url || item.image) && (
                 <div className="h-40 overflow-hidden">
                   <img
-                    src={item.image}
+                    src={item.image_url || item.image}
                     alt={item.title}
                     className="w-full h-full object-cover"
                   />
