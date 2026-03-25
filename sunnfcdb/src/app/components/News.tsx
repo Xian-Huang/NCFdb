@@ -1,7 +1,7 @@
 import { Calendar, User, Tag } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { fetchNews } from "../../apis/data_apis";
 

@@ -1,7 +1,7 @@
 import { Calendar, User, Tag, ArrowLeft, Eye } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useParams } from "react-router-dom";
 import { fetchNewsDetail } from "../../apis/data_apis";
 
 interface NewsItem {

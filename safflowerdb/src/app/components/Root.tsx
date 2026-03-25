@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import { useTranslation } from "react-i18next";
 

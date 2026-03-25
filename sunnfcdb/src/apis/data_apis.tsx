@@ -33,7 +33,6 @@ export const fetchChangelogDetail = async (id: number) => {
 
 // ============ Admin APIs ============
 
-// Users
 export const fetchUsers = async () => {
     const response = await fetchRequest("/api/users/", "GET");
     return response.json();
@@ -53,7 +52,6 @@ export const deleteUser = async (id: number) => {
     await fetchRequest(`/api/users/${id}/`, "DELETE");
 }
 
-// News
 export const createNews = async (data: any) => {
     const response = await fetchRequest("/api/news/", "POST", data);
     return response.json();

@@ -250,7 +250,7 @@ export function Admin() {
   const getEmptyForm = () => {
     switch (activeType) {
       case "news":
-        return { title: "", content: "", author: "", category: "", imgefield: "", tags: "", is_published: true };
+        return { title: "", content: "", author: "", category: "", image: "", tags: "", is_published: true };
       case "changelog":
         return { version: "", title: "", content: "", changes: [], release_date: "", is_published: true };
       case "regions":
@@ -526,7 +526,7 @@ export function Admin() {
     return (
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Form Fields Grid */}
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {formFields.map((key) => (
             <div key={key} className="space-y-3">
               <div className="flex items-center justify-between">
@@ -741,77 +741,6 @@ export function Admin() {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
                     placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
                   />
-                </div>
-              )
-              : key.includes('image') || key.includes('img') || key.includes('imgefield') ? ( // Image upload field
-                <div className="space-y-3">
-                  {formData[key] && (
-                    <div className="flex items-center gap-4">
-                      <img 
-                        src={formData[key]} 
-                        alt="Preview" 
-                        className="w-20 h-20 object-cover rounded-lg border border-gray-200"
-                      />
-                      <button 
-                        type="button"
-                        onClick={() => setFormData({ ...formData, [key]: '' })}
-                        className="text-red-600 hover:text-red-800 text-sm"
-                      >
-                        Remove Image
-                      </button>
-                    </div>
-                  )}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-4">
-                      <button 
-                        type="button"
-                        onClick={() => setFormData({ ...formData, [`${key}_upload_type`]: 'file' })}
-                        className={`px-4 py-2 rounded-lg text-sm ${formData[`${key}_upload_type`] === 'file' ? 'bg-purple-500 text-white' : 'bg-gray-100 text-gray-700'}`}
-                      >
-                        Upload File
-                      </button>
-                      <button 
-                        type="button"
-                        onClick={() => setFormData({ ...formData, [`${key}_upload_type`]: 'url' })}
-                        className={`px-4 py-2 rounded-lg text-sm ${formData[`${key}_upload_type`] === 'url' ? 'bg-purple-500 text-white' : 'bg-gray-100 text-gray-700'}`}
-                      >
-                        Enter URL
-                      </button>
-                    </div>
-                    {formData[`${key}_upload_type`] === 'url' ? (
-                      <div className="relative">
-                        <input
-                          id={key}
-                          type="url"
-                          value={formData[key] || ''}
-                          onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
-                          placeholder="Enter image URL"
-                        />
-                      </div>
-                    ) : (
-                      <div className="relative">
-                        <input
-                          id={key}
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                              const file = e.target.files[0];
-                              const reader = new FileReader();
-                              reader.onload = (event) => {
-                                if (event.target && typeof event.target.result === 'string') {
-                                  setFormData({ ...formData, [key]: event.target.result });
-                                }
-                              };
-                              reader.readAsDataURL(file);
-                            }
-                          }}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
-                        />
-                      </div>
-                    )}
-                  </div>
                 </div>
               )
               : (

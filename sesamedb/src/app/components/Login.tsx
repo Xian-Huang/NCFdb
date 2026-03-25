@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { Sprout, Eye, EyeOff } from "lucide-react";
 import { fetchloginSesameRegions } from "../../apis/user_api";
 
