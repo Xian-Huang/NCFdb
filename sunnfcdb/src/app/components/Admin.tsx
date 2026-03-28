@@ -67,8 +67,10 @@ interface VarietyData {
   region: number | null;
   region_name?: string;
   seed_color: string;
-  oil_content: number;
-  maturity_days: number;
+  oil_content: number | null;
+  maturity_days: number | null;
+  yield_per_hectare: number | null;
+  height: number | null;
 }
 
 interface GeneData {
@@ -98,9 +100,52 @@ interface AnnouncementData {
   content: string;
   announcement_type: string;
   author: string;
+  institution: number | null;
+  institution_name?: string;
   importance: string;
   is_published: boolean;
   publish_date: string;
+}
+
+interface GeneExpressionData {
+  id: number;
+  gene: number;
+  gene_name?: string;
+  variety: number;
+  variety_name?: string;
+  tissue: string;
+  stage: string;
+  expression_value: number;
+  fpkm: number | null;
+  tpm: number | null;
+  sample_id: string;
+}
+
+interface EnvironmentalFactorData {
+  id: number;
+  name: string;
+  code: string;
+  unit: string;
+  category: string;
+  min_value: number | null;
+  max_value: number | null;
+}
+
+interface NutritionData {
+  id: number;
+  name: string;
+  desc: string;
+}
+
+interface DownloadFileData {
+  id: number;
+  title: string;
+  description: string;
+  size: number | null;
+  format: string;
+  version: string;
+  downloads: number;
+  file_url: string;
 }
 
 const dataTypeConfig: Record<DataType, { title: string; icon: React.ElementType; endpoint: string }> = {
@@ -126,6 +171,11 @@ export function Admin() {
   const [editingItem, setEditingItem] = useState<any>(null);
   const [formData, setFormData] = useState<any>({});
   const [searchTerm, setSearchTerm] = useState("");
+  // Foreign key options
+  const [regions, setRegions] = useState<any[]>([]);
+  const [varieties, setVarieties] = useState<any[]>([]);
+  const [genes, setGenes] = useState<any[]>([]);
+  const [institutions, setInstitutions] = useState<any[]>([]);
   const navigate = useNavigate();
 
   const userStr = localStorage.getItem("user");
@@ -133,7 +183,25 @@ export function Admin() {
 
   useEffect(() => {
     fetchData();
+    fetchForeignKeyOptions();
   }, [activeType]);
+
+  const fetchForeignKeyOptions = async () => {
+    try {
+      const [regionsData, varietiesData, genesData, institutionsData] = await Promise.all([
+        fetchRegions(),
+        fetchVarieties(),
+        fetchGenes(),
+        fetchInstitutions(),
+      ]);
+      setRegions(regionsData);
+      setVarieties(varietiesData);
+      setGenes(genesData);
+      setInstitutions(institutionsData);
+    } catch (error) {
+      console.error("Failed to fetch foreign key options:", error);
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -219,13 +287,21 @@ export function Admin() {
       case "regions":
         return { name: "", code: "", country: "", climate: "", description: "" };
       case "varieties":
-        return { name: "", variety_code: "", region: null, seed_color: "", oil_content: 0, maturity_days: 0, yield_per_hectare: 0, height: 0, description: "" };
+        return { name: "", variety_code: "", region: null, seed_color: "", oil_content: null, maturity_days: null, yield_per_hectare: null, height: null, description: "" };
       case "genes":
-        return { gene_id: "", name: "", symbol: "", chromosome: "", start_position: 0, end_position: 0, strand: "", gene_type: "", description: "", function: "", pathway: "" };
+        return { gene_id: "", name: "", symbol: "", chromosome: "", start_position: null, end_position: null, strand: "", gene_type: "", description: "", function: "", pathway: "" };
+      case "gene_expressions":
+        return { gene: null, variety: null, tissue: "", stage: "", expression_value: null, fpkm: null, tpm: null, sample_id: "" };
+      case "environmental_factors":
+        return { name: "", code: "", unit: "", category: "", description: "", min_value: null, max_value: null };
+      case "nutrition":
+        return { name: "", desc: "" };
       case "institutions":
         return { name: "", abbreviation: "", country: "", city: "", address: "", website: "", email: "", phone: "", contact_person: "", description: "", institution_type: "" };
       case "announcements":
         return { title: "", content: "", announcement_type: "", author: "", institution: null, importance: "normal", is_published: true, publish_date: "" };
+      case "downloads":
+        return { title: "", description: "", size: null, format: "", version: "", downloads: 0 };
       default:
         return {};
     }
@@ -233,7 +309,7 @@ export function Admin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate required fields
     if (!editingItem) {
       if (activeType === 'changelog' && !formData.release_date) {
@@ -241,20 +317,29 @@ export function Admin() {
         return;
       }
     }
-    
+
     try {
+      // Filter out null values and empty strings before submitting (for optional fields)
+      const submitData = { ...formData };
+      Object.keys(submitData).forEach(key => {
+        // Convert empty strings to null for optional fields
+        if (submitData[key] === null || submitData[key] === '') {
+          delete submitData[key];
+        }
+      });
+
       switch (activeType) {
         case "users":
           if (editingItem) {
-            await updateUser(editingItem.id, formData);
+            await updateUser(editingItem.id, submitData);
           } else {
-            await createUser(formData);
+            await createUser(submitData);
           }
           break;
         case "news":
           // Handle file upload for news images
-          let newsData = { ...formData };
-          
+          let newsData = { ...submitData };
+
           if (editingItem) {
             // For editing, only include image if it's a file object (user selected a new image)
             if (formData.image && typeof formData.image === 'object') {
@@ -269,7 +354,7 @@ export function Admin() {
               newsData.image = formData.image;
             }
           }
-          
+
           if (editingItem) {
             await updateNews(editingItem.id, newsData);
           } else {
@@ -278,72 +363,72 @@ export function Admin() {
           break;
         case "changelog":
           if (editingItem) {
-            await updateChangelog(editingItem.id, formData);
+            await updateChangelog(editingItem.id, submitData);
           } else {
-            await createChangelog(formData);
+            await createChangelog(submitData);
           }
           break;
         case "regions":
           if (editingItem) {
-            await updateRegion(editingItem.id, formData);
+            await updateRegion(editingItem.id, submitData);
           } else {
-            await createRegion(formData);
+            await createRegion(submitData);
           }
           break;
         case "varieties":
           if (editingItem) {
-            await updateVariety(editingItem.id, formData);
+            await updateVariety(editingItem.id, submitData);
           } else {
-            await createVariety(formData);
+            await createVariety(submitData);
           }
           break;
         case "genes":
           if (editingItem) {
-            await updateGene(editingItem.id, formData);
+            await updateGene(editingItem.id, submitData);
           } else {
-            await createGene(formData);
+            await createGene(submitData);
           }
           break;
         case "gene_expressions":
           if (editingItem) {
-            await updateGeneExpression(editingItem.id, formData);
+            await updateGeneExpression(editingItem.id, submitData);
           } else {
-            await createGeneExpression(formData);
+            await createGeneExpression(submitData);
           }
           break;
         case "environmental_factors":
           if (editingItem) {
-            await updateEnvironmentalFactor(editingItem.id, formData);
+            await updateEnvironmentalFactor(editingItem.id, submitData);
           } else {
-            await createEnvironmentalFactor(formData);
+            await createEnvironmentalFactor(submitData);
           }
           break;
         case "nutrition":
           if (editingItem) {
-            await updateNutrition(editingItem.id, formData);
+            await updateNutrition(editingItem.id, submitData);
           } else {
-            await createNutrition(formData);
+            await createNutrition(submitData);
           }
           break;
         case "institutions":
           if (editingItem) {
-            await updateInstitution(editingItem.id, formData);
+            await updateInstitution(editingItem.id, submitData);
           } else {
-            await createInstitution(formData);
+            await createInstitution(submitData);
           }
           break;
         case "announcements":
           if (editingItem) {
-            await updateAnnouncement(editingItem.id, formData);
+            await updateAnnouncement(editingItem.id, submitData);
           } else {
-            await createAnnouncement(formData);
+            await createAnnouncement(submitData);
           }
           break;
         case "downloads":
           if (editingItem) {
-            await updateDownloadFile(editingItem.id, formData);
+            await updateDownloadFile(editingItem.id, submitData);
           } else {
-            await createDownloadFile(formData);
+            await createDownloadFile(submitData);
           }
           break;
       }
@@ -531,8 +616,8 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.name}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.variety_code}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.region_name || "-"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.oil_content}%</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.maturity_days} days</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.oil_content ?? "-"}{item.oil_content !== null && item.oil_content !== undefined ? '%' : ''}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.maturity_days ?? "-"}{item.maturity_days !== null && item.maturity_days !== undefined ? ' days' : ''}</td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
@@ -560,9 +645,9 @@ export function Admin() {
                 <tr key={item.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.gene_id}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.symbol}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.chromosome}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.gene_type}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.symbol || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.chromosome || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.gene_type || "-"}</td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
@@ -610,6 +695,7 @@ export function Admin() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Author</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Institution</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Importance</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
@@ -620,7 +706,10 @@ export function Admin() {
                 <tr key={item.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.title}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.announcement_type}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.author}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.author || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {item.institution_name || institutions.find(i => i.id === item.institution)?.name || "-"}
+                  </td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 text-xs rounded-full ${item.importance === 'high' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}`}>
                       {item.importance}
@@ -668,6 +757,126 @@ export function Admin() {
             </tbody>
           </table>
         );
+      case "gene_expressions":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gene</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variety</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tissue</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stage</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expression Value</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as GeneExpressionData[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    {item.gene_name || genes.find(g => g.id === item.gene)?.gene_id || item.gene}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {item.variety_name || varieties.find(v => v.id === item.variety)?.name || item.variety}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.tissue}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.stage || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.expression_value}</td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+      case "environmental_factors":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Min Value</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Max Value</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as EnvironmentalFactorData[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.code}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.unit}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.category || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.min_value ?? "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.max_value ?? "-"}</td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+      case "nutrition":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as NutritionData[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.desc || "-"}</td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+      case "downloads":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Format</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Size</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Version</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Downloads</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as DownloadFileData[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.title}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.format || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.size ? `${(item.size / 1024 / 1024).toFixed(2)} MB` : "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.version || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.downloads}</td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
       default:
         return <p className="text-gray-500">No data available</p>;
     }
@@ -675,28 +884,49 @@ export function Admin() {
 
   const renderForm = () => {
     const formFields = Object.keys(formData).filter(k => k !== 'id' && k !== 'create_time' && k !== 'update_time' && k !== 'date_joined');
-    
+
     // Define options for select fields
     const importanceOptions = [
       { value: 'low', label: 'Low' },
       { value: 'normal', label: 'Normal' },
       { value: 'high', label: 'High' },
     ];
-    
+
     const institutionTypeOptions = [
       { value: 'university', label: 'University' },
       { value: 'research', label: 'Research Institute' },
       { value: 'company', label: 'Company' },
       { value: 'other', label: 'Other' },
     ];
-    
+
     const announcementTypeOptions = [
       { value: 'event', label: 'Event' },
       { value: 'news', label: 'News' },
       { value: 'alert', label: 'Alert' },
       { value: 'other', label: 'Other' },
     ];
-    
+
+    const newsCategoryOptions = [
+      { value: 'research', label: 'Research' },
+      { value: 'publication', label: 'Publication' },
+      { value: 'conference', label: 'Conference' },
+      { value: 'update', label: 'Update' },
+      { value: 'other', label: 'Other' },
+    ];
+
+    const newsTagsOptions = [
+      { value: 'genomics', label: 'Genomics' },
+      { value: 'breeding', label: 'Breeding' },
+      { value: 'transcriptomics', label: 'Transcriptomics' },
+      { value: 'metabolomics', label: 'Metabolomics' },
+      { value: 'phenotyping', label: 'Phenotyping' },
+      { value: 'genetic-diversity', label: 'Genetic Diversity' },
+      { value: 'marker-development', label: 'Marker Development' },
+      { value: 'qtl-mapping', label: 'QTL Mapping' },
+      { value: 'genome-editing', label: 'Genome Editing' },
+      { value: 'bioinformatics', label: 'Bioinformatics' },
+    ];
+
     return (
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Form Fields Grid */}
@@ -787,20 +1017,100 @@ export function Admin() {
                       </div>
                     </div>
                   );
-                } else if (key === 'region' || key === 'institution') {
+                } else if (key === 'region') {
                   return (
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        #
+                        📍
                       </span>
-                      <input
+                      <select
                         id={key}
-                        type="number"
-                        value={formData[key] || ''}
-                        onChange={(e) => setFormData({ ...formData, [key]: parseInt(e.target.value) || null })}
-                        className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
-                        placeholder={`${key.replace(/_/g, ' ').toLowerCase()} ID`}
-                      />
+                        value={formData[key] ?? ''}
+                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
+                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                      >
+                        <option value="">Select Region</option>
+                        {regions.map((region) => (
+                          <option key={region.id} value={region.id}>
+                            {region.name} ({region.code})
+                          </option>
+                        ))}
+                      </select>
+                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                        ▼
+                      </span>
+                    </div>
+                  );
+                } else if (key === 'variety') {
+                  return (
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                        🌱
+                      </span>
+                      <select
+                        id={key}
+                        value={formData[key] ?? ''}
+                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
+                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                      >
+                        <option value="">Select Variety</option>
+                        {varieties.map((variety) => (
+                          <option key={variety.id} value={variety.id}>
+                            {variety.name} ({variety.variety_code})
+                          </option>
+                        ))}
+                      </select>
+                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                        ▼
+                      </span>
+                    </div>
+                  );
+                } else if (key === 'gene') {
+                  return (
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                        🧬
+                      </span>
+                      <select
+                        id={key}
+                        value={formData[key] ?? ''}
+                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
+                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                      >
+                        <option value="">Select Gene</option>
+                        {genes.map((gene) => (
+                          <option key={gene.id} value={gene.id}>
+                            {gene.gene_id} - {gene.name}
+                          </option>
+                        ))}
+                      </select>
+                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                        ▼
+                      </span>
+                    </div>
+                  );
+                } else if (key === 'institution') {
+                  return (
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                        🏢
+                      </span>
+                      <select
+                        id={key}
+                        value={formData[key] ?? ''}
+                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
+                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                      >
+                        <option value="">Select Institution</option>
+                        {institutions.map((institution) => (
+                          <option key={institution.id} value={institution.id}>
+                            {institution.name} ({institution.abbreviation || institution.country})
+                          </option>
+                        ))}
+                      </select>
+                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                        ▼
+                      </span>
                     </div>
                   );
                 } else if (key.includes('password')) {
@@ -937,14 +1247,81 @@ export function Admin() {
                       </span>
                     </div>
                   );
-                } else if (key.includes('content') || key.includes('value') || key.includes('days') || key.includes('size') || key.includes('height') || key.includes('yield')) {
+                } else if (key === 'category' && activeType === 'news') {
+                  return (
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                        📰
+                      </span>
+                      <select
+                        id={key}
+                        value={formData[key] || ''}
+                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                      >
+                        <option value="">Select Category</option>
+                        {newsCategoryOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                        ▼
+                      </span>
+                    </div>
+                  );
+                } else if (key === 'tags' && activeType === 'news') {
+                  // Parse existing tags from comma-separated string to array
+                  const existingTags = formData[key] ? formData[key].split(',').map((t: string) => t.trim()).filter((t: string) => t) : [];
+                  
+                  const toggleTag = (tagValue: string) => {
+                    const currentTags = formData[key] ? formData[key].split(',').map((t: string) => t.trim()).filter((t: string) => t) : [];
+                    let newTags: string[];
+                    if (currentTags.includes(tagValue)) {
+                      newTags = currentTags.filter((t: string) => t !== tagValue);
+                    } else {
+                      newTags = [...currentTags, tagValue];
+                    }
+                    setFormData({ ...formData, [key]: newTags.join(',') });
+                  };
+
+                  return (
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap gap-2">
+                        {newsTagsOptions.map((option) => {
+                          const isSelected = existingTags.includes(option.value);
+                          return (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => toggleTag(option.value)}
+                              className={`px-3 py-1.5 text-sm rounded-full transition-all duration-200 ${
+                                isSelected
+                                  ? 'bg-amber-500 text-white shadow-md'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              }`}
+                            >
+                              {option.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {formData[key] && (
+                        <div className="text-xs text-gray-500 mt-1">
+                          Selected: {existingTags.join(', ')}
+                        </div>
+                      )}
+                    </div>
+                  );
+                } else if (key.includes('content') || key.includes('value') || key.includes('days') || key.includes('size') || key.includes('height') || key.includes('yield') || key.includes('position')) {
                   return (
                     <div className="relative">
                       <input
                         id={key}
                         type="number"
-                        value={formData[key] || ''}
-                        onChange={(e) => setFormData({ ...formData, [key]: parseFloat(e.target.value) || 0 })}
+                        value={formData[key] ?? ''}
+                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseFloat(e.target.value) })}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
                         placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
                       />

@@ -30,11 +30,41 @@ export const fetchSesameGeneExpressions = async () => {
     return data;
 }
 
+export const createSesameGeneExpression = async (data: any) => {
+    const response = await fetchRequest("/gene-expressions/", "POST", data);
+    return await response.json();
+};
+
+export const updateSesameGeneExpression = async (id: number, data: any) => {
+    const response = await fetchRequest(`/gene-expressions/${id}/`, "PUT", data);
+    return await response.json();
+};
+
+export const deleteSesameGeneExpression = async (id: number) => {
+    const response = await fetchRequest(`/gene-expressions/${id}/`, "DELETE");
+    return await response.json();
+};
+
 export const fetchSesameEnvironmentalFactors = async () => {
     const response = await fetchRequest("/environmental-factors/", "GET");
     const data = await response.json();
     return data;
 }
+
+export const createSesameEnvironmentalFactor = async (data: any) => {
+    const response = await fetchRequest("/environmental-factors/", "POST", data);
+    return await response.json();
+};
+
+export const updateSesameEnvironmentalFactor = async (id: number, data: any) => {
+    const response = await fetchRequest(`/environmental-factors/${id}/`, "PUT", data);
+    return await response.json();
+};
+
+export const deleteSesameEnvironmentalFactor = async (id: number) => {
+    const response = await fetchRequest(`/environmental-factors/${id}/`, "DELETE");
+    return await response.json();
+};
 
 export const fetchSesameInstitutions = async () => {
     const response = await fetchRequest("/institutions/", "GET");

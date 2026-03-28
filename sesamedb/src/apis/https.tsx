@@ -1,4 +1,4 @@
-const API_BASE_URL = '/api/sesame';
+const API_BASE_URL = '/api';
 
 function getCSRFToken() {
   const name = 'csrftoken';
@@ -16,8 +16,9 @@ function getCSRFToken() {
   return cookieValue;
 }
 
-export async function fetchRequest(endpoint: string, method: string, body?: any, autoAddUrl?: boolean) {
-  let url = autoAddUrl ? `${API_BASE_URL}${endpoint}` : `${endpoint}`;
+export async function fetchRequest(endpoint: string, method: string, body?: any, onlyEndPoint?: boolean) {
+  let url = onlyEndPoint ?  `${endpoint}` :`${API_BASE_URL}${endpoint}`;
+  console.log(`Making ${method} request to:`, url);
   const csrfToken = getCSRFToken();
   
   const headers: HeadersInit = {};

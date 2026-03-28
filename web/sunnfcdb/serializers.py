@@ -56,9 +56,18 @@ class GeneSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class GeneExpressionSerializer(serializers.ModelSerializer):
+    gene_name = serializers.CharField(source='gene.name', read_only=True)
+    variety_name = serializers.CharField(source='variety.name', read_only=True)
+    
     class Meta:
         model = GeneExpression
         fields = '__all__'
+        extra_kwargs = {
+            'stage': {'required': False, 'allow_blank': True, 'allow_null': True},
+            'fpkm': {'required': False, 'allow_null': True},
+            'tpm': {'required': False, 'allow_null': True},
+            'sample_id': {'required': False, 'allow_blank': True, 'allow_null': True},
+        }
 
 class EnvironmentalFactorSerializer(serializers.ModelSerializer):
     class Meta:

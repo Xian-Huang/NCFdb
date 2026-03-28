@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link } from "react-router-dom";
 import { Calendar, Eye, ArrowLeft, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { fetchPerillaNewsById } from "../../apis/data_apis";

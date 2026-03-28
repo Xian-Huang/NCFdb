@@ -52,7 +52,7 @@ export function Home() {
             <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 max-w-2xl shadow-2xl">
               <div className="flex items-center gap-2 mb-3">
                 <Sprout className="h-5 w-5 text-green-600" />
-                <span className="text-green-700 font-medium">SinNCFdb</span>
+                <span className="text-green-700 font-medium">SesameDB</span>
               </div>
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
                 {t("home.title")}

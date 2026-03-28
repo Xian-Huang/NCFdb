@@ -1,4 +1,4 @@
-const API_BASE_URL = '/api/';
+const API_BASE_URL = '/api';
 
 function getCSRFToken() {
   const name = 'csrftoken';

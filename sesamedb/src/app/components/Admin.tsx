@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { 
   User, Plus, Edit, Trash2, X, Shield, LogOut,
   FileText, MapPin, Leaf, Dna, Building, Bell,
@@ -11,6 +11,8 @@ import {
   fetchSesameRegions,
   fetchSesameVarieties,
   fetchSesameGenes,
+  fetchSesameGeneExpressions,
+  fetchSesameEnvironmentalFactors,
   fetchSesameInstitutions,
   fetchSesameAnnouncements,
   fetchSesameDownloadFiles,
@@ -29,6 +31,12 @@ import {
   createSesameGene,
   updateSesameGene,
   deleteSesameGene,
+  createSesameGeneExpression,
+  updateSesameGeneExpression,
+  deleteSesameGeneExpression,
+  createSesameEnvironmentalFactor,
+  updateSesameEnvironmentalFactor,
+  deleteSesameEnvironmentalFactor,
   createSesameInstitution,
   updateSesameInstitution,
   deleteSesameInstitution,
@@ -76,8 +84,10 @@ interface VarietyData {
   region: number | null;
   region_name?: string;
   seed_color: string;
-  oil_content: number;
-  maturity_days: number;
+  oil_content: number | null;
+  maturity_days: number | null;
+  yield_per_hectare: number | null;
+  height: number | null;
 }
 
 interface GeneData {
@@ -107,9 +117,12 @@ interface AnnouncementData {
   content: string;
   announcement_type: string;
   author: string;
+  institution: number | null;
   importance: string;
+  attachment_url: string;
   is_published: boolean;
   publish_date: string;
+  expire_date: string;
 }
 
 const dataTypeConfig: Record<DataType, { title: string; icon: React.ElementType; fetchFn: () => Promise<any[]>; createFn: (data: any) => Promise<any>; updateFn: (id: number, data: any) => Promise<any>; deleteFn: (id: number) => Promise<any> }> = {
@@ -153,21 +166,21 @@ const dataTypeConfig: Record<DataType, { title: string; icon: React.ElementType;
     updateFn: updateSesameGene,
     deleteFn: deleteSesameGene,
   },
-  gene_expressions: { 
-    title: "Gene Expressions", 
-    icon: Dna, 
-    fetchFn: async () => [],
-    createFn: async () => {},
-    updateFn: async () => {},
-    deleteFn: async () => {},
+  gene_expressions: {
+    title: "Gene Expressions",
+    icon: Dna,
+    fetchFn: fetchSesameGeneExpressions,
+    createFn: createSesameGeneExpression,
+    updateFn: updateSesameGeneExpression,
+    deleteFn: deleteSesameGeneExpression,
   },
-  environmental_factors: { 
-    title: "Environmental Factors", 
-    icon: Beaker, 
-    fetchFn: async () => [],
-    createFn: async () => {},
-    updateFn: async () => {},
-    deleteFn: async () => {},
+  environmental_factors: {
+    title: "Environmental Factors",
+    icon: Beaker,
+    fetchFn: fetchSesameEnvironmentalFactors,
+    createFn: createSesameEnvironmentalFactor,
+    updateFn: updateSesameEnvironmentalFactor,
+    deleteFn: deleteSesameEnvironmentalFactor,
   },
   institutions: { 
     title: "Institutions", 
@@ -203,6 +216,11 @@ export function Admin() {
   const [editingItem, setEditingItem] = useState<any>(null);
   const [formData, setFormData] = useState<any>({});
   const [searchTerm, setSearchTerm] = useState("");
+  // Foreign key data
+  const [regions, setRegions] = useState<any[]>([]);
+  const [varieties, setVarieties] = useState<any[]>([]);
+  const [genes, setGenes] = useState<any[]>([]);
+  const [institutions, setInstitutions] = useState<any[]>([]);
   const navigate = useNavigate();
 
   const userStr = localStorage.getItem("user");
@@ -210,7 +228,25 @@ export function Admin() {
 
   useEffect(() => {
     fetchData();
+    fetchForeignKeyData();
   }, [activeType]);
+
+  const fetchForeignKeyData = async () => {
+    try {
+      const [regionsData, varietiesData, genesData, institutionsData] = await Promise.all([
+        fetchSesameRegions(),
+        fetchSesameVarieties(),
+        fetchSesameGenes(),
+        fetchSesameInstitutions(),
+      ]);
+      setRegions(regionsData);
+      setVarieties(varietiesData);
+      setGenes(genesData);
+      setInstitutions(institutionsData);
+    } catch (err) {
+      console.error("Failed to fetch foreign key data:", err);
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -250,23 +286,23 @@ export function Admin() {
   const getEmptyForm = () => {
     switch (activeType) {
       case "news":
-        return { title: "", content: "", author: "", category: "", image: "", tags: "", is_published: true };
+        return { title: "", content: "", author: "", category: "", image: "", tags: "", views: 0, is_published: true, publish_time: "" };
       case "changelog":
         return { version: "", title: "", content: "", changes: [], release_date: "", is_published: true };
       case "regions":
         return { name: "", code: "", country: "", climate: "", description: "" };
       case "varieties":
-        return { name: "", variety_code: "", region: null, seed_color: "", oil_content: 0, maturity_days: 0, yield_per_hectare: 0, height: 0, description: "" };
+        return { name: "", variety_code: "", region: null, seed_color: "", oil_content: null, maturity_days: null, yield_per_hectare: null, height: null, description: "" };
       case "genes":
-        return { gene_id: "", name: "", symbol: "", chromosome: "", start_position: 0, end_position: 0, strand: "", gene_type: "", description: "", function: "", pathway: "" };
+        return { gene_id: "", name: "", symbol: "", chromosome: "", start_position: null, end_position: null, strand: "", gene_type: "", description: "", function: "", pathway: "" };
       case "gene_expressions":
-        return { gene: null, variety: null, tissue: "", stage: "", expression_value: 0, fpkm: 0, tpm: 0, sample_id: "" };
+        return { gene: null, variety: null, tissue: "", stage: "", expression_value: null, fpkm: null, tpm: null, sample_id: "" };
       case "environmental_factors":
-        return { name: "", code: "", unit: "", category: "", description: "", min_value: 0, max_value: 0 };
+        return { name: "", code: "", unit: "", category: "", description: "", min_value: null, max_value: null };
       case "institutions":
         return { name: "", abbreviation: "", country: "", city: "", address: "", website: "", email: "", phone: "", contact_person: "", description: "", institution_type: "" };
       case "announcements":
-        return { title: "", content: "", announcement_type: "", author: "", institution: null, importance: "normal", is_published: true, publish_date: "" };
+        return { title: "", content: "", announcement_type: "", author: "", institution: null, importance: "normal", attachment_url: "", views: 0, is_published: true, publish_date: "", expire_date: "" };
       case "downloads":
         return { file_name: "", file_type: "", file_size: "", description: "", download_url: "", category: "", version: "", is_published: true };
       default:
@@ -276,17 +312,152 @@ export function Admin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate form data based on data type
+    const errors: string[] = [];
+
+    // Common validation for all types
+    Object.keys(formData).forEach(key => {
+      const value = formData[key];
+      
+      // Validate max length for string fields
+      if (typeof value === 'string' && value.length > 0) {
+        const maxLengths: Record<string, number> = {
+          gene_id: 50, name: 200, symbol: 50, chromosome: 20, strand: 10,
+          gene_type: 50, pathway: 200, tissue: 100, stage: 100, sample_id: 100,
+          unit: 50, version: 50, file_name: 200, file_type: 50, file_size: 50,
+          climate: 100, seed_color: 50, title: 200, author: 100, phone: 50,
+          contact_person: 100, abbreviation: 50, country: 100, city: 100,
+          announcement_type: 50, code: 50, variety_code: 50, description: 500,
+          category: 50, tags: 200, content: 10000, importance: 20, address: 500
+        };
+        if (maxLengths[key] && value.length > maxLengths[key]) {
+          errors.push(`${key.replace(/_/g, ' ')} exceeds maximum length of ${maxLengths[key]} characters`);
+        }
+      }
+
+      // Validate numeric ranges
+      if (typeof value === 'number' || (!isNaN(parseFloat(value)) && value !== '')) {
+        const numValue = parseFloat(value);
+        
+        // Decimal(10,4) fields: 0-999999.9999
+        if (['expression_value', 'fpkm', 'tpm', 'min_value', 'max_value'].includes(key)) {
+          if (numValue < 0 || numValue > 999999.9999) {
+            errors.push(`${key.replace(/_/g, ' ')} must be between 0 and 999999.9999`);
+          }
+        }
+        
+        // Decimal(5,2) fields: 0-999.99
+        if (key === 'oil_content') {
+          if (numValue < 0 || numValue > 999.99) {
+            errors.push(`${key.replace(/_/g, ' ')} must be between 0 and 999.99`);
+          }
+        }
+        
+        // Decimal(6,2) fields: 0-9999.99
+        if (key === 'height') {
+          if (numValue < 0 || numValue > 9999.99) {
+            errors.push(`${key.replace(/_/g, ' ')} must be between 0 and 9999.99`);
+          }
+        }
+        
+        // Decimal(10,2) fields: 0-99999999.99
+        if (key === 'yield_per_hectare') {
+          if (numValue < 0 || numValue > 99999999.99) {
+            errors.push(`${key.replace(/_/g, ' ')} must be between 0 and 99999999.99`);
+          }
+        }
+        
+        // Integer fields
+        if (key === 'maturity_days') {
+          if (numValue < -2147483648 || numValue > 2147483647) {
+            errors.push(`${key.replace(/_/g, ' ')} must be between -2,147,483,648 and 2,147,483,647`);
+          }
+        }
+        
+        // BigInteger fields
+        if (['start_position', 'end_position'].includes(key)) {
+          if (numValue < 0 || numValue > 9223372036854775807) {
+            errors.push(`${key.replace(/_/g, ' ')} must be between 0 and 9,223,372,036,854,775,807`);
+          }
+        }
+      }
+
+      // Validate email format
+      if (key === 'email' && value && value.length > 0) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+          errors.push('Please enter a valid email address');
+        }
+      }
+
+      // Validate URL format
+      if ((key.includes('_url') || key === 'website') && value && value.length > 0) {
+        try {
+          new URL(value);
+        } catch {
+          errors.push('Please enter a valid URL (e.g., https://example.com)');
+        }
+      }
+    });
+
+    // Type-specific required field validation
+    const requiredFields: Record<string, string[]> = {
+      news: ['title'],
+      changelog: ['version', 'title', 'release_date'],
+      regions: ['name', 'code', 'country'],
+      varieties: ['name', 'variety_code'],
+      genes: ['gene_id', 'name'],
+      gene_expressions: ['gene', 'variety', 'tissue', 'expression_value'],
+      environmental_factors: ['name', 'code', 'unit'],
+      institutions: ['name', 'country'],
+      announcements: ['title', 'content', 'announcement_type'],
+      downloads: ['file_name', 'file_type', 'file_size', 'download_url', 'category']
+    };
+
+    if (requiredFields[activeType]) {
+      requiredFields[activeType].forEach(field => {
+        if (!formData[field] || (typeof formData[field] === 'string' && formData[field].trim() === '')) {
+          errors.push(`${field.replace(/_/g, ' ')} is required`);
+        }
+      });
+    }
+
+    // Show validation errors
+    if (errors.length > 0) {
+      alert('Please fix the following errors:\n\n' + errors.join('\n'));
+      return;
+    }
+
+    // Filter out null and empty string values before submitting
+    const submitData = { ...formData };
+    Object.keys(submitData).forEach(key => {
+      if (submitData[key] === null || submitData[key] === '') {
+        delete submitData[key];
+      }
+    });
+
     const config = dataTypeConfig[activeType];
     try {
       if (editingItem) {
-        await config.updateFn(editingItem.id, formData);
+        // For editing, only include image if it's a File object (new image selected)
+        if (activeType === 'news' && formData.image instanceof File) {
+          await config.updateFn(editingItem.id, submitData);
+        } else if (activeType === 'news' && editingItem.image) {
+          // Keep existing image, don't send image field
+          delete submitData.image;
+          await config.updateFn(editingItem.id, submitData);
+        } else {
+          await config.updateFn(editingItem.id, submitData);
+        }
       } else {
-        await config.createFn(formData);
+        await config.createFn(submitData);
       }
       await fetchData();
       closeModal();
     } catch (err) {
       console.error("Failed to save:", err);
+      alert("Failed to save: " + (err as Error).message);
     }
   };
 
@@ -428,6 +599,68 @@ export function Admin() {
             </tbody>
           </table>
         );
+      case "gene_expressions":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gene</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variety</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tissue</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stage</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expression Value</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as any[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm text-gray-900">{item.gene}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.variety}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.tissue}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.stage || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.expression_value}</td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+      case "environmental_factors":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Min Value</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Max Value</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as any[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.code}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.unit}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.category || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.min_value ?? "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.max_value ?? "-"}</td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
       case "institutions":
         return (
           <table className="min-w-full divide-y divide-gray-200">
@@ -494,12 +727,50 @@ export function Admin() {
             </tbody>
           </table>
         );
+      case "changelog":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Version</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Release Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as ChangelogData[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.version}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.title}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.release_date}</td>
+                  <td className="px-6 py-4">
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
       default:
         return <p className="text-gray-500">No data available</p>;
     }
   };
 
   const renderForm = () => {
+    // Helper function to get placeholder with max length hint
+    const getPlaceholder = (key: string, basePlaceholder: string, maxLength?: number) => {
+      if (maxLength) {
+        return `${basePlaceholder} (max ${maxLength} characters)`;
+      }
+      return basePlaceholder;
+    };
+
     return (
       <form onSubmit={handleSubmit} className="space-y-4">
         {Object.keys(formData).filter(k => k !== 'id' && k !== 'create_time' && k !== 'update_time').map((key) => (
@@ -508,12 +779,18 @@ export function Admin() {
               {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </label>
             {key === 'content' || key === 'description' ? (
-              <textarea
-                value={formData[key] || ''}
-                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
-                rows={4}
-              />
+              <div>
+                <textarea
+                  value={formData[key] || ''}
+                  onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
+                  rows={4}
+                  placeholder={getPlaceholder(key, `Enter ${key.replace(/_/g, ' ')}`, key === 'description' ? 500 : undefined)}
+                />
+                {key === 'description' && (
+                  <p className="text-xs text-gray-500 mt-1">Max 500 characters</p>
+                )}
+              </div>
             ) : key === 'is_active' || key === 'is_published' ? (
               <input
                 type="checkbox"
@@ -521,19 +798,208 @@ export function Admin() {
                 onChange={(e) => setFormData({ ...formData, [key]: e.target.checked })}
                 className="h-4 w-4 text-green-500"
               />
-            ) : key === 'region' || key === 'institution' || key === 'gene' || key === 'variety' ? (
-              <input
-                type="number"
+            ) : key === 'image' && activeType === 'news' ? (
+              <div className="space-y-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setFormData({ ...formData, image: file });
+                    }
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                />
+                {editingItem && formData.image && typeof formData.image === 'string' && (
+                  <div className="text-sm text-gray-600">
+                    Current image: <span className="text-green-600">{formData.image.split('/').pop()}</span>
+                  </div>
+                )}
+                {formData.image && typeof formData.image === 'object' && (
+                  <div className="text-sm text-green-600">
+                    Selected: <span className="font-medium">{(formData.image as File).name}</span>
+                  </div>
+                )}
+              </div>
+            ) : key === 'category' && activeType === 'news' ? (
+              <select
                 value={formData[key] || ''}
-                onChange={(e) => setFormData({ ...formData, [key]: parseInt(e.target.value) || null })}
+                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              >
+                <option value="">Select Category</option>
+                <option value="research">Research</option>
+                <option value="breeding">Breeding</option>
+                <option value="events">Events</option>
+                <option value="publications">Publications</option>
+              </select>
+            ) : key === 'tags' && activeType === 'news' ? (
+              <input
+                type="text"
+                value={formData[key] || ''}
+                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                placeholder="Enter tags separated by commas (e.g., genome, BLAST, annotation)"
+              />
+            ) : key === 'region' || key === 'institution' || key === 'gene' || key === 'variety' ? (
+              <select
+                value={formData[key] ?? ''}
+                onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              >
+                <option value="">Select {key.charAt(0).toUpperCase() + key.slice(1)}</option>
+                {key === 'region' && regions && regions.map((item) => (
+                  <option key={item.id} value={item.id}>{item.name} ({item.code})</option>
+                ))}
+                {key === 'variety' && varieties && varieties.map((item) => (
+                  <option key={item.id} value={item.id}>{item.name} ({item.variety_code})</option>
+                ))}
+                {key === 'gene' && genes && genes.map((item) => (
+                  <option key={item.id} value={item.id}>{item.gene_id} - {item.name}</option>
+                ))}
+                {key === 'institution' && institutions && institutions.map((item) => (
+                  <option key={item.id} value={item.id}>{item.name}</option>
+                ))}
+              </select>
+            ) : key === 'importance' ? (
+              <select
+                value={formData[key] || 'normal'}
+                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              >
+                <option value="low">Low</option>
+                <option value="normal">Normal</option>
+                <option value="high">High</option>
+              </select>
+            ) : key === 'email' ? (
+              <input
+                type="email"
+                value={formData[key] || ''}
+                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                placeholder="Enter email address"
+              />
+            ) : key.includes('_url') || key === 'website' ? (
+              <input
+                type="url"
+                value={formData[key] || ''}
+                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                placeholder="Enter URL"
+              />
+            ) : key.includes('_date') ? (
+              <input
+                type="date"
+                value={formData[key] || ''}
+                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
               />
+            ) : key.includes('value') || key.includes('position') ? (
+              <div>
+                <input
+                  type="number"
+                  value={formData[key] ?? ''}
+                  onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseFloat(e.target.value) })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                  placeholder={`Enter ${key.replace(/_/g, ' ')}`}
+                />
+                {key.includes('expression_value') && (
+                  <p className="text-xs text-gray-500 mt-1">Range: 0-999999.9999 (max 10 digits, 4 decimals)</p>
+                )}
+                {key.includes('fpkm') && (
+                  <p className="text-xs text-gray-500 mt-1">Range: 0-999999.9999 (max 10 digits, 4 decimals)</p>
+                )}
+                {key.includes('tpm') && (
+                  <p className="text-xs text-gray-500 mt-1">Range: 0-999999.9999 (max 10 digits, 4 decimals)</p>
+                )}
+                {key.includes('min_value') && (
+                  <p className="text-xs text-gray-500 mt-1">Range: 0-999999.9999 (max 10 digits, 4 decimals)</p>
+                )}
+                {key.includes('max_value') && (
+                  <p className="text-xs text-gray-500 mt-1">Range: 0-999999.9999 (max 10 digits, 4 decimals)</p>
+                )}
+                {key.includes('start_position') && (
+                  <p className="text-xs text-gray-500 mt-1">Range: 0-9,223,372,036,854,775,807 (BigInteger)</p>
+                )}
+                {key.includes('end_position') && (
+                  <p className="text-xs text-gray-500 mt-1">Range: 0-9,223,372,036,854,775,807 (BigInteger)</p>
+                )}
+              </div>
+            ) : key.includes('days') ? (
+              <div>
+                <input
+                  type="number"
+                  value={formData[key] ?? ''}
+                  onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                  placeholder={`Enter ${key.replace(/_/g, ' ')}`}
+                />
+                {key.includes('maturity_days') && (
+                  <p className="text-xs text-gray-500 mt-1">Range: 0-2,147,483,647 (Integer, days)</p>
+                )}
+              </div>
+            ) : key.includes('oil_content') || key.includes('height') || key.includes('yield') || key.includes('file_size') ? (
+              <div>
+                <input
+                  type="number"
+                  value={formData[key] ?? ''}
+                  onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseFloat(e.target.value) })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                  placeholder={`Enter ${key.replace(/_/g, ' ')}`}
+                />
+                {key.includes('oil_content') && (
+                  <p className="text-xs text-gray-500 mt-1">Range: 0-999.99 (max 5 digits, 2 decimals, %)</p>
+                )}
+                {key.includes('yield_per_hectare') && (
+                  <p className="text-xs text-gray-500 mt-1">Range: 0-99999999.99 (max 10 digits, 2 decimals, kg/ha)</p>
+                )}
+                {key.includes('height') && (
+                  <p className="text-xs text-gray-500 mt-1">Range: 0-9999.99 (max 6 digits, 2 decimals, cm)</p>
+                )}
+              </div>
             ) : (
               <input
                 type="text"
                 value={formData[key] || ''}
                 onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                placeholder={(() => {
+                  const basePlaceholder = `Enter ${key.replace(/_/g, ' ')}`;
+                  // Add max length hints for specific fields
+                  if (key === 'gene_id') return `${basePlaceholder} (max 50 characters)`;
+                  if (key === 'name' && activeType === 'genes') return `${basePlaceholder} (max 200 characters)`;
+                  if (key === 'name' && activeType === 'varieties') return `${basePlaceholder} (max 100 characters)`;
+                  if (key === 'name' && activeType === 'regions') return `${basePlaceholder} (max 100 characters)`;
+                  if (key === 'code' && activeType === 'regions') return `${basePlaceholder} (max 50 characters, unique)`;
+                  if (key === 'variety_code') return `${basePlaceholder} (max 50 characters, unique)`;
+                  if (key === 'symbol') return `${basePlaceholder} (max 50 characters)`;
+                  if (key === 'chromosome') return `${basePlaceholder} (max 20 characters)`;
+                  if (key === 'strand') return `${basePlaceholder} (max 10 characters, e.g., + or -)`;
+                  if (key === 'gene_type') return `${basePlaceholder} (max 50 characters)`;
+                  if (key === 'pathway') return `${basePlaceholder} (max 200 characters)`;
+                  if (key === 'tissue') return `${basePlaceholder} (max 100 characters)`;
+                  if (key === 'stage') return `${basePlaceholder} (max 100 characters)`;
+                  if (key === 'sample_id') return `${basePlaceholder} (max 100 characters)`;
+                  if (key === 'unit') return `${basePlaceholder} (max 50 characters)`;
+                  if (key === 'version') return `${basePlaceholder} (max 50 characters)`;
+                  if (key === 'file_name') return `${basePlaceholder} (max 200 characters)`;
+                  if (key === 'file_type') return `${basePlaceholder} (max 50 characters)`;
+                  if (key === 'file_size') return `${basePlaceholder} (max 50 characters)`;
+                  if (key === 'climate') return `${basePlaceholder} (max 100 characters)`;
+                  if (key === 'seed_color') return `${basePlaceholder} (max 50 characters)`;
+                  if (key === 'title') return `${basePlaceholder} (max 200 characters)`;
+                  if (key === 'author') return `${basePlaceholder} (max 100 characters)`;
+                  if (key === 'phone') return `${basePlaceholder} (max 50 characters)`;
+                  if (key === 'contact_person') return `${basePlaceholder} (max 100 characters)`;
+                  if (key === 'abbreviation') return `${basePlaceholder} (max 50 characters)`;
+                  if (key === 'country') return `${basePlaceholder} (max 100 characters)`;
+                  if (key === 'city') return `${basePlaceholder} (max 100 characters)`;
+                  if (key === 'address') return `${basePlaceholder} (max 500 characters)`;
+                  if (key === 'announcement_type') return `${basePlaceholder} (max 50 characters)`;
+                  if (key === 'importance') return `${basePlaceholder} (max 20 characters)`;
+                  return basePlaceholder;
+                })()}
               />
             )}
           </div>
@@ -556,7 +1022,7 @@ export function Admin() {
           <div className="flex items-center gap-3">
             <Shield className="h-8 w-8" />
             <div>
-              <h1 className="text-xl font-bold">SinNCFdb</h1>
+              <h1 className="text-xl font-bold">SesameDB</h1>
               <p className="text-xs text-green-200">Admin Panel</p>
             </div>
           </div>

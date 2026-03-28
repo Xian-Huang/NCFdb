@@ -1,6 +1,6 @@
 import { Calendar, ArrowLeft, Tag } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useParams } from "react-router-dom";
 import { fetchChangelog } from "../../apis/data_apis";
 
 interface ChangelogItem {

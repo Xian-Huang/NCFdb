@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link } from "react-router-dom";
 import { Calendar, Eye, ArrowLeft, User } from "lucide-react";
 import { fetchSafflowerNewsById } from "../../apis/data_apis";
 

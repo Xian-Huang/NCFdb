@@ -21,12 +21,42 @@ export const fetchPerillaGenes = async () => {
 };
 
 export const fetchPerillaGeneExpressions = async () => {
-  const response = await fetchRequest("/api/gene-expressions/", "GET"); 
+  const response = await fetchRequest("/api/gene-expressions/", "GET");
+  return await response.json();
+};
+
+export const createPerillaGeneExpression = async (data: any) => {
+  const response = await fetchRequest("/api/gene-expressions/", "POST", data);
+  return await response.json();
+};
+
+export const updatePerillaGeneExpression = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/gene-expressions/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deletePerillaGeneExpression = async (id: number) => {
+  const response = await fetchRequest(`/api/gene-expressions/${id}/`, "DELETE");
   return await response.json();
 };
 
 export const fetchPerillaEnvironmentalFactors = async () => {
   const response = await fetchRequest("/api/environmental-factors/", "GET");
+  return await response.json();
+};
+
+export const createPerillaEnvironmentalFactor = async (data: any) => {
+  const response = await fetchRequest("/api/environmental-factors/", "POST", data);
+  return await response.json();
+};
+
+export const updatePerillaEnvironmentalFactor = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/environmental-factors/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deletePerillaEnvironmentalFactor = async (id: number) => {
+  const response = await fetchRequest(`/api/environmental-factors/${id}/`, "DELETE");
   return await response.json();
 };
 

@@ -25,8 +25,38 @@ export const fetchFlaxGeneExpressions = async () => {
   return await response.json();
 };
 
+export const createFlaxGeneExpression = async (data: any) => {
+  const response = await fetchRequest("/api/gene-expressions/", "POST", data);
+  return await response.json();
+};
+
+export const updateFlaxGeneExpression = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/gene-expressions/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteFlaxGeneExpression = async (id: number) => {
+  const response = await fetchRequest(`/api/gene-expressions/${id}/`, "DELETE");
+  return await response.json();
+};
+
 export const fetchFlaxEnvironmentalFactors = async () => {
   const response = await fetchRequest("/api/environmental-factors/", "GET");
+  return await response.json();
+};
+
+export const createFlaxEnvironmentalFactor = async (data: any) => {
+  const response = await fetchRequest("/api/environmental-factors/", "POST", data);
+  return await response.json();
+};
+
+export const updateFlaxEnvironmentalFactor = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/environmental-factors/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteFlaxEnvironmentalFactor = async (id: number) => {
+  const response = await fetchRequest(`/api/environmental-factors/${id}/`, "DELETE");
   return await response.json();
 };
 

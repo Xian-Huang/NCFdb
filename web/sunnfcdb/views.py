@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import *
-from .serializers import DownloadFileSerializer, NewsSerializer, ChangelogSerializer
+from .serializers import *
 from rest_framework import serializers
 
 class RegionSerializer(serializers.ModelSerializer):
@@ -503,7 +503,3 @@ class AnnouncementDetailView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Announcement.DoesNotExist:
             return Response({"error": "Announcement not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        if request.user.is_authenticated:
-            return Response(UserSerializer(request.user).data)
-        return Response({"error": "Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)

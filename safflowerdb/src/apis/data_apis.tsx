@@ -25,8 +25,38 @@ export const fetchSafflowerGeneExpressions = async () => {
   return await response.json();
 };
 
+export const createSafflowerGeneExpression = async (data: any) => {
+  const response = await fetchRequest("/api/gene-expressions/", "POST", data);
+  return await response.json();
+};
+
+export const updateSafflowerGeneExpression = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/gene-expressions/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteSafflowerGeneExpression = async (id: number) => {
+  const response = await fetchRequest(`/api/gene-expressions/${id}/`, "DELETE");
+  return await response.json();
+};
+
 export const fetchSafflowerEnvironmentalFactors = async () => {
   const response = await fetchRequest("/api/environmental-factors/", "GET");
+  return await response.json();
+};
+
+export const createSafflowerEnvironmentalFactor = async (data: any) => {
+  const response = await fetchRequest("/api/environmental-factors/", "POST", data);
+  return await response.json();
+};
+
+export const updateSafflowerEnvironmentalFactor = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/environmental-factors/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteSafflowerEnvironmentalFactor = async (id: number) => {
+  const response = await fetchRequest(`/api/environmental-factors/${id}/`, "DELETE");
   return await response.json();
 };
 

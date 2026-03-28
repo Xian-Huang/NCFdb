@@ -1,5 +1,5 @@
 import { ArrowRight, Database, Users, BookOpen, Beaker, Flower2 } from "lucide-react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
