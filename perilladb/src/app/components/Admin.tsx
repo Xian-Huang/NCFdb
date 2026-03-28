@@ -750,11 +750,41 @@ export function Admin() {
                   />
                 </div>
               )
-              
+
+              : key === 'image' && activeType === 'news' ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    🖼️
+                  </span>
+                  <input
+                    id={key}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setFormData({ ...formData, [key]: file });
+                      }
+                    }}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                  />
+                  {formData[key] && typeof formData[key] === 'string' && (
+                    <div className="mt-2 text-sm text-gray-600">
+                      Current image: {formData[key].split('/').pop()}
+                    </div>
+                  )}
+                  {formData[key] && typeof formData[key] === 'object' && (
+                    <div className="mt-2 text-sm text-gray-600">
+                      Selected image: {formData[key].name}
+                    </div>
+                  )}
+                </div>
+              )
+
               : key === 'is_active' || key === 'is_published' ? (
                 <div className="flex items-center space-x-3">
-                  <label 
-                    htmlFor={key} 
+                  <label
+                    htmlFor={key}
                     className="text-sm text-gray-600 cursor-pointer flex-1"
                   >
                     {key === 'is_active' ? 'Active' : 'Published'}
@@ -767,51 +797,109 @@ export function Admin() {
                       onChange={(e) => setFormData({ ...formData, [key]: e.target.checked })}
                       className="sr-only"
                     />
-                    <span 
+                    <span
                       className={`inline-block w-12 h-6 rounded-full transition duration-200 ease-in-out ${formData[key] ? 'bg-purple-500' : 'bg-gray-200'}`}
                     >
-                      <span 
+                      <span
                         className={`inline-block w-5 h-5 mt-0.5 ml-0.5 rounded-full bg-white transition duration-200 ease-in-out transform ${formData[key] ? 'translate-x-6' : 'translate-x-0'}`}
                       />
                     </span>
                   </div>
                 </div>
               )
-              
+
+              : key === 'category' && activeType === 'news' ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    📰
+                  </span>
+                  <select
+                    id={key}
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                  >
+                    <option value="">Select Category</option>
+                    <option value="research">Research</option>
+                    <option value="breeding">Breeding</option>
+                    <option value="events">Events</option>
+                    <option value="publications">Publications</option>
+                  </select>
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                    ▼
+                  </span>
+                </div>
+              )
+
+              : key === 'tags' && activeType === 'news' ? (
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                    🏷️
+                  </span>
+                  <input
+                    id={key}
+                    type="text"
+                    value={formData[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    placeholder="Enter tags separated by commas"
+                  />
+                </div>
+              )
 
               : key === 'region' || key === 'institution' || key === 'gene' || key === 'variety' ? (
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
                     #
                   </span>
-                  <input
+                  <select
                     id={key}
-                    type="number"
-                    value={formData[key] || ''}
-                    onChange={(e) => setFormData({ ...formData, [key]: parseInt(e.target.value) || null })}
-                    className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
-                    placeholder={`${key.replace(/_/g, ' ').toLowerCase()} ID`}
-                  />
+                    value={formData[key] ?? ''}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                  >
+                    <option value="">Select {key.charAt(0).toUpperCase() + key.slice(1)}</option>
+                    {key === 'region' && regions && regions.map((item) => (
+                      <option key={item.id} value={item.id}>{item.name} ({item.code})</option>
+                    ))}
+                    {key === 'variety' && varieties && varieties.map((item) => (
+                      <option key={item.id} value={item.id}>{item.name} ({item.variety_code})</option>
+                    ))}
+                    {key === 'gene' && genes && genes.map((item) => (
+                      <option key={item.id} value={item.id}>{item.gene_id} - {item.name}</option>
+                    ))}
+                    {key === 'institution' && institutions && institutions.map((item) => (
+                      <option key={item.id} value={item.id}>{item.name}</option>
+                    ))}
+                  </select>
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                    ▼
+                  </span>
                 </div>
               )
 
-              : key.includes('password') ? (
+              : key === 'importance' ? (
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                    ••••
+                    ⭐
                   </span>
-                  <input
+                  <select
                     id={key}
-                    type="password"
-                    value={formData[key] || ''}
+                    value={formData[key] || 'normal'}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
-                    placeholder="Enter password"
-                  />
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                  >
+                    <option value="low">Low</option>
+                    <option value="normal">Normal</option>
+                    <option value="high">High</option>
+                  </select>
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                    ▼
+                  </span>
                 </div>
               )
-              
-              : key.includes('email') ? (
+
+              : key === 'email' ? (
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
                     @
@@ -927,16 +1015,82 @@ export function Admin() {
                 </div>
               )
               
-              : key.includes('content') || key.includes('value') || key.includes('days') || key.includes('size') || key.includes('height') || key.includes('yield') ? ( // Number input for numeric fields
-                <div className="relative">
-                  <input
-                    id={key}
-                    type="number"
-                    value={formData[key] ?? ''}
-                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseFloat(e.target.value) })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
-                    placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
-                  />
+              : key.includes('value') || key.includes('position') ? (
+                <div>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                      #
+                    </span>
+                    <input
+                      id={key}
+                      type="number"
+                      value={formData[key] ?? ''}
+                      onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseFloat(e.target.value) })}
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                      placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
+                    />
+                  </div>
+                  {key.includes('expression_value') && (
+                    <p className="text-xs text-gray-500 mt-1">Range: 0-999999.9999 (max 10 digits, 4 decimals)</p>
+                  )}
+                  {key.includes('fpkm') && (
+                    <p className="text-xs text-gray-500 mt-1">Range: 0-999999.9999 (max 10 digits, 4 decimals)</p>
+                  )}
+                  {key.includes('tpm') && (
+                    <p className="text-xs text-gray-500 mt-1">Range: 0-999999.9999 (max 10 digits, 4 decimals)</p>
+                  )}
+                  {key.includes('start_position') && (
+                    <p className="text-xs text-gray-500 mt-1">Range: 0-9,223,372,036,854,775,807 (BigInteger)</p>
+                  )}
+                  {key.includes('end_position') && (
+                    <p className="text-xs text-gray-500 mt-1">Range: 0-9,223,372,036,854,775,807 (BigInteger)</p>
+                  )}
+                </div>
+              )
+              : key.includes('days') ? (
+                <div>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                      #
+                    </span>
+                    <input
+                      id={key}
+                      type="number"
+                      value={formData[key] ?? ''}
+                      onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                      placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
+                    />
+                  </div>
+                  {key.includes('maturity_days') && (
+                    <p className="text-xs text-gray-500 mt-1">Range: 0-2,147,483,647 (Integer, days)</p>
+                  )}
+                </div>
+              )
+              : key.includes('oil_content') || key.includes('height') || key.includes('yield') || key.includes('file_size') ? (
+                <div>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                      #
+                    </span>
+                    <input
+                      id={key}
+                      type="number"
+                      value={formData[key] ?? ''}
+                      onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseFloat(e.target.value) })}
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                      placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
+                    />
+                  </div>
+                  {key.includes('oil_content') && (
+                    <p className="text-xs text-gray-500 mt-1">Range: 0-999.99 (max 5 digits, 2 decimals, %)</p>
+                  )}
+                  {key.includes('yield_per_hectare') && (
+                    <p className="text-xs text-gray-500 mt-1">Range: 0-99999999.99 (max 10 digits, 2 decimals, kg/ha)</p>
+                  )}
+                  {key.includes('height') && (
+                    <p className="text-xs text-gray-500 mt-1">Range: 0-9999.99 (max 6 digits, 2 decimals, cm)</p>
+                  )}
                 </div>
               )
               : (
