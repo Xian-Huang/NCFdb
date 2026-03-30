@@ -37,7 +37,10 @@ export async function fetchRequest(endpoint: string, method: string, body?: any,
   
   if (body) {
     if (method.toUpperCase() === 'GET') {
-      url = `${url}?${new URLSearchParams(body).toString()}`;
+      const params = new URLSearchParams(body).toString();
+      if (params) {
+        url = `${url}?${params}`;
+      }
     } else if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase())) {
       // 检查是否包含文件
       const hasFile = Object.values(body).some(value => value instanceof File);

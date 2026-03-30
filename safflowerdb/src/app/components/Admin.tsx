@@ -752,6 +752,40 @@ export function Admin() {
             </tbody>
           </table>
         );
+      case "downloads":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">File Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Size</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Version</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as any[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.file_name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.file_type}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.file_size}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.category}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.version}</td>
+                  <td className="px-6 py-4">
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
       default:
         return <p className="text-gray-500">No data available</p>;
     }
