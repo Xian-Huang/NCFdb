@@ -1,0 +1,26 @@
+{
+  "name": "ncfdb",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev",
+    "dev:all": "pnpm -r --parallel run dev",
+    "dev:flax": "pnpm --filter flaxdb run dev",
+    "dev:perilla": "pnpm --filter perilladb run dev",
+    "dev:safflower": "pnpm --filter safflowerdb run dev",
+    "dev:sesame": "pnpm --filter sesamedb run dev",
+    "dev:sunnfc": "pnpm --filter sunnfcdb run dev",
+    "build": "pnpm -r run build",
+    "build:all": "pnpm -r run build",
+    "build:flax": "pnpm --filter flaxdb run build",
+    "build:perilla": "pnpm --filter perilladb run build",
+    "build:safflower": "pnpm --filter safflowerdb run build",
+    "build:sesame": "pnpm --filter sesamedb run build",
+    "build:sunnfc": "pnpm --filter sunnfcdb run build"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "6.3.5"
+    }
+  }
+}

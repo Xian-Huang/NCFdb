@@ -1,6 +1,5 @@
 node_modules
 venv
-dist
 *-lock.json
 web/media
 *.pyc
