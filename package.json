@@ -19,6 +19,14 @@
     "build:sunnfc": "pnpm --filter sunnfcdb run build"
   },
   "pnpm": {
+    "packages": [
+      "flaxdb",
+      "perilladb",
+      "safflowerdb",
+      "sesamedb",
+      "sunnfcdb",
+      "packages/*"
+    ],
     "overrides": {
       "vite": "6.3.5"
     }
