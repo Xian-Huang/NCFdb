@@ -1,0 +1,7 @@
+packages:
+  - 'flaxdb'
+  - 'perilladb'
+  - 'safflowerdb'
+  - 'sesamedb'
+  - 'sunnfcdb'
+  - 'packages/*'
