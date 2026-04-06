@@ -11,8 +11,8 @@ import { Admin } from "./components/Admin";
 import { Login } from "./components/Login";
 import { ChangelogDetail } from "./components/ChangelogDetail";
 import { NotFound } from "./components/NotFound";
+import { JBrowser } from "../../../packages/ui/src";
 import { useState, createContext, useContext, ReactNode } from "react";
-import JBrowser from "../../../packages/ui/src/JBrowser";
 
 interface User {
   username: string;
@@ -72,6 +72,7 @@ export const router = createBrowserRouter([
       { path: "news/:id", Component: NewsDetail },
       { path: "events", Component: Events },
       { path: "tools", Component: Tools },
+      { path: "jbrowse", Component: JBrowser },
       { path: "contact", Component: Contact },
       { path: "login", Component: LoginWrapper },
       { path: "admin", Component: AdminWrapper },

@@ -1,8 +1,10 @@
 import { Search, Code, BarChart3, Microscope, Database, FileSearch } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export function Tools() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   
   const tools = [
     {
@@ -60,6 +62,7 @@ export function Tools() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {tools.map((tool, index) => {
           const Icon = tool.icon;
+          const isBrowser = tool.name === t("tools.browser");
           return (
             <div
               key={index}
@@ -91,7 +94,10 @@ export function Tools() {
                   </span>
                 ))}
               </div>
-              <button className="w-full px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm">
+              <button
+                onClick={() => isBrowser ? navigate("/jbrowse") : null}
+                className="w-full px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm"
+              >
                 {t("tools.launch")}
               </button>
             </div>
