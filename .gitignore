@@ -5,3 +5,8 @@ web/media
 *.pyc
 __pycache__
 web/.env
+.vscide
+.cache
+dist
+build
+.qwen
