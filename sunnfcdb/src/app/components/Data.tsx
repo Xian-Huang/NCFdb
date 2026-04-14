@@ -1,4 +1,4 @@
-import { Download, Search, Database, FileText } from "lucide-react";
+import { Download, Search, Database, FileText, Dna } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { fetchDownloadFiles } from "../../apis/data_apis";
@@ -57,6 +57,7 @@ export function Data() {
           <div className="text-sm text-gray-600">{t("data.stats.downloads")}</div>
         </div>
         <div className="bg-white p-4 rounded-lg shadow border border-gray-200 text-center">
+          <Dna className="h-8 w-8 text-amber-500 mx-auto mb-2" />
           <div className="text-2xl font-bold">52,232</div>
           <div className="text-sm text-gray-600">{t("data.stats.genes")}</div>
         </div>

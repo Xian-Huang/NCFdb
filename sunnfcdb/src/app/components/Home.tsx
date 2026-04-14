@@ -43,7 +43,7 @@ export function Home() {
       {/* Hero Section */}
       <section className="relative h-[500px] overflow-hidden">
         <ImageWithFallback
-          src="https://images.unsplash.com/photo-1712338481983-e742ac6f260d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdW5mbG93ZXIlMjBjbG9zZSUyMHVwJTIweWVsbG93fGVufDF8fHx8MTc3MTk5OTE4NHww&ixlib=rb-4.1.0&q=80&w=1080"
+          src="/hero-bg.jpg"
           alt="Sunflower"
           className="w-full h-full object-cover"
         />

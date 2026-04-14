@@ -43,8 +43,8 @@ export function Home() {
       {/* Hero Section - Centered */}
       <section className="relative h-[450px] overflow-hidden mb-8 rounded-2xl shadow-2xl">
         <ImageWithFallback
-          src="https://images.unsplash.com/photo-1597848212624-a19eb35e2651?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1200"
-          alt="Perilla"
+          src="/hero-bg.jpg"
+          alt="Perilla leaves"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-purple-900/70 via-purple-800/50 to-purple-900/70 flex items-center justify-center">

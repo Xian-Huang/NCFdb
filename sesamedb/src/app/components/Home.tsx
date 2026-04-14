@@ -43,8 +43,8 @@ export function Home() {
       {/* Hero Section - Card Overlay Style */}
       <section className="relative h-[400px] overflow-hidden mb-8 rounded-2xl shadow-2xl">
         <ImageWithFallback
-          src="https://images.unsplash.com/photo-1587771613366-849e202d2e21?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1200"
-          alt="Sesame"
+          src="/hero-bg.jpg"
+          alt="Sesame seeds and plant"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-green-900/90 via-green-900/40 to-transparent flex items-end">

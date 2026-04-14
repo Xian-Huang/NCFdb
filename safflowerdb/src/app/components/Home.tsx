@@ -44,8 +44,8 @@ export function Home() {
       <section className="relative h-[380px] overflow-hidden mb-8 rounded-xl shadow-xl">
         <div className="absolute inset-0">
           <ImageWithFallback
-            src="https://images.unsplash.com/photo-1595854341625-f71831d39e71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1200"
-            alt="Safflower"
+            src="/hero-bg.jpg"
+            alt="Safflower red flowers"
             className="w-full h-full object-cover"
           />
         </div>

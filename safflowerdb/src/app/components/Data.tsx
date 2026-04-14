@@ -1,4 +1,4 @@
-import { Download, Search, Database, FileText } from "lucide-react";
+import { Download, Search, Database, FileText, Dna } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { fetchSafflowerDownloadFiles } from "../../apis/data_apis";
@@ -59,6 +59,7 @@ export function Data() {
           <div className="text-xs text-gray-500">{t("data.stats.downloads")}</div>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
+          <Dna className="h-6 w-6 text-red-500 mx-auto mb-2" />
           <div className="text-xl font-bold text-gray-800">35,232</div>
           <div className="text-xs text-gray-500">{t("data.stats.genes")}</div>
         </div>

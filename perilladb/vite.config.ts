@@ -13,6 +13,12 @@ export default defineConfig({
   server: {
     port: 3004,
     proxy: {
+      '/api/media': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
       '/api/users': {
         target: 'http://localhost:8000',
         changeOrigin: true,
