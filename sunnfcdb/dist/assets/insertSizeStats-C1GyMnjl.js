@@ -1,0 +1,1 @@
+import{bf as l}from"./index-ixS01Ok_.js";function p(s){const t=s.length,n=l(s);let c=0;for(let r=0;r<t;r++){const a=s[r];c+=a*a}const o=n/t,e=Math.sqrt((t*c-n*n)/(t*t)),u=o+3*e,g=o-3*e;return{upper:u,lower:g,avg:o,sd:e}}export{p as g};

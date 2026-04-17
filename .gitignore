@@ -7,6 +7,5 @@ __pycache__
 web/.env
 .vscode
 .cache
-dist
 build
 .qwen

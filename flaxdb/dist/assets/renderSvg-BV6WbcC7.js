@@ -1,0 +1,1 @@
+import{bA as a,bB as o,j as s,b7 as i}from"./index-D3PUCfrP.js";async function d(n,e){const r=a(n),t=await o({...r,exportSVG:e,theme:e.theme||r.renderProps.theme});return s.jsx(i,{rendering:t})}export{d as renderSvg};
