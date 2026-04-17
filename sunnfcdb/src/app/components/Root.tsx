@@ -8,7 +8,7 @@ export function Root() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
       <Navigation />
-      <main className="container mx-auto px-4 py-6">
+      <main>
         <Outlet />
       </main>
       <footer className="bg-amber-800 text-white py-8 mt-12">
