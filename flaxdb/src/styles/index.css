@@ -9,3 +9,25 @@ body {
   background-color: var(--background);
   color: var(--foreground);
 }
+
+@keyframes scroll-y {
+  0%, 20% {
+    transform: translateY(0);
+  }
+  25%, 45% {
+    transform: translateY(-2rem);
+  }
+  50%, 70% {
+    transform: translateY(-4rem);
+  }
+  75%, 95% {
+    transform: translateY(-6rem);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.animate-scroll-y {
+  animation: scroll-y 12s ease-in-out infinite;
+}

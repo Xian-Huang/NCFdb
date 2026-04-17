@@ -30,7 +30,8 @@ urlpatterns = [
     
     path('news/', views.NewsView.as_view(), name='news-list'),
     path('news/<int:pk>/', views.NewsDetailView.as_view(), name='news-detail'),
-    
+    path('news/scrolling/', views.ScrollingNewsView.as_view(), name='scrolling-news'),
+
     path('changelogs/', views.ChangelogView.as_view(), name='changelog-list'),
     path('changelogs/<int:pk>/', views.ChangelogDetailView.as_view(), name='changelog-detail'),
 ]

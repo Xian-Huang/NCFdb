@@ -444,6 +444,13 @@ class NewsView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ScrollingNewsView(APIView):
+    def get(self, request, format=None):
+        news = News.objects.filter(is_published=True, is_scrolling=True)
+        serializer = NewsSerializer(news, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
 class NewsDetailView(APIView):
     def get(self, request, pk, format=None):
         try:

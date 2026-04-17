@@ -1,6 +1,7 @@
 import { Calendar, ArrowLeft, Tag } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
+import { fetchSesameChangelogById } from "../../apis/data_apis";
 
 interface ChangelogItem {
   id: number;
@@ -19,8 +20,7 @@ export function ChangelogDetail() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/sesame/changelogs/${id}/`)
-      .then((res) => res.json())
+    fetchSesameChangelogById(parseInt(id))
       .then((data) => {
         setChangelog(data);
         setLoading(false);

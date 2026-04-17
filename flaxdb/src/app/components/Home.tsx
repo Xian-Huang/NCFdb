@@ -1,9 +1,17 @@
-import { ArrowRight, Database, Users, BookOpen, FlaskConical, Leaf, Dna } from "lucide-react";
+import { ArrowRight, Database, Users, BookOpen, FlaskConical, Leaf, Dna, Megaphone } from "lucide-react";
 import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { fetchChangelog } from "../../apis/data_apis";
+import { fetchChangelog, fetchFlaxScrollingNews } from "../../apis/data_apis";
+
+interface ScrollingNewsItem {
+  id: number;
+  title: string;
+  content: string;
+  category: string;
+  publish_time: string;
+}
 
 interface ChangelogItem {
   id: number;
@@ -18,7 +26,9 @@ interface ChangelogItem {
 export function Home() {
   const { t } = useTranslation();
   const [changelog, setChangelog] = useState<ChangelogItem[]>([]);
+  const [scrollingNews, setScrollingNews] = useState<ScrollingNewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
 
   useEffect(() => {
     fetchChangelog()
@@ -30,7 +40,26 @@ export function Home() {
         console.error("Failed to fetch changelog:", err);
         setLoading(false);
       });
+
+    fetchFlaxScrollingNews()
+      .then((data: ScrollingNewsItem[]) => {
+        setScrollingNews(data);
+      })
+      .catch((err: any) => {
+        console.error("Failed to fetch scrolling news:", err);
+      });
   }, []);
+
+  // Auto rotate news every 3 seconds
+  useEffect(() => {
+    if (scrollingNews.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentNewsIndex((prevIndex) => (prevIndex + 1) % scrollingNews.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [scrollingNews.length]);
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -82,6 +111,33 @@ export function Home() {
           <div className="w-1/2"></div>
         </div>
       </section>
+
+      {/* Scrolling News Bar */}
+      {scrollingNews.length > 0 && (
+        <section className="mb-6 bg-blue-50 border border-blue-200 rounded-xl overflow-hidden">
+          <div className="flex items-center px-4 py-2 bg-blue-500 text-white">
+            <Megaphone className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="text-sm font-medium">最新通知</span>
+          </div>
+          <div className="relative h-8 overflow-hidden">
+            <div className="absolute inset-0 transition-all duration-500 ease-in-out">
+              {scrollingNews.map((news, index) => (
+                <div
+                  key={news.id}
+                  className={`h-8 flex items-center px-4 text-sm text-gray-700 hover:bg-blue-100 cursor-pointer transition-colors ${index === currentNewsIndex ? 'block' : 'hidden'}`}
+                >
+                  {news.category && (
+                    <span className="px-2 py-0.5 bg-blue-200 text-blue-800 text-xs rounded mr-2 flex-shrink-0">
+                      {news.category}
+                    </span>
+                  )}
+                  <span className="truncate">{news.title}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Stats Section - Bento Grid */}
       <section className="mb-8">

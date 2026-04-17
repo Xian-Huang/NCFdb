@@ -281,7 +281,7 @@ export function Admin() {
       case "users":
         return { username: "", email: "", password: "", first_name: "", last_name: "", is_active: true, is_staff: false };
       case "news":
-        return { title: "", content: "", author: "", category: "", image: "", tags: "", is_published: true };
+        return { title: "", content: "", author: "", category: "", image: "", tags: "", is_published: true, is_scrolling: false };
       case "changelog":
         return { version: "", title: "", content: "", changes: [], release_date: "", is_published: true };
       case "regions":
@@ -928,11 +928,11 @@ export function Admin() {
     ];
 
     return (
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Form Fields Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Form Fields - Single Column */}
+        <div className="grid grid-cols-1 gap-6">
           {formFields.map((key) => (
-            <div key={key} className="space-y-3">
+            <div key={key} className="space-y-2">
               <div className="flex items-center justify-between">
                 <label 
                   htmlFor={key} 
@@ -990,31 +990,32 @@ export function Admin() {
                       )}
                     </div>
                   );
-                } else if (key === 'is_active' || key === 'is_published') {
+                } else if (key === 'is_active' || key === 'is_published' || key === 'is_scrolling') {
+                  const isChecked = formData[key] === true || formData[key] === 'true';
                   return (
                     <div className="flex items-center space-x-3">
-                      <label 
-                        htmlFor={key} 
+                      <label
+                        htmlFor={key}
                         className="text-sm text-gray-600 cursor-pointer flex-1"
                       >
-                        {key === 'is_active' ? 'Active' : 'Published'}
+                        {key === 'is_active' ? 'Active' : key === 'is_published' ? 'Published' : 'Scrolling Display'}
                       </label>
-                      <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out">
+                      <label htmlFor={key} className="relative inline-block w-12 h-6 cursor-pointer">
                         <input
                           id={key}
                           type="checkbox"
-                          checked={formData[key] || false}
+                          checked={isChecked}
                           onChange={(e) => setFormData({ ...formData, [key]: e.target.checked })}
-                          className="sr-only"
+                          className="sr-only peer"
                         />
-                        <span 
-                          className={`inline-block w-12 h-6 rounded-full transition duration-200 ease-in-out ${formData[key] ? 'bg-amber-500' : 'bg-gray-200'}`}
+                        <span
+                          className={`absolute inset-0 rounded-full transition duration-200 ease-in-out ${isChecked ? 'bg-amber-500' : 'bg-gray-200'}`}
                         >
-                          <span 
-                            className={`inline-block w-5 h-5 mt-0.5 ml-0.5 rounded-full bg-white transition duration-200 ease-in-out transform ${formData[key] ? 'translate-x-6' : 'translate-x-0'}`}
+                          <span
+                            className={`absolute left-0.5 top-0.5 w-5 h-5 rounded-full bg-white transition duration-200 ease-in-out transform ${isChecked ? 'translate-x-6' : 'translate-x-0'}`}
                           />
                         </span>
-                      </div>
+                      </label>
                     </div>
                   );
                 } else if (key === 'region') {
@@ -1348,15 +1349,15 @@ export function Admin() {
         
         {/* Form Actions */}
         <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-gray-200">
-          <button 
-            type="button" 
-            onClick={closeModal} 
+          <button
+            type="button"
+            onClick={closeModal}
             className="px-8 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 flex-1 sm:flex-none font-medium shadow-sm hover:shadow"
           >
             Cancel
           </button>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="px-8 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-200 flex-1 sm:flex-none font-medium shadow-sm hover:shadow"
           >
             {editingItem ? 'Save Changes' : 'Add'}
@@ -1406,7 +1407,6 @@ export function Admin() {
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 bg-gray-100 p-6 ml-64">
         <div className="bg-white rounded-lg shadow">
             <div className="p-4 border-b flex items-center justify-between">

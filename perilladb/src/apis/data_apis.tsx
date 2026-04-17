@@ -75,6 +75,11 @@ export const fetchPerillaNews = async () => {
   return await response.json();
 };
 
+export const fetchPerillaScrollingNews = async () => {
+  const response = await fetchRequest("/api/news/scrolling/", "GET");
+  return await response.json();
+};
+
 export const fetchPerillaNewsById = async (id: number) => {
   const response = await fetchRequest(`/api/news/${id}/`, "GET");
   return await response.json();

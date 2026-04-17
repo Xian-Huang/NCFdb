@@ -25,6 +25,11 @@ export const fetchNewsDetail = async (id: number) => {
     return data;
 }
 
+export const fetchScrollingNews = async () => {
+    const response = await fetchRequest("/api/news/scrolling/", "GET");
+    return response.json();
+}
+
 export const fetchChangelogDetail = async (id: number) => {
     const response = await fetchRequest(`/api/changelog/${id}/`, "GET");
     const data = await response.json();

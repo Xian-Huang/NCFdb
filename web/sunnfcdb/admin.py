@@ -15,13 +15,27 @@ class DownloadFileAdmin(admin.ModelAdmin):
 
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):
-    list_display = ['title', 'author', 'category', 'views', 'is_published', 'publish_time', 'create_time']
+    list_display = ['title', 'author', 'category', 'views', 'is_published', 'is_scrolling', 'publish_time', 'create_time']
     search_fields = ['title', 'content', 'author', 'tags']
-    list_filter = ['category', 'is_published', 'create_time', 'publish_time']
+    list_filter = ['category', 'is_published', 'is_scrolling', 'create_time', 'publish_time']
     readonly_fields = ['views', 'create_time', 'update_time']
     ordering = ['-publish_time', '-create_time']
-    list_editable = ['is_published']
+    list_editable = ['is_published', 'is_scrolling']
     date_hierarchy = 'publish_time'
+    fields = [
+        'title',
+        'content',
+        'author',
+        'image',
+        'category',
+        'tags',
+        'views',
+        'is_published',
+        'is_scrolling',
+        'publish_time',
+        'create_time',
+        'update_time',
+    ]
 
 @admin.register(Changelog)
 class ChangelogAdmin(admin.ModelAdmin):

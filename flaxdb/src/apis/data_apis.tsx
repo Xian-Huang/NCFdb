@@ -75,6 +75,11 @@ export const fetchFlaxNews = async () => {
   return await response.json();
 };
 
+export const fetchFlaxScrollingNews = async () => {
+  const response = await fetchRequest("/api/news/scrolling/", "GET");
+  return await response.json();
+};
+
 export const fetchFlaxNewsById = async (id: number) => {
   const response = await fetchRequest(`/api/news/${id}/`, "GET");
   return await response.json();

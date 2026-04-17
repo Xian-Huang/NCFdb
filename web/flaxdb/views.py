@@ -341,13 +341,19 @@ class NewsView(APIView):
         news = News.objects.filter(is_published=True)
         serializer = NewsSerializer(news, many=True)
         return Response(serializer.data)
-    
+
     def post(self, request, format=None):
         serializer = NewsSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ScrollingNewsView(APIView):
+    def get(self, request, format=None):
+        news = News.objects.filter(is_published=True, is_scrolling=True)
+        serializer = NewsSerializer(news, many=True)
+        return Response(serializer.data)
 
 class NewsDetailView(APIView):
     def get(self, request, pk, format=None):

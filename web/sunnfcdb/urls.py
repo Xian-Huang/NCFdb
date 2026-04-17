@@ -6,6 +6,7 @@ urlpatterns = [
     path('download/files/<int:pk>/', views.DownloadFileDetailView.as_view()),
     path('news/', views.NewsView.as_view()),
     path('news/<int:pk>/', views.NewsDetailView.as_view()),
+    path('news/scrolling/', views.ScrollingNewsView.as_view()),
     path('changelog/', views.ChangelogView.as_view()),
     path('changelog/<int:pk>/', views.ChangelogDetailView.as_view()),
     path('regions/', views.RegionView.as_view()),
