@@ -1,4 +1,4 @@
-import { ArrowRight, Database, Users, BookOpen, Beaker, Flower2, Megaphone } from "lucide-react";
+import { ArrowRight, Database, Users, BookOpen, Beaker, Flower2, Megaphone, Leaf, Sparkles, ClipboardList } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
@@ -67,10 +67,16 @@ export function Home() {
     return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   };
 
+  const knowledgeCards = [
+    { title: "Volatile Compounds", desc: "Records for aroma-related metabolites and chemical phenotype comparison.", icon: Sparkles },
+    { title: "Leaf & Seed Traits", desc: "Phenotypic indicators for edible, medicinal and oil-use perilla resources.", icon: Leaf },
+    { title: "Curated References", desc: "Versioned knowledge entries, project news and literature-oriented updates.", icon: ClipboardList },
+  ];
+
   return (
-    <div>
+    <div className="bg-gradient-to-b from-purple-50/60 to-white">
       {/* Hero Section - Centered */}
-      <section className="relative h-[450px] overflow-hidden mb-8 rounded-2xl shadow-2xl">
+      <section className="relative h-[450px] overflow-hidden mb-8 rounded-[2rem] shadow-2xl">
         <ImageWithFallback
           src="/hero-bg.jpg"
           alt="Perilla leaves"
@@ -78,6 +84,10 @@ export function Home() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-purple-900/70 via-purple-800/50 to-purple-900/70 flex items-center justify-center">
           <div className="text-center max-w-3xl px-4">
+            <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-purple-200/50 bg-white/15 px-4 py-1 text-sm font-medium text-purple-50 backdrop-blur">
+              <Flower2 className="h-4 w-4" />
+              Perilla nutrition and functional traits
+            </div>
             <h1 className="text-5xl font-bold text-white mb-5 tracking-wide">
               {t("home.title")}
             </h1>
@@ -124,26 +134,26 @@ export function Home() {
 
       {/* Stats Section - Circular */}
       <section className="mb-8">
-        <div className="flex flex-wrap justify-center gap-6">
-          <div className="bg-white p-8 rounded-2xl shadow-md border border-purple-100 text-center min-w-[180px]">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="bg-white p-8 rounded-2xl shadow-md border border-purple-100 text-center">
             <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <span className="text-2xl font-bold text-purple-600">25</span>
             </div>
             <div className="text-gray-600">{t("home.stats.varieties")}</div>
           </div>
-          <div className="bg-white p-8 rounded-2xl shadow-md border border-purple-100 text-center min-w-[180px]">
+          <div className="bg-white p-8 rounded-2xl shadow-md border border-purple-100 text-center">
             <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <span className="text-2xl font-bold text-purple-600">35K+</span>
             </div>
             <div className="text-gray-600">{t("home.stats.genes")}</div>
           </div>
-          <div className="bg-white p-8 rounded-2xl shadow-md border border-purple-100 text-center min-w-[180px]">
+          <div className="bg-white p-8 rounded-2xl shadow-md border border-purple-100 text-center">
             <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <span className="text-2xl font-bold text-purple-600">50</span>
             </div>
             <div className="text-gray-600">{t("home.stats.regions")}</div>
           </div>
-          <div className="bg-white p-8 rounded-2xl shadow-md border border-purple-100 text-center min-w-[180px]">
+          <div className="bg-white p-8 rounded-2xl shadow-md border border-purple-100 text-center">
             <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <span className="text-2xl font-bold text-purple-600">20+</span>
             </div>
@@ -154,9 +164,14 @@ export function Home() {
 
       {/* Features - 2x2 Grid with Icons */}
       <section className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          {t("home.services")}
-        </h2>
+        <div className="mb-6 text-center">
+          <h2 className="text-2xl font-bold text-gray-800">
+            {t("home.services")}
+          </h2>
+          <p className="mx-auto mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+            PerillaDB emphasizes perilla germplasm, volatile metabolites, leaf nutrition and functional trait resources for edible and medicinal plant research.
+          </p>
+        </div>
         <div className="grid md:grid-cols-2 gap-6">
           <Link to="/data" className="group bg-white p-8 rounded-2xl shadow-sm border-2 border-transparent hover:border-purple-200 hover:shadow-xl transition-all">
             <div className="flex items-start gap-5">
@@ -206,6 +221,21 @@ export function Home() {
             </div>
           </Link>
         </div>
+      </section>
+
+      <section className="mb-8 grid gap-5 md:grid-cols-3">
+        {knowledgeCards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <div key={card.title} className="rounded-2xl border border-purple-100 bg-white p-6 shadow-sm">
+              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-100 text-purple-700">
+                <Icon className="h-6 w-6" />
+              </div>
+              <h3 className="font-semibold text-gray-900">{card.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-gray-600">{card.desc}</p>
+            </div>
+          );
+        })}
       </section>
 
       {/* Latest Updates - Large Cards */}

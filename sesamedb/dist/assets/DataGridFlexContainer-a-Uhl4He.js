@@ -1,0 +1,1 @@
+import{j as n,m as a}from"./index-DyM1-9cW.js";const l=a()({flexContainer:{display:"flex",flexDirection:"column"}});function o({children:e,style:s}){const{classes:t}=l();return n.jsx("div",{className:t.flexContainer,style:s,children:e})}export{o as D};

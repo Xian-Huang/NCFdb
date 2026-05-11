@@ -1,4 +1,4 @@
-import { ArrowRight, Database, Users, BookOpen, Droplets, Sun, Megaphone } from "lucide-react";
+import { ArrowRight, Database, Users, BookOpen, Droplets, Sun, Megaphone, FlaskConical, Activity, FileSearch } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
@@ -67,10 +67,16 @@ export function Home() {
     return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   };
 
+  const resourceHighlights = [
+    { title: "Pigment Components", desc: "Curated references for safflower yellow, flavonoids and related quality indicators.", icon: FlaskConical },
+    { title: "Functional Evaluation", desc: "Trait-oriented records for oil-use, medicinal-use and stress-adaptive germplasm screening.", icon: Activity },
+    { title: "Traceable Updates", desc: "Changelog and news entries help users follow dataset releases and project progress.", icon: FileSearch },
+  ];
+
   return (
-    <div>
+    <div className="bg-rose-50/40">
       {/* Hero Section - Diagonal Split */}
-      <section className="relative h-[380px] overflow-hidden mb-8 rounded-xl shadow-xl">
+      <section className="relative h-[380px] overflow-hidden mb-8 rounded-[1.75rem] shadow-xl">
         <div className="absolute inset-0">
           <ImageWithFallback
             src="/hero-bg.jpg"
@@ -133,7 +139,7 @@ export function Home() {
 
       {/* Stats Section - Horizontal Cards */}
       <section className="mb-8">
-        <div className="grid grid-cols-4 divide-x divide-red-200 bg-white rounded-xl shadow-md p-6">
+        <div className="grid grid-cols-2 gap-4 bg-white rounded-2xl shadow-md p-6 md:grid-cols-4 md:divide-x md:divide-red-200 md:gap-0">
           <div className="text-center">
             <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mx-auto mb-2">
               <Droplets className="h-6 w-6 text-red-600" />
@@ -167,7 +173,13 @@ export function Home() {
 
       {/* Features - 2 Columns with Large Icons */}
       <section className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t("home.services")}</h2>
+        <div className="mb-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-red-600">Safflower Research Database</p>
+          <h2 className="mt-2 text-2xl font-bold text-gray-800">{t("home.services")}</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+            SafflowerDB brings together germplasm, functional compounds, nutrition quality and project updates to support safflower resource evaluation and applied research.
+          </p>
+        </div>
         <div className="grid md:grid-cols-2 gap-6">
           <Link to="/data" className="group bg-gradient-to-r from-red-50 to-white p-6 rounded-xl border border-red-100 hover:shadow-lg transition-all">
             <div className="flex items-center gap-4">
@@ -221,6 +233,21 @@ export function Home() {
             </div>
           </Link>
         </div>
+      </section>
+
+      <section className="mb-8 grid gap-5 md:grid-cols-3">
+        {resourceHighlights.map((item) => {
+          const Icon = item.icon;
+          return (
+            <div key={item.title} className="rounded-2xl border border-red-100 bg-white p-6 shadow-sm">
+              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-red-100 text-red-700">
+                <Icon className="h-6 w-6" />
+              </div>
+              <h3 className="font-semibold text-gray-900">{item.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-gray-600">{item.desc}</p>
+            </div>
+          );
+        })}
       </section>
 
       {/* Latest Updates - Horizontal List */}

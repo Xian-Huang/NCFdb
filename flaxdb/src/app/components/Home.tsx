@@ -1,4 +1,4 @@
-import { ArrowRight, Database, Users, BookOpen, FlaskConical, Leaf, Dna, Megaphone } from "lucide-react";
+import { ArrowRight, Database, Users, BookOpen, FlaskConical, Leaf, Dna, Megaphone, Workflow } from "lucide-react";
 import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
@@ -67,10 +67,16 @@ export function Home() {
     return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   };
 
+  const pipelines = [
+    "Germplasm registration and sample metadata normalization",
+    "Trait, nutrition and molecular dataset curation",
+    "Search, comparison and downstream analysis tool integration",
+  ];
+
   return (
-    <div>
+    <div className="bg-slate-50">
       {/* Hero Section - Split Screen */}
-      <section className="relative h-[420px] overflow-hidden mb-8 rounded-2xl shadow-2xl">
+      <section className="relative h-[420px] overflow-hidden mb-8 rounded-[1.75rem] shadow-2xl">
         <div className="absolute inset-0">
           <ImageWithFallback
             src="/hero-bg.jpg"
@@ -79,7 +85,7 @@ export function Home() {
           />
         </div>
         <div className="absolute inset-0 flex">
-          <div className="w-1/2 bg-gradient-to-r from-blue-900/95 to-blue-800/80 flex items-center">
+          <div className="w-full md:w-1/2 bg-gradient-to-r from-blue-950/95 to-blue-800/80 flex items-center">
             <div className="px-10 py-12">
               <div className="flex items-center gap-3 mb-4">
                 <Dna className="h-8 w-8 text-blue-300" />
@@ -108,7 +114,7 @@ export function Home() {
               </div>
             </div>
           </div>
-          <div className="w-1/2"></div>
+          <div className="hidden md:block w-1/2"></div>
         </div>
       </section>
 
@@ -141,7 +147,7 @@ export function Home() {
 
       {/* Stats Section - Bento Grid */}
       <section className="mb-8">
-        <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[200px]">
+        <div className="grid grid-cols-2 md:grid-cols-4 md:grid-rows-2 gap-4 md:h-[200px]">
           <div className="col-span-1 row-span-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-5 flex flex-col justify-between">
             <div className="text-blue-100 text-sm">{t("home.stats.varieties")}</div>
             <div>
@@ -179,7 +185,13 @@ export function Home() {
 
       {/* Features - Zigzag Cards */}
       <section className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t("home.services")}</h2>
+        <div className="mb-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Flax Research Portal</p>
+          <h2 className="mt-2 text-2xl font-bold text-gray-800">{t("home.services")}</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+            FlaxNCFdb focuses on flax germplasm, oil and fiber-related traits, genome resources and analysis services for molecular breeding and nutrition evaluation.
+          </p>
+        </div>
         <div className="space-y-4">
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/data" className="group bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-300 transition-all">
@@ -231,6 +243,31 @@ export function Home() {
                 </div>
               </div>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 p-6 text-white shadow-lg">
+          <Workflow className="mb-4 h-9 w-9 text-blue-100" />
+          <h3 className="text-xl font-bold">Data Curation Workflow</h3>
+          <p className="mt-2 text-sm leading-6 text-blue-100">
+            A lightweight workflow view helps researchers understand how raw records become searchable flax database resources.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-blue-100 bg-white p-6 shadow-sm">
+          <div className="space-y-4">
+            {pipelines.map((item, index) => (
+              <div key={item} className="flex gap-4">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
+                  {index + 1}
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900">{item}</p>
+                  <p className="mt-1 text-sm text-gray-500">Supports traceable records and comparative analysis across experiments.</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

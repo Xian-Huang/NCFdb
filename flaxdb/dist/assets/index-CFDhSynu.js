@@ -1,0 +1,1 @@
+import{C as m}from"./Container-DYAIquag.js";import{e as i,g as e}from"./index-C_vzLNLe.js";import"./styled-w7hfF8vW.js";function r(t){return e("MuiContainer",t)}const n=i("MuiContainer",["root","disableGutters","fixed","maxWidthXs","maxWidthSm","maxWidthMd","maxWidthLg","maxWidthXl"]);export{n as containerClasses,m as default,r as getContainerUtilityClass};

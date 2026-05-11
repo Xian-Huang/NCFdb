@@ -1,4 +1,4 @@
-import { ArrowRight, Database, Users, BookOpen, Sprout, LeafyGreen, Bean, Megaphone } from "lucide-react";
+import { ArrowRight, Database, Users, BookOpen, Sprout, LeafyGreen, Bean, Megaphone, FlaskConical, Layers, Search } from "lucide-react";
 import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
@@ -67,10 +67,16 @@ export function Home() {
     return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   };
 
+  const focusAreas = [
+    { title: "Sesamin & Lignans", desc: "Functional component records for lignan accumulation, oil quality and antioxidant-related traits.", icon: FlaskConical },
+    { title: "Regional Germplasm", desc: "Sesame accessions organized by origin, phenotype, nutrition profile and experimental batch.", icon: Layers },
+    { title: "Searchable Knowledge", desc: "Fast access to datasets, tools, news and versioned updates for repeatable database use.", icon: Search },
+  ];
+
   return (
-    <div>
+    <div className="bg-gradient-to-b from-green-50/70 to-white">
       {/* Hero Section - Card Overlay Style */}
-      <section className="relative h-[400px] overflow-hidden mb-8 rounded-2xl shadow-2xl">
+      <section className="relative h-[400px] overflow-hidden mb-8 rounded-[1.75rem] shadow-2xl">
         <ImageWithFallback
           src="/hero-bg.jpg"
           alt="Sesame seeds and plant"
@@ -78,7 +84,7 @@ export function Home() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-green-900/90 via-green-900/40 to-transparent flex items-end">
           <div className="container mx-auto px-6 pb-10">
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 max-w-2xl shadow-2xl">
+            <div className="bg-white/95 backdrop-blur-sm rounded-[1.5rem] p-6 max-w-2xl shadow-2xl border border-white/70">
               <div className="flex items-center gap-2 mb-3">
                 <Sprout className="h-5 w-5 text-green-600" />
                 <span className="text-green-700 font-medium">SesameDB</span>
@@ -138,7 +144,7 @@ export function Home() {
 
       {/* Stats Section - Minimal Strip */}
       <section className="mb-8">
-        <div className="grid grid-cols-4 gap-px bg-gray-200 rounded-xl overflow-hidden">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200 rounded-2xl overflow-hidden shadow-sm">
           <div className="bg-white p-5 text-center hover:bg-green-50 transition-colors">
             <div className="flex items-center justify-center gap-2 mb-1">
               <Bean className="h-4 w-4 text-green-500" />
@@ -172,7 +178,12 @@ export function Home() {
 
       {/* Features - 1-2 Asymmetric Layout */}
       <section className="mb-8">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">{t("home.services")}</h2>
+        <div className="mb-4">
+          <h2 className="text-2xl font-bold text-gray-800">{t("home.services")}</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+            SesameDB links germplasm resources, functional component evaluation and analysis tools to support sesame nutrition quality research and variety comparison.
+          </p>
+        </div>
         <div className="grid md:grid-cols-3 gap-4">
           {/* Large card on left */}
           <Link to="/data" className="md:col-span-1 group bg-gradient-to-br from-green-500 to-emerald-600 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all">
@@ -208,6 +219,21 @@ export function Home() {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="mb-8 grid gap-4 md:grid-cols-3">
+        {focusAreas.map((area) => {
+          const Icon = area.icon;
+          return (
+            <div key={area.title} className="rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 text-green-700">
+                <Icon className="h-5 w-5" />
+              </div>
+              <h3 className="font-semibold text-gray-900">{area.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-gray-600">{area.desc}</p>
+            </div>
+          );
+        })}
       </section>
 
       {/* Latest Updates - Timeline Style */}
