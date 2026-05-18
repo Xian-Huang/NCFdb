@@ -14,22 +14,22 @@ export default defineConfig({
     port: 3001,
     proxy: {
       '/api/users': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8104',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/api/media': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8104',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8104',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/sesame'),
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
 
     },

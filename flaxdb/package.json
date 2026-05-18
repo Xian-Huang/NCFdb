@@ -1,11 +1,13 @@
 {
-  "name": "sesamedb",
+  "name": "flaxdb",
   "private": true,
   "version": "0.0.1",
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "backend": "python backend/manage.py runserver 8101",
+    "backend:migrate": "python backend/manage.py migrate"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

@@ -14,22 +14,22 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/api/users': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8105',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/api/media': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8105',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8105',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/sunflower'),
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
     port: 3000,
@@ -44,5 +44,4 @@ export default defineConfig({
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
 })
-
 

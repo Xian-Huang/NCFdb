@@ -14,22 +14,22 @@ export default defineConfig({
     port: 3004,
     proxy: {
       '/api/media': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8102',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/api/users': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8102',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8102',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/perilla'),
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },

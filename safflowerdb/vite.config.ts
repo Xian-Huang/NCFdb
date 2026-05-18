@@ -14,20 +14,20 @@ export default defineConfig({
     port: 3003,
     proxy: {
       '/api/users': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8103',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8103',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/safflower'),
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
 
       '/api/media': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8103',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
