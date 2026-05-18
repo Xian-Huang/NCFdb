@@ -57,7 +57,7 @@ export function NewsDetail() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="text-center">Loading...</div>
       </div>
     );
@@ -65,7 +65,7 @@ export function NewsDetail() {
 
   if (!news) {
     return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900">News not found</h1>
           <Link to="/news" className="text-amber-600 hover:text-amber-700 mt-4 inline-block">
@@ -79,34 +79,34 @@ export function NewsDetail() {
   const tagList = news.tags ? news.tags.split(",").map(t => t.trim()) : [];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Back Button */}
       <Link 
         to="/news" 
-        className="inline-flex items-center text-gray-600 hover:text-amber-600 mb-6 transition-colors"
+        className="mb-6 inline-flex items-center text-slate-600 transition-colors hover:text-amber-700"
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back to News
       </Link>
 
       {/* Article */}
-      <article className="bg-white rounded-lg shadow-lg overflow-hidden">
+      <article className="overflow-hidden rounded-[1.75rem] border border-amber-100 bg-white shadow-xl shadow-amber-100/70">
         {/* Cover Image */}
         {news.image && (
-          <div className="w-full h-64 md:h-96 overflow-hidden">
+          <div className="h-64 w-full overflow-hidden md:h-96">
             <ImageWithFallback
               src={news.image}
               alt={news.title || ""}
-              className="w-full h-full object-cover"
+              className="h-full w-full object-cover"
             />
           </div>
         )}
 
         <div className="p-6 md:p-8">
           {/* Meta Info */}
-          <div className="flex flex-wrap items-center gap-4 mb-6">
+          <div className="mb-6 flex flex-wrap items-center gap-4">
             {news.category && (
-              <span className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium">
+              <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800">
                 {news.category}
               </span>
             )}
@@ -125,7 +125,7 @@ export function NewsDetail() {
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+          <h1 className="mb-6 text-3xl font-bold text-slate-950 md:text-4xl">
             {news.title}
           </h1>
 
@@ -135,7 +135,7 @@ export function NewsDetail() {
               {tagList.map((tag, index) => (
                 <span 
                   key={index}
-                  className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                  className="inline-flex items-center rounded-full bg-amber-50 px-3 py-1 text-sm text-amber-800"
                 >
                   <Tag className="h-3 w-3 mr-1" />
                   {tag}
@@ -145,7 +145,7 @@ export function NewsDetail() {
           )}
 
           {/* Content */}
-          <div className="prose prose-lg max-w-none text-gray-700">
+          <div className="prose prose-lg max-w-none text-slate-700">
             {news.content.split('\n').map((paragraph, index) => (
               <p key={index} className="mb-4">
                 {paragraph}
@@ -167,7 +167,7 @@ export function NewsDetail() {
         <h2 className="text-2xl font-bold mb-6">Related News</h2>
         <Link 
           to="/news" 
-          className="inline-flex items-center text-amber-600 hover:text-amber-700 font-medium"
+        className="inline-flex items-center font-medium text-amber-700 hover:text-amber-800"
         >
           View All News →
         </Link>

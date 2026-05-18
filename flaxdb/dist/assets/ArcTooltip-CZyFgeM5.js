@@ -1,1 +1,0 @@
-import{o as i,j as o,b as n,y as s,au as e}from"./index-D3PUCfrP.js";const a=n.forwardRef(function({message:t},l){return o.jsx("div",{ref:l,children:n.isValidElement(t)?t:t?o.jsx(e,{html:String(t)}):null})}),c=i(function({contents:t}){return t?o.jsx(n.Suspense,{fallback:null,children:o.jsx(s,{children:o.jsx(a,{message:t})})}):null});export{c as default};

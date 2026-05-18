@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { Calendar, Eye, ArrowRight } from "lucide-react";
+import { Calendar, Eye, ArrowRight, Newspaper } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { fetchFlaxNews } from "../../apis/data_apis";
 
@@ -48,20 +48,36 @@ export function News() {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">{t("news.title")}</h1>
-        <p className="text-gray-500">{t("news.subtitle")}</p>
-      </div>
+    <div className="space-y-7 text-slate-900">
+      <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-950 shadow-2xl shadow-blue-100">
+        <div className="grid gap-0 lg:grid-cols-[0.82fr_1.18fr]">
+          <div className="p-8 text-white sm:p-10">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-300/30 bg-blue-400/10 px-4 py-2 text-sm font-medium text-blue-100">
+              <Newspaper className="h-4 w-4" />
+              Flax research bulletin
+            </div>
+            <h1 className="text-4xl font-bold leading-tight sm:text-5xl">{t("news.title")}</h1>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">{t("news.subtitle")}</p>
+          </div>
+          <div className="grid border-t border-white/10 bg-white p-5 lg:border-l lg:border-t-0">
+            <div className="rounded-[1.5rem] border border-blue-100 bg-blue-50 p-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Knowledge stream</p>
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                Updates are grouped as an operational feed for flax genome resources, oil and fiber traits, publications and project events.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
         {categories.map((category) => (
           <button
             key={category}
             onClick={() => setSelectedCategory(category)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               selectedCategory === category
-                ? "bg-blue-500 text-white"
+                ? "bg-blue-600 text-white shadow-sm"
                 : "bg-white text-gray-600 hover:bg-blue-50 border border-gray-200"
             }`}
           >
@@ -71,32 +87,32 @@ export function News() {
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-gray-400">{t("news.loading")}</div>
+        <div className="rounded-2xl bg-white py-12 text-center text-gray-400">{t("news.loading")}</div>
       ) : filteredNews.length === 0 ? (
-        <div className="text-center py-12 text-gray-400 bg-white rounded-xl">
+        <div className="rounded-2xl bg-white py-12 text-center text-gray-400">
           <p>{t("news.noNews")}</p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {filteredNews.map((item) => (
             <Link
               key={item.id}
               to={`/news/${item.id}`}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-300 transition-all overflow-hidden"
+              className="group overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
             >
               {item.image && (
-                <div className="h-40 overflow-hidden">
+                <div className="h-44 overflow-hidden">
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
               )}
-              <div className="p-4">
+              <div className="p-5">
                 <div className="flex items-center justify-between mb-2">
                   {item.category && (
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded">
+                    <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
                       {t(`news.categories.${item.category}`)}
                     </span>
                   )}
@@ -105,10 +121,10 @@ export function News() {
                     {item.views}
                   </div>
                 </div>
-                <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 hover:text-blue-600">
+                <h3 className="mb-3 line-clamp-2 font-semibold text-slate-900 group-hover:text-blue-700">
                   {item.title}
                 </h3>
-                <div className="flex items-center justify-between text-xs text-gray-400">
+                <div className="flex items-center justify-between text-xs text-slate-400">
                   <div className="flex items-center">
                     <Calendar className="h-3 w-3 mr-1" />
                     {formatDate(item.publish_time || item.create_time)}

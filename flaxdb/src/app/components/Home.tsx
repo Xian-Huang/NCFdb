@@ -1,4 +1,17 @@
-import { ArrowRight, Database, Users, BookOpen, FlaskConical, Leaf, Dna, Megaphone, Workflow } from "lucide-react";
+import {
+  ArrowRight,
+  BarChart3,
+  BookOpen,
+  Database,
+  Dna,
+  FlaskConical,
+  Leaf,
+  Megaphone,
+  Network,
+  ScanSearch,
+  Users,
+  Workflow,
+} from "lucide-react";
 import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
@@ -22,6 +35,41 @@ interface ChangelogItem {
   release_date: string;
   is_published: boolean;
 }
+
+const flaxStats = [
+  { value: "25", label: "Varieties", desc: "curated accessions", icon: Leaf },
+  { value: "35K+", label: "Genes", desc: "annotation records", icon: Dna },
+  { value: "50", label: "Regions", desc: "trial sources", icon: Network },
+  { value: "20+", label: "Partners", desc: "research teams", icon: Users },
+];
+
+const omicsPanels = [
+  {
+    title: "Genome Resources",
+    desc: "Reference gene records, resequencing indexes and variation-ready resource entries for flax molecular research.",
+    icon: Dna,
+    to: "/data",
+  },
+  {
+    title: "Oil & Fiber Traits",
+    desc: "Trait-oriented records for seed oil quality, fiber-use characters and nutrition evaluation.",
+    icon: BarChart3,
+    to: "/data",
+  },
+  {
+    title: "Analysis Utilities",
+    desc: "Search and analysis tools for comparing germplasm, datasets and curated research outputs.",
+    icon: ScanSearch,
+    to: "/tools",
+  },
+];
+
+const pipelineRows = [
+  { step: "01", title: "Sample Layer", desc: "accession identity, origin and batch metadata" },
+  { step: "02", title: "Omics Layer", desc: "gene annotation, molecular markers and variation records" },
+  { step: "03", title: "Trait Layer", desc: "oil quality, fiber traits and nutrition indicators" },
+  { step: "04", title: "Service Layer", desc: "search, comparison, tools and release notes" },
+];
 
 export function Home() {
   const { t } = useTranslation();
@@ -67,73 +115,95 @@ export function Home() {
     return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   };
 
-  const pipelines = [
-    "Germplasm registration and sample metadata normalization",
-    "Trait, nutrition and molecular dataset curation",
-    "Search, comparison and downstream analysis tool integration",
-  ];
-
   return (
-    <div className="bg-slate-50">
-      {/* Hero Section - Split Screen */}
-      <section className="relative h-[420px] overflow-hidden mb-8 rounded-[1.75rem] shadow-2xl">
-        <div className="absolute inset-0">
-          <ImageWithFallback
-            src="/hero-bg.jpg"
-            alt="Flax field with blue flowers"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="absolute inset-0 flex">
-          <div className="w-full md:w-1/2 bg-gradient-to-r from-blue-950/95 to-blue-800/80 flex items-center">
-            <div className="px-10 py-12">
-              <div className="flex items-center gap-3 mb-4">
-                <Dna className="h-8 w-8 text-blue-300" />
-                <span className="text-blue-300 font-medium">FlaxNCFdb</span>
+    <div className="bg-white text-slate-900">
+      <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+        <div className="rounded-[2rem] border border-slate-200 bg-slate-950 p-3 shadow-2xl shadow-blue-100">
+          <div className="grid gap-3 lg:grid-cols-[0.78fr_1.22fr]">
+            <div className="relative min-h-[420px] overflow-hidden rounded-[1.55rem]">
+              <ImageWithFallback
+                src="/hero-bg.jpg"
+                alt="Flax field with blue flowers"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent" />
+              <div className="absolute left-5 top-5 rounded-full bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-blue-800 backdrop-blur">
+                FlaxNCFdb
               </div>
-              <h1 className="text-4xl font-bold text-white mb-4 leading-tight">
+              <div className="absolute bottom-5 left-5 right-5 rounded-2xl border border-white/20 bg-slate-950/70 p-5 text-white backdrop-blur">
+                <div className="flex items-center gap-2 text-sm font-semibold text-blue-200">
+                  <Dna className="h-4 w-4" />
+                  Linum usitatissimum research viewer
+                </div>
+                <p className="mt-2 text-sm leading-6 text-slate-200">
+                  A focused resource for flax genome records, oil quality, fiber traits and nutrition-oriented evaluation.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-[1.55rem] bg-white p-7 sm:p-8 lg:p-10">
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-800">
+                <FlaskConical className="h-4 w-4" />
+                Omics analysis workspace
+              </div>
+              <h1 className="max-w-3xl text-4xl font-bold leading-tight text-slate-950 sm:text-5xl">
                 {t("home.title")}
               </h1>
-              <p className="text-blue-100 mb-6 leading-relaxed">
+              <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600">
                 {t("home.subtitle")}
               </p>
-              <div className="flex flex-col gap-3">
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-500">
+                FlaxNCFdb presents germplasm, genome annotation, oil and fiber trait records as an analysis-ready database for molecular breeding and crop nutrition research.
+              </p>
+
+              <div className="mt-7 grid gap-3 sm:grid-cols-2">
                 <Link
                   to="/data"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                  className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white shadow-lg shadow-blue-100 transition-colors hover:bg-blue-700"
                 >
                   {t("home.explore")}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
                 <Link
                   to="/tools"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors font-medium backdrop-blur-sm border border-white/20"
+                  className="inline-flex items-center justify-center rounded-xl border border-blue-200 bg-white px-6 py-3 font-semibold text-blue-800 transition-colors hover:bg-blue-50"
                 >
                   {t("home.analysisTools")}
                 </Link>
               </div>
+
+              <div className="mt-8 grid gap-3 sm:grid-cols-4">
+                {flaxStats.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={item.label} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                      <Icon className="mb-3 h-5 w-5 text-blue-600" />
+                      <div className="text-2xl font-bold text-slate-950">{item.value}</div>
+                      <div className="mt-1 text-xs font-semibold uppercase text-slate-500">{item.label}</div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
-          <div className="hidden md:block w-1/2"></div>
         </div>
       </section>
 
-      {/* Scrolling News Bar */}
       {scrollingNews.length > 0 && (
-        <section className="mb-6 bg-blue-50 border border-blue-200 rounded-xl overflow-hidden">
-          <div className="flex items-center px-4 py-2 bg-blue-500 text-white">
-            <Megaphone className="h-4 w-4 mr-2 flex-shrink-0" />
-            <span className="text-sm font-medium">最新通知</span>
-          </div>
-          <div className="relative h-8 overflow-hidden">
-            <div className="absolute inset-0 transition-all duration-500 ease-in-out">
+        <section className="mx-auto mt-6 max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm md:grid-cols-[180px_1fr]">
+            <div className="flex items-center gap-2 bg-blue-600 px-5 py-3 text-sm font-medium text-white">
+              <Megaphone className="h-4 w-4 flex-shrink-0" />
+              最新通知
+            </div>
+            <div className="relative h-11 overflow-hidden">
               {scrollingNews.map((news, index) => (
                 <div
                   key={news.id}
-                  className={`h-8 flex items-center px-4 text-sm text-gray-700 hover:bg-blue-100 cursor-pointer transition-colors ${index === currentNewsIndex ? 'block' : 'hidden'}`}
+                  className={`h-11 items-center px-4 text-sm text-slate-700 ${index === currentNewsIndex ? "flex" : "hidden"}`}
                 >
                   {news.category && (
-                    <span className="px-2 py-0.5 bg-blue-200 text-blue-800 text-xs rounded mr-2 flex-shrink-0">
+                    <span className="mr-3 flex-shrink-0 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
                       {news.category}
                     </span>
                   )}
@@ -145,156 +215,108 @@ export function Home() {
         </section>
       )}
 
-      {/* Stats Section - Bento Grid */}
-      <section className="mb-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 md:grid-rows-2 gap-4 md:h-[200px]">
-          <div className="col-span-1 row-span-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-5 flex flex-col justify-between">
-            <div className="text-blue-100 text-sm">{t("home.stats.varieties")}</div>
-            <div>
-              <div className="text-4xl font-bold text-white">25</div>
-              <div className="text-blue-200 text-xs">Varieties</div>
-            </div>
-          </div>
-          <div className="col-span-2 row-span-1 bg-white rounded-xl p-4 flex items-center justify-between shadow-sm border border-gray-100">
-            <div>
-              <div className="text-gray-500 text-xs">{t("home.stats.genes")}</div>
-              <div className="text-2xl font-bold text-gray-800">35K+</div>
-            </div>
-            <Dna className="h-10 w-10 text-blue-500 opacity-50" />
-          </div>
-          <div className="col-span-1 row-span-2 bg-white rounded-xl p-5 flex flex-col justify-center items-center shadow-sm border border-gray-100">
-            <div className="text-3xl font-bold text-gray-800 mb-1">50</div>
-            <div className="text-xs text-gray-500">{t("home.stats.regions")}</div>
-          </div>
-          <div className="col-span-1 row-span-1 bg-white rounded-xl p-4 flex items-center justify-between shadow-sm border border-gray-100">
-            <div>
-              <div className="text-gray-500 text-xs">{t("home.stats.partners")}</div>
-              <div className="text-xl font-bold text-gray-800">20+</div>
-            </div>
-            <Users className="h-8 w-8 text-blue-500 opacity-50" />
-          </div>
-          <div className="col-span-1 row-span-1 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl p-4 flex items-end justify-between">
-            <div>
-              <div className="text-indigo-200 text-xs">Total</div>
-              <div className="text-xl font-bold text-white">100+</div>
-            </div>
-            <Database className="h-6 w-6 text-white opacity-70" />
-          </div>
-        </div>
-      </section>
-
-      {/* Features - Zigzag Cards */}
-      <section className="mb-8">
-        <div className="mb-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Flax Research Portal</p>
-          <h2 className="mt-2 text-2xl font-bold text-gray-800">{t("home.services")}</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
-            FlaxNCFdb focuses on flax germplasm, oil and fiber-related traits, genome resources and analysis services for molecular breeding and nutrition evaluation.
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-7">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-700">Resource Console</p>
+          <h2 className="mt-2 text-3xl font-bold text-slate-950">{t("home.services")}</h2>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+            The flax portal is organized as an analysis console: core resources, trait panels and tools are shown as operational modules instead of generic content cards.
           </p>
         </div>
-        <div className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <Link to="/data" className="group bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-300 transition-all">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-500 transition-colors flex-shrink-0">
-                  <Database className="h-7 w-7 text-blue-600 group-hover:text-white" />
+
+        <div className="grid gap-5 lg:grid-cols-3">
+          {omicsPanels.map((panel) => {
+            const Icon = panel.icon;
+            return (
+              <Link
+                key={panel.title}
+                to={panel.to}
+                className="group rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-blue-200 hover:shadow-xl"
+              >
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-slate-300 transition-transform group-hover:translate-x-1 group-hover:text-blue-600" />
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-800 mb-1 group-hover:text-blue-700">{t("home.genomicData")}</h3>
-                  <p className="text-sm text-gray-500">{t("home.genomicDataDesc")}</p>
-                </div>
+                <h3 className="text-lg font-semibold text-slate-950">{panel.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{panel.desc}</p>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+        <div className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-5 flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white">
+                <Workflow className="h-6 w-6" />
               </div>
-            </Link>
-            
-            <Link to="/data" className="group bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-300 transition-all">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-500 transition-colors flex-shrink-0">
-                  <Leaf className="h-7 w-7 text-blue-600 group-hover:text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-800 mb-1 group-hover:text-blue-700">{t("home.varieties")}</h3>
-                  <p className="text-sm text-gray-500">{t("home.varietiesDesc")}</p>
-                </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Data Pipeline</p>
+                <h2 className="text-xl font-bold text-slate-950">Layered flax data model</h2>
               </div>
-            </Link>
+            </div>
+            <div className="space-y-3">
+              {pipelineRows.map((row) => (
+                <div key={row.step} className="grid gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 sm:grid-cols-[64px_1fr]">
+                  <div className="text-2xl font-bold text-blue-600">{row.step}</div>
+                  <div>
+                    <h3 className="font-semibold text-slate-950">{row.title}</h3>
+                    <p className="mt-1 text-sm text-slate-600">{row.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          
-          <div className="grid md:grid-cols-2 gap-4">
-            <Link to="/tools" className="group bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-300 transition-all">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-500 transition-colors flex-shrink-0">
-                  <FlaskConical className="h-7 w-7 text-blue-600 group-hover:text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-800 mb-1 group-hover:text-blue-700">{t("home.analysisTools")}</h3>
-                  <p className="text-sm text-gray-500">{t("home.analysisToolsDesc")}</p>
-                </div>
-              </div>
-            </Link>
-            
-            <Link to="/news" className="group bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-300 transition-all">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-500 transition-colors flex-shrink-0">
-                  <BookOpen className="h-7 w-7 text-blue-600 group-hover:text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-800 mb-1 group-hover:text-blue-700">{t("nav.news")}</h3>
-                  <p className="text-sm text-gray-500">{t("home.newsUpdates")}</p>
-                </div>
-              </div>
-            </Link>
+
+          <div className="rounded-[1.5rem] bg-slate-950 p-6 text-white shadow-xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-200">Snapshot</p>
+            <h2 className="mt-2 text-2xl font-bold">Flax research indicators</h2>
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              {flaxStats.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.label} className="rounded-2xl bg-white/10 p-4">
+                    <Icon className="mb-3 h-5 w-5 text-blue-200" />
+                    <div className="text-3xl font-bold">{item.value}</div>
+                    <div className="mt-1 text-xs font-medium text-blue-100">{item.desc}</div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="mb-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 p-6 text-white shadow-lg">
-          <Workflow className="mb-4 h-9 w-9 text-blue-100" />
-          <h3 className="text-xl font-bold">Data Curation Workflow</h3>
-          <p className="mt-2 text-sm leading-6 text-blue-100">
-            A lightweight workflow view helps researchers understand how raw records become searchable flax database resources.
-          </p>
-        </div>
-        <div className="rounded-2xl border border-blue-100 bg-white p-6 shadow-sm">
-          <div className="space-y-4">
-            {pipelines.map((item, index) => (
-              <div key={item} className="flex gap-4">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
-                  {index + 1}
-                </div>
-                <div>
-                  <p className="font-medium text-gray-900">{item}</p>
-                  <p className="mt-1 text-sm text-gray-500">Supports traceable records and comparative analysis across experiments.</p>
-                </div>
-              </div>
-            ))}
+      <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-700">Release Notes</p>
+            <h2 className="mt-2 text-2xl font-bold text-slate-950">{t("home.newsUpdates")}</h2>
           </div>
+          <BookOpen className="hidden h-9 w-9 text-blue-600 sm:block" />
         </div>
-      </section>
-
-      {/* Latest Updates - Magazine Style */}
-      <section className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t("home.newsUpdates")}</h2>
         {loading ? (
           <p className="text-gray-500">{t("home.loading")}</p>
         ) : (
-          <div className="grid md:grid-cols-3 gap-6">
-            {changelog.map((item, index) => (
-              <Link 
-                key={item.id} 
+          <div className="grid gap-5 md:grid-cols-3">
+            {changelog.map((item) => (
+              <Link
+                key={item.id}
                 to={`/changelog/${item.id}`}
-                className={`bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-xl transition-all group overflow-hidden ${index === 0 ? 'md:row-span-2' : ''}`}
+                className="rounded-[1.25rem] border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-blue-200 hover:shadow-lg"
               >
-                <div className={`bg-gradient-to-r ${index === 0 ? 'from-blue-500 to-indigo-600' : 'from-blue-100 to-indigo-100'} p-4`}>
-                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${index === 0 ? 'bg-white/20 text-white' : 'bg-white text-blue-700'}`}>
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
                     v{item.version}
                   </span>
+                  <span className="text-xs text-slate-400">{formatDate(item.release_date)}</span>
                 </div>
-                <div className="p-5">
-                  <div className="text-xs text-gray-400 mb-2">{formatDate(item.release_date)}</div>
-                  <h3 className={`font-bold text-gray-800 mb-2 group-hover:text-blue-700 ${index === 0 ? 'text-xl' : ''}`}>{item.title}</h3>
-                  <p className="text-sm text-gray-500 line-clamp-3">{item.content}</p>
-                </div>
+                <h3 className="font-semibold text-slate-950 hover:text-blue-700">{item.title}</h3>
+                <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{item.content}</p>
               </Link>
             ))}
           </div>

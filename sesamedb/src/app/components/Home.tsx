@@ -1,4 +1,16 @@
-import { ArrowRight, Database, Users, BookOpen, Sprout, LeafyGreen, Bean, Megaphone, FlaskConical, Layers, Search } from "lucide-react";
+import {
+  ArrowRight,
+  Bean,
+  BookOpen,
+  Database,
+  FlaskConical,
+  Layers,
+  LeafyGreen,
+  Megaphone,
+  Search,
+  Sprout,
+  Users,
+} from "lucide-react";
 import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
@@ -22,6 +34,38 @@ interface ChangelogItem {
   release_date: string;
   is_published: boolean;
 }
+
+const sesameStats = [
+  { value: "25", label: "Varieties", desc: "representative germplasm", icon: Bean },
+  { value: "35K+", label: "Genes", desc: "genome-scale annotations", icon: LeafyGreen },
+  { value: "50", label: "Regions", desc: "collection and trial sources", icon: Database },
+  { value: "20+", label: "Partners", desc: "research collaborators", icon: Users },
+];
+
+const focusAreas = [
+  {
+    title: "Lignan profile",
+    desc: "Sesamin, sesamolin and antioxidant-related component records.",
+    icon: FlaskConical,
+  },
+  {
+    title: "Accession archive",
+    desc: "Origin, phenotype, batch and nutrition profile information.",
+    icon: Layers,
+  },
+  {
+    title: "Knowledge lookup",
+    desc: "Dataset, tool, news and version entries for repeatable use.",
+    icon: Search,
+  },
+];
+
+const sesameMatrix = [
+  { trait: "Oil quality", record: "fatty acid profile", status: "curated" },
+  { trait: "Functional compounds", record: "sesamin / sesamolin", status: "featured" },
+  { trait: "Phenotype", record: "seed color and plant type", status: "indexed" },
+  { trait: "Origin", record: "region and trial source", status: "mapped" },
+];
 
 export function Home() {
   const { t } = useTranslation();
@@ -67,70 +111,87 @@ export function Home() {
     return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   };
 
-  const focusAreas = [
-    { title: "Sesamin & Lignans", desc: "Functional component records for lignan accumulation, oil quality and antioxidant-related traits.", icon: FlaskConical },
-    { title: "Regional Germplasm", desc: "Sesame accessions organized by origin, phenotype, nutrition profile and experimental batch.", icon: Layers },
-    { title: "Searchable Knowledge", desc: "Fast access to datasets, tools, news and versioned updates for repeatable database use.", icon: Search },
-  ];
-
   return (
-    <div className="bg-gradient-to-b from-green-50/70 to-white">
-      {/* Hero Section - Card Overlay Style */}
-      <section className="relative h-[400px] overflow-hidden mb-8 rounded-[1.75rem] shadow-2xl">
-        <ImageWithFallback
-          src="/hero-bg.jpg"
-          alt="Sesame seeds and plant"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-green-900/90 via-green-900/40 to-transparent flex items-end">
-          <div className="container mx-auto px-6 pb-10">
-            <div className="bg-white/95 backdrop-blur-sm rounded-[1.5rem] p-6 max-w-2xl shadow-2xl border border-white/70">
-              <div className="flex items-center gap-2 mb-3">
-                <Sprout className="h-5 w-5 text-green-600" />
-                <span className="text-green-700 font-medium">SesameDB</span>
-              </div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                {t("home.title")}
-              </h1>
-              <p className="text-gray-600 mb-4">
-                {t("home.subtitle")}
+    <div className="bg-[#f7faf6] text-slate-900">
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="relative min-h-[460px] overflow-hidden rounded-[2rem] bg-white shadow-xl shadow-green-100/60">
+            <ImageWithFallback
+              src="/hero-bg.jpg"
+              alt="Sesame seeds and plant"
+              className="h-full min-h-[460px] w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
+            <div className="absolute bottom-6 left-6 right-6 rounded-2xl bg-white/92 p-6 shadow-lg backdrop-blur">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green-700">Sesamum indicum collection</p>
+              <h2 className="mt-2 text-2xl font-bold text-slate-950">Germplasm, oil quality and lignan records</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                A sesame-focused visual entry for nutrition resources and functional component research.
               </p>
-              <div className="flex gap-3">
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-between gap-6">
+            <div className="rounded-[2rem] border border-green-100 bg-white p-8 shadow-sm">
+              <div className="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-green-700">
+                <span className="rounded-full bg-green-50 px-3 py-1 ring-1 ring-green-100">SesameDB</span>
+                <span className="rounded-full bg-white px-3 py-1 ring-1 ring-green-100">Nutrition archive</span>
+              </div>
+              <h1 className="text-4xl font-bold leading-tight text-slate-950">{t("home.title")}</h1>
+              <p className="mt-5 text-base leading-8 text-slate-600">
+                {t("home.subtitle")} The database highlights sesame germplasm, functional lignans, oil quality and searchable research records.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
                 <Link
                   to="/data"
-                  className="inline-flex items-center px-5 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
+                  className="inline-flex items-center rounded-xl bg-green-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-green-700"
                 >
                   {t("home.explore")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
                 <Link
                   to="/tools"
-                  className="inline-flex items-center px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                  className="inline-flex items-center rounded-xl border border-green-200 bg-white px-6 py-3 text-sm font-semibold text-green-800 transition-colors hover:bg-green-50"
                 >
                   {t("home.analysisTools")}
                 </Link>
               </div>
             </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {sesameStats.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.label} className="rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
+                    <div className="mb-4 flex items-center justify-between">
+                      <Icon className="h-5 w-5 text-green-700" />
+                      <span className="text-xs font-semibold uppercase text-green-700">{item.label}</span>
+                    </div>
+                    <div className="text-3xl font-bold text-slate-950">{item.value}</div>
+                    <p className="mt-2 text-xs leading-5 text-slate-500">{item.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Scrolling News Bar */}
       {scrollingNews.length > 0 && (
-        <section className="mb-6 bg-green-50 border border-green-200 rounded-xl overflow-hidden">
-          <div className="flex items-center px-4 py-2 bg-green-500 text-white">
-            <Megaphone className="h-4 w-4 mr-2 flex-shrink-0" />
-            <span className="text-sm font-medium">最新通知</span>
-          </div>
-          <div className="relative h-8 overflow-hidden">
-            <div className="absolute inset-0 transition-all duration-500 ease-in-out">
+        <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
+          <div className="grid overflow-hidden rounded-2xl border border-green-100 bg-white shadow-sm md:grid-cols-[160px_1fr]">
+            <div className="flex items-center gap-2 bg-green-600 px-5 py-3 text-sm font-medium text-white">
+              <Megaphone className="h-4 w-4 flex-shrink-0" />
+              最新通知
+            </div>
+            <div className="relative h-11 min-w-0 overflow-hidden">
               {scrollingNews.map((news, index) => (
                 <div
                   key={news.id}
-                  className={`h-8 flex items-center px-4 text-sm text-gray-700 hover:bg-green-100 cursor-pointer transition-colors ${index === currentNewsIndex ? 'block' : 'hidden'}`}
+                  className={`h-11 items-center px-4 text-sm text-slate-700 ${index === currentNewsIndex ? "flex" : "hidden"}`}
                 >
                   {news.category && (
-                    <span className="px-2 py-0.5 bg-green-200 text-green-800 text-xs rounded mr-2 flex-shrink-0">
+                    <span className="mr-3 flex-shrink-0 rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-800">
                       {news.category}
                     </span>
                   )}
@@ -142,133 +203,70 @@ export function Home() {
         </section>
       )}
 
-      {/* Stats Section - Minimal Strip */}
-      <section className="mb-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200 rounded-2xl overflow-hidden shadow-sm">
-          <div className="bg-white p-5 text-center hover:bg-green-50 transition-colors">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <Bean className="h-4 w-4 text-green-500" />
-              <div className="text-2xl font-bold text-gray-800">25</div>
-            </div>
-            <div className="text-xs text-gray-500">{t("home.stats.varieties")}</div>
-          </div>
-          <div className="bg-white p-5 text-center hover:bg-green-50 transition-colors">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <LeafyGreen className="h-4 w-4 text-green-500" />
-              <div className="text-2xl font-bold text-gray-800">35K+</div>
-            </div>
-            <div className="text-xs text-gray-500">{t("home.stats.genes")}</div>
-          </div>
-          <div className="bg-white p-5 text-center hover:bg-green-50 transition-colors">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <Database className="h-4 w-4 text-green-500" />
-              <div className="text-2xl font-bold text-gray-800">50</div>
-            </div>
-            <div className="text-xs text-gray-500">{t("home.stats.regions")}</div>
-          </div>
-          <div className="bg-white p-5 text-center hover:bg-green-50 transition-colors">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <Users className="h-4 w-4 text-green-500" />
-              <div className="text-2xl font-bold text-gray-800">20+</div>
-            </div>
-            <div className="text-xs text-gray-500">{t("home.stats.partners")}</div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features - 1-2 Asymmetric Layout */}
-      <section className="mb-8">
-        <div className="mb-4">
-          <h2 className="text-2xl font-bold text-gray-800">{t("home.services")}</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
-            SesameDB links germplasm resources, functional component evaluation and analysis tools to support sesame nutrition quality research and variety comparison.
-          </p>
-        </div>
-        <div className="grid md:grid-cols-3 gap-4">
-          {/* Large card on left */}
-          <Link to="/data" className="md:col-span-1 group bg-gradient-to-br from-green-500 to-emerald-600 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all">
-            <Database className="h-10 w-10 text-white mb-4" />
-            <h3 className="font-bold text-xl text-white mb-2 group-hover:text-green-100">{t("home.genomicData")}</h3>
-            <p className="text-green-100 text-sm">{t("home.genomicDataDesc")}</p>
-          </Link>
-          
-          {/* Two smaller cards on right */}
-          <div className="md:col-span-2 grid gap-4">
-            <Link to="/data" className="group bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-200 transition-all">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <Sprout className="h-6 w-6 text-green-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-800">{t("home.varieties")}</h3>
-                  <p className="text-sm text-gray-500">{t("home.varietiesDesc")}</p>
-                </div>
-              </div>
-            </Link>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <Link to="/tools" className="group bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-200 transition-all">
-                <Users className="h-6 w-6 text-green-600 mb-2" />
-                <h3 className="font-medium text-gray-800">{t("home.analysisTools")}</h3>
-              </Link>
-              
-              <Link to="/news" className="group bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-200 transition-all">
-                <BookOpen className="h-6 w-6 text-green-600 mb-2" />
-                <h3 className="font-medium text-gray-800">{t("nav.news")}</h3>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mb-8 grid gap-4 md:grid-cols-3">
+      <section className="mx-auto grid max-w-7xl gap-6 px-4 pb-12 sm:px-6 lg:grid-cols-3 lg:px-8">
         {focusAreas.map((area) => {
           const Icon = area.icon;
           return (
-            <div key={area.title} className="rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 text-green-700">
-                <Icon className="h-5 w-5" />
+            <div key={area.title} className="rounded-[1.75rem] border border-green-100 bg-white p-7 shadow-sm">
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50 text-green-700">
+                <Icon className="h-6 w-6" />
               </div>
-              <h3 className="font-semibold text-gray-900">{area.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-gray-600">{area.desc}</p>
+              <h3 className="text-xl font-semibold text-slate-950">{area.title}</h3>
+              <p className="mt-3 text-sm leading-6 text-slate-600">{area.desc}</p>
             </div>
           );
         })}
       </section>
 
-      {/* Latest Updates - Timeline Style */}
-      <section className="mb-8">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">{t("home.newsUpdates")}</h2>
-        {loading ? (
-          <p className="text-gray-500">{t("home.loading")}</p>
-        ) : (
-          <div className="space-y-3">
-            {changelog.map((item, index) => (
-              <Link 
-                key={item.id} 
-                to={`/changelog/${item.id}`}
-                className="flex items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-200 transition-all group"
-              >
-                <div className="flex flex-col items-center mr-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${index === 0 ? 'bg-green-500' : 'bg-gray-200'}`}>
-                    <span className={`text-sm font-bold ${index === 0 ? 'text-white' : 'text-gray-600'}`}>{index + 1}</span>
-                  </div>
-                  {index < changelog.length - 1 && <div className="w-0.5 h-8 bg-gray-200 mt-1"></div>}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
-                      v{item.version}
-                    </span>
-                    <span className="text-xs text-gray-400">{formatDate(item.release_date)}</span>
-                  </div>
-                  <h3 className="font-medium text-gray-800 group-hover:text-green-700 truncate">{item.title}</h3>
-                </div>
-                <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-green-500 ml-3" />
-              </Link>
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 pb-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
+        <div className="rounded-[1.75rem] border border-green-100 bg-white p-7 shadow-sm">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green-700">Trait register</p>
+              <h2 className="text-2xl font-bold text-slate-950">Sesame research records</h2>
+            </div>
+            <Bean className="h-8 w-8 text-green-700" />
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-green-100">
+            {sesameMatrix.map((row, index) => (
+              <div key={row.trait} className={`grid gap-3 px-5 py-4 text-sm sm:grid-cols-[1fr_1.3fr_auto] ${index % 2 === 0 ? "bg-green-50/60" : "bg-white"}`}>
+                <span className="font-semibold text-slate-900">{row.trait}</span>
+                <span className="text-slate-600">{row.record}</span>
+                <span className="w-fit rounded-full bg-white px-3 py-1 text-xs font-medium text-green-800 ring-1 ring-green-100">{row.status}</span>
+              </div>
             ))}
           </div>
-        )}
+        </div>
+
+        <div className="rounded-[1.75rem] border border-green-100 bg-white p-7 shadow-sm">
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green-700">Release notes</p>
+              <h2 className="text-2xl font-bold text-slate-950">{t("home.newsUpdates")}</h2>
+            </div>
+            <BookOpen className="h-8 w-8 text-green-700" />
+          </div>
+          {loading ? (
+            <p className="text-sm text-gray-500">{t("home.loading")}</p>
+          ) : (
+            <div className="space-y-3">
+              {changelog.map((item) => (
+                <Link
+                  key={item.id}
+                  to={`/changelog/${item.id}`}
+                  className="block rounded-2xl border border-green-100 bg-white p-4 transition-colors hover:bg-green-50"
+                >
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-800">v{item.version}</span>
+                    <span className="text-xs text-slate-400">{formatDate(item.release_date)}</span>
+                  </div>
+                  <h3 className="line-clamp-1 font-semibold text-slate-950">{item.title}</h3>
+                  <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-500">{item.content}</p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       </section>
     </div>
   );

@@ -57,7 +57,7 @@ export function NewsDetail() {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
         <h1 className="text-2xl font-bold mb-4">News not found</h1>
-        <Link to="/news" className="text-amber-600 hover:text-amber-700">
+        <Link to="/news" className="text-red-600 hover:text-red-700">
           Back to News
         </Link>
       </div>
@@ -65,27 +65,28 @@ export function NewsDetail() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
       <Link
         to="/news"
-        className="inline-flex items-center text-gray-600 hover:text-amber-600 mb-6"
+        className="mb-6 inline-flex items-center text-gray-600 transition-colors hover:text-red-700"
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back to News
       </Link>
 
-      <article>
+      <article className="overflow-hidden rounded-[1.5rem] border border-red-100 bg-white shadow-xl shadow-red-100/60">
         {news.image && (
           <img
             src={news.image}
             alt={news.title}
-            className="w-full h-96 object-cover rounded-lg mb-8"
+            className="h-96 w-full object-cover"
           />
         )}
 
-        <div className="flex items-center justify-between mb-4">
+        <div className="p-6 sm:p-8">
+        <div className="mb-4 flex items-center justify-between">
           {news.category && (
-            <span className="px-3 py-1 bg-amber-100 text-amber-800 text-sm rounded-full">
+            <span className="rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-800">
               {news.category}
             </span>
           )}
@@ -95,9 +96,9 @@ export function NewsDetail() {
           </div>
         </div>
 
-        <h1 className="text-4xl font-bold mb-4">{news.title}</h1>
+        <h1 className="mb-4 text-4xl font-bold text-gray-900">{news.title}</h1>
 
-        <div className="flex items-center text-gray-500 text-sm mb-8 space-x-4">
+        <div className="mb-8 flex items-center space-x-4 text-sm text-gray-500">
           <div className="flex items-center">
             <User className="h-4 w-4 mr-1" />
             {news.author || "Anonymous"}
@@ -119,7 +120,7 @@ export function NewsDetail() {
               {news.tags.split(",").map((tag, index) => (
                 <span
                   key={index}
-                  className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
+                  className="rounded-full bg-red-50 px-3 py-1 text-sm text-red-800"
                 >
                   {tag.trim()}
                 </span>
@@ -127,6 +128,7 @@ export function NewsDetail() {
             </div>
           </div>
         )}
+        </div>
       </article>
     </div>
   );

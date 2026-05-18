@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Eye, ArrowRight } from "lucide-react";
+import { Calendar, Eye, ArrowRight, Droplets } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { fetchSafflowerNews } from "../../apis/data_apis";
 
@@ -48,20 +48,27 @@ export function News() {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">{t("news.title")}</h1>
-        <p className="text-gray-500">{t("news.subtitle")}</p>
-      </div>
+    <div className="space-y-7 text-gray-900">
+      <section className="relative overflow-hidden rounded-[1.75rem] bg-red-900 p-8 text-white shadow-xl shadow-red-100">
+        <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-gradient-to-l from-red-500/40 to-transparent md:block" />
+        <div className="relative max-w-3xl">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-red-500/80 px-4 py-2 text-sm font-medium">
+            <Droplets className="h-4 w-4" />
+            Safflower research dispatch
+          </div>
+          <h1 className="text-4xl font-bold sm:text-5xl">{t("news.title")}</h1>
+          <p className="mt-4 text-base leading-7 text-red-100">{t("news.subtitle")}</p>
+        </div>
+      </section>
 
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 rounded-xl border border-red-100 bg-white p-3 shadow-sm">
         {categories.map((category) => (
           <button
             key={category}
             onClick={() => setSelectedCategory(category)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               selectedCategory === category
-                ? "bg-red-500 text-white"
+                ? "bg-red-500 text-white shadow-sm"
                 : "bg-white text-gray-600 hover:bg-red-50 border border-gray-200"
             }`}
           >
@@ -71,32 +78,32 @@ export function News() {
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-gray-400">{t("news.loading")}</div>
+        <div className="rounded-xl bg-white py-12 text-center text-gray-400">{t("news.loading")}</div>
       ) : filteredNews.length === 0 ? (
-        <div className="text-center py-12 text-gray-400 bg-white rounded-xl">
+        <div className="rounded-xl bg-white py-12 text-center text-gray-400">
           <p>{t("news.noNews")}</p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-4">
           {filteredNews.map((item) => (
             <Link
               key={item.id}
               to={`/news/${item.id}`}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-red-300 transition-all overflow-hidden"
+              className="group grid overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm transition-all hover:border-red-200 hover:shadow-lg md:grid-cols-[220px_1fr]"
             >
               {item.image && (
-                <div className="h-40 overflow-hidden">
+                <div className="h-44 overflow-hidden md:h-full">
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
               )}
-              <div className="p-4">
+              <div className="p-5">
                 <div className="flex items-center justify-between mb-2">
                   {item.category && (
-                    <span className="px-2 py-0.5 bg-red-50 text-red-700 text-xs rounded">
+                    <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700">
                       {t(`news.categories.${item.category}`)}
                     </span>
                   )}
@@ -105,7 +112,7 @@ export function News() {
                     {item.views}
                   </div>
                 </div>
-                <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 hover:text-red-600">
+                <h3 className="mb-3 line-clamp-2 text-lg font-bold text-gray-800 group-hover:text-red-700">
                   {item.title}
                 </h3>
                 <div className="flex items-center justify-between text-xs text-gray-400">
