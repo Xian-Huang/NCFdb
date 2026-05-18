@@ -2,8 +2,14 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('nutrition-data/', views.NutritionDataView.as_view(), name='nutrition-data-list'),
+    path('nutrition-data/<int:pk>/', views.NutritionDataDetailView.as_view(), name='nutrition-data-detail'),
+    path('search/', views.GlobalSearchView.as_view(), name='global-search'),
+    path('visualizations/', views.VisualizationSummaryView.as_view(), name='visualization-summary'),
+    path('export/<str:entity>/', views.DataExportView.as_view(), name='data-export'),
     path('download/files/', views.DownloadFileView.as_view()),
     path('download/files/<int:pk>/', views.DownloadFileDetailView.as_view()),
+    path('download/files/<int:pk>/download/', views.DownloadFileDownloadView.as_view()),
     path('news/', views.NewsView.as_view()),
     path('news/<int:pk>/', views.NewsDetailView.as_view()),
     path('news/scrolling/', views.ScrollingNewsView.as_view()),

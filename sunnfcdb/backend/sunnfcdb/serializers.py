@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.conf import settings
-from .models import DownloadFile, News, Changelog, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, Institution, Announcement, Nutrition
+from .models import DownloadFile, News, Changelog, NutritionData, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, Institution, Announcement, Nutrition
 
 class DownloadFileSerializer(serializers.ModelSerializer):
     file_url = serializers.SerializerMethodField("get_file_url",read_only=True)
@@ -82,4 +82,13 @@ class InstitutionSerializer(serializers.ModelSerializer):
 class AnnouncementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Announcement
+        fields = '__all__'
+
+
+class NutritionDataSerializer(serializers.ModelSerializer):
+    variety_name = serializers.CharField(source='variety.name', read_only=True)
+    region_name = serializers.CharField(source='variety.region.name', read_only=True)
+
+    class Meta:
+        model = NutritionData
         fields = '__all__'

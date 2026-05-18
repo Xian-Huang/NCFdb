@@ -118,7 +118,7 @@ export function Data() {
                         {dataset.category || "general"}
                       </span>
                   </div>
-                  <a href={dataset.download_url || "#"} target="_blank" rel="noopener noreferrer" className="justify-self-start bg-green-600 px-4 py-2 text-sm text-white transition-colors hover:bg-green-700 md:justify-self-end">
+                  <a href={dataset.id ? `/api/download/files/${dataset.id}/download/` : dataset.download_url || "#"} target="_blank" rel="noopener noreferrer" download className="justify-self-start bg-green-600 px-4 py-2 text-sm text-white transition-colors hover:bg-green-700 md:justify-self-end">
                     {t("data.download")}
                   </a>
               </div>

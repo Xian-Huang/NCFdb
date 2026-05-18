@@ -18,9 +18,13 @@ import {
   fetchInstitutions, createInstitution, updateInstitution, deleteInstitution,
   fetchAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement,
   fetchDownloadFiles, createDownloadFile, updateDownloadFile, deleteDownloadFile,
+  fetchSunflowerNutritionData,
+  createSunflowerNutritionData,
+  updateSunflowerNutritionData,
+  deleteSunflowerNutritionData,
 } from "../../apis/data_apis";
 
-type DataType = "users" | "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "nutrition" | "institutions" | "announcements" | "downloads";
+type DataType = "users" | "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "nutrition" | "institutions" | "announcements" | "downloads" | "nutrition_data";
 
 interface UserData {
   id: number;
@@ -160,6 +164,14 @@ const dataTypeConfig: Record<DataType, { title: string; icon: React.ElementType;
   nutrition: { title: "Nutrition", icon: Beaker, endpoint: "nutrition/" },
   institutions: { title: "Institutions", icon: Building, endpoint: "institutions/" },
   announcements: { title: "Announcements", icon: Bell, endpoint: "announcements/" },
+  nutrition_data: {
+    title: "Nutrition Data",
+    icon: Beaker,
+    fetchFn: fetchSunflowerNutritionData,
+    createFn: createSunflowerNutritionData,
+    updateFn: updateSunflowerNutritionData,
+    deleteFn: deleteSunflowerNutritionData,
+  },
   downloads: { title: "Downloads", icon: Download, endpoint: "download/files/" },
 };
 
@@ -214,7 +226,37 @@ export function Admin() {
         case "news":
           result = await fetchNews();
           break;
-        case "changelog":
+        case "nutrition_data":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sample</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variety</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Oil</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Protein</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as NutritionData[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.sample_code}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.variety_name || item.variety || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.oil_content ?? "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.protein ?? "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.method}</td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+      case "changelog":
           result = await fetchChangelog();
           break;
         case "regions":
@@ -282,6 +324,8 @@ export function Admin() {
         return { username: "", email: "", password: "", first_name: "", last_name: "", is_active: true, is_staff: false };
       case "news":
         return { title: "", content: "", author: "", category: "", image: "", tags: "", is_published: true, is_scrolling: false };
+      case "nutrition_data":
+        return { variety: null, sample_code: "", oil_content: null, protein: null, fatty_acid: null, lignan: null, moisture: null, method: "HPLC/NIR", test_date: "" };
       case "changelog":
         return { version: "", title: "", content: "", changes: [], release_date: "", is_published: true };
       case "regions":
@@ -292,6 +336,8 @@ export function Admin() {
         return { gene_id: "", name: "", symbol: "", chromosome: "", start_position: null, end_position: null, strand: "", gene_type: "", description: "", function: "", pathway: "" };
       case "gene_expressions":
         return { gene: null, variety: null, tissue: "", stage: "", expression_value: null, fpkm: null, tpm: null, sample_id: "" };
+      case "nutrition_data":
+        return { variety: null, sample_code: "", oil_content: null, protein: null, fatty_acid: null, lignan: null, moisture: null, method: "HPLC/NIR", test_date: "" };
       case "environmental_factors":
         return { name: "", code: "", unit: "", category: "", description: "", min_value: null, max_value: null };
       case "nutrition":
@@ -361,7 +407,37 @@ export function Admin() {
             await createNews(newsData);
           }
           break;
-        case "changelog":
+        case "nutrition_data":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sample</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variety</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Oil</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Protein</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as NutritionData[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.sample_code}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.variety_name || item.variety || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.oil_content ?? "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.protein ?? "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.method}</td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+      case "changelog":
           if (editingItem) {
             await updateChangelog(editingItem.id, submitData);
           } else {
@@ -449,7 +525,37 @@ export function Admin() {
         case "news":
           await deleteNews(id);
           break;
-        case "changelog":
+        case "nutrition_data":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sample</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variety</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Oil</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Protein</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as NutritionData[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.sample_code}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.variety_name || item.variety || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.oil_content ?? "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.protein ?? "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.method}</td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+      case "changelog":
           await deleteChangelog(id);
           break;
         case "regions":
@@ -718,6 +824,36 @@ export function Admin() {
                   <td className="px-6 py-4">
                     {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
                   </td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+      case "nutrition_data":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sample</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variety</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Oil</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Protein</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as NutritionData[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.sample_code}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.variety_name || item.variety || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.oil_content ?? "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.protein ?? "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.method}</td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>

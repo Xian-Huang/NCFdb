@@ -5,6 +5,11 @@ web/media
 *.pyc
 __pycache__
 web/.env
+flaxdb/backend/.env
+perilladb/backend/.env
+safflowerdb/backend/.env
+sesamedb/backend/.env
+sunnfcdb/backend/.env
 .vscode
 .cache
 build

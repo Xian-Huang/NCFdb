@@ -15,6 +15,16 @@ Each `*/backend` folder is an independent Django project with its own `.env.exam
 top-level `web` folder is left in place so existing deployments are not removed
 implicitly.
 
+Start everything with one command from the repository root:
+
+```bash
+npm run start:all
+```
+
+On Windows you can also double-click `start-all.bat`. This starts all five
+backends and all five frontends, then opens the Sunflower frontend. Press
+`Ctrl+C` in the startup window to stop the services launched by the script.
+
 Typical backend setup:
 
 ```bash

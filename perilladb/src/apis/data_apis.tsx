@@ -224,3 +224,24 @@ export const deletePerillaDownloadFile = async (id: number) => {
   const response = await fetchRequest(`/api/download/files/${id}/`, "DELETE");
   return await response.json();
 };
+
+
+export const fetchPerillaNutritionData = async () => {
+    const response = await fetchRequest("/nutrition-data/", "GET", undefined, true);
+    return await response.json();
+};
+
+export const createPerillaNutritionData = async (data: any) => {
+    const response = await fetchRequest("/nutrition-data/", "POST", data, true);
+    return await response.json();
+};
+
+export const updatePerillaNutritionData = async (id: number, data: any) => {
+    const response = await fetchRequest(`/nutrition-data/${id}/`, "PUT", data, true);
+    return await response.json();
+};
+
+export const deletePerillaNutritionData = async (id: number) => {
+    const response = await fetchRequest(`/nutrition-data/${id}/`, "DELETE", undefined, true);
+    return await response.json();
+};

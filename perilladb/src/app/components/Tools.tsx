@@ -12,6 +12,9 @@ export function Tools() {
       name: t("tools.blast"),
       description: t("tools.blastDesc"),
       features: ["BLASTN", "BLASTP", "BLASTX", "tBLASTn"],
+      summary: "Compare nucleotide or protein sequences against curated perilla genome, transcript and protein indexes.",
+      metrics: ["4 search modes", "3 target databases", "FASTA batch input"],
+      workflow: ["Paste FASTA", "Choose database", "Review hit table"],
       status: "Available",
     },
     {
@@ -19,6 +22,9 @@ export function Tools() {
       name: t("tools.browser"),
       description: t("tools.browserDesc"),
       features: ["JBrowse 2", "Track customization", "Comparative view"],
+      summary: "Inspect loci with gene models, variant tracks and expression evidence in a synchronized genome view.",
+      metrics: ["Genome tracks", "Annotation layers", "Region sharing"],
+      workflow: ["Open locus", "Toggle tracks", "Export view"],
       status: "Available",
     },
     {
@@ -26,6 +32,9 @@ export function Tools() {
       name: t("tools.geneSearch"),
       description: t("tools.geneSearchDesc"),
       features: ["Advanced filters", "Batch search", "Export results"],
+      summary: "Find candidate genes by keyword, identifier, annotation term or genomic interval.",
+      metrics: ["ID lookup", "GO filters", "CSV export"],
+      workflow: ["Set filters", "Compare records", "Download table"],
       status: "Available",
     },
     {
@@ -33,6 +42,9 @@ export function Tools() {
       name: t("tools.expression"),
       description: t("tools.expressionDesc"),
       features: ["Heatmaps", "Co-expression", "Differential expression"],
+      summary: "Explore expression profiles across leaf, seed, flower and stress-related perilla samples.",
+      metrics: ["Tissue matrix", "Condition groups", "Gene clusters"],
+      workflow: ["Select genes", "Choose samples", "Inspect patterns"],
       status: "Available",
     },
     {
@@ -40,6 +52,9 @@ export function Tools() {
       name: t("tools.variant"),
       description: t("tools.variantDesc"),
       features: ["SNP viewer", "InDels", "Population data"],
+      summary: "Browse SNP and InDel records from perilla germplasm panels for trait-linked variation review.",
+      metrics: ["SNP/InDel", "Population tags", "Functional impact"],
+      workflow: ["Filter region", "Check effects", "Export variants"],
       status: "Available",
     },
     {
@@ -47,6 +62,9 @@ export function Tools() {
       name: t("tools.api"),
       description: t("tools.apiDesc"),
       features: ["REST API", "Python SDK", "Documentation"],
+      summary: "Use stable API endpoints to integrate perilla records into local analysis scripts and pipelines.",
+      metrics: ["JSON output", "Token-ready", "Versioned docs"],
+      workflow: ["Choose endpoint", "Set query", "Parse response"],
       status: "Beta",
     },
   ];
@@ -64,43 +82,69 @@ export function Tools() {
         {tools.map((tool, index) => {
           const Icon = tool.icon;
           const isBrowser = tool.name === t("tools.browser");
+          const isLargeCard = index % 3 === 0;
           return (
             <div
               key={index}
-              className={`rounded-[1.75rem] border border-purple-100 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg ${index % 3 === 0 ? "lg:row-span-2" : ""}`}
+              className={`rounded-[1.75rem] border border-purple-100 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg ${isLargeCard ? "lg:row-span-2" : ""}`}
             >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-purple-100">
-                  <Icon className="h-5 w-5 text-purple-600" />
-                </div>
-                <span
-                  className={`px-2 py-0.5 text-xs rounded ${
-                    tool.status === "Available"
-                      ? "bg-purple-50 text-purple-700"
-                      : "bg-amber-50 text-amber-700"
-                  }`}
-                >
-                  {tool.status}
-                </span>
-              </div>
-              <h3 className="font-medium text-gray-800 mb-1">{tool.name}</h3>
-              <p className="text-sm text-gray-500 mb-3 line-clamp-2">{tool.description}</p>
-              <div className="flex flex-wrap gap-1 mb-3">
-                {tool.features.map((feature, idx) => (
+              <div className="flex h-full flex-col">
+                <div className="mb-3 flex items-start justify-between">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-purple-100">
+                    <Icon className="h-5 w-5 text-purple-600" />
+                  </div>
                   <span
-                    key={idx}
-                    className="px-2 py-0.5 bg-gray-50 text-gray-600 text-xs rounded"
+                    className={`rounded px-2 py-0.5 text-xs ${
+                      tool.status === "Available"
+                        ? "bg-purple-50 text-purple-700"
+                        : "bg-amber-50 text-amber-700"
+                    }`}
                   >
-                    {feature}
+                    {tool.status}
                   </span>
-                ))}
+                </div>
+                <h3 className="mb-1 font-medium text-gray-800">{tool.name}</h3>
+                <p className={`${isLargeCard ? "mb-4" : "mb-3 line-clamp-2"} text-sm leading-6 text-gray-500`}>
+                  {isLargeCard ? tool.summary : tool.description}
+                </p>
+                <div className="mb-4 flex flex-wrap gap-1.5">
+                  {tool.features.map((feature, idx) => (
+                    <span
+                      key={idx}
+                      className="rounded bg-gray-50 px-2 py-0.5 text-xs text-gray-600"
+                    >
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+                {isLargeCard && (
+                  <div className="mb-5 space-y-4">
+                    <div className="grid gap-2 sm:grid-cols-3">
+                      {tool.metrics.map((metric, idx) => (
+                        <div key={idx} className="rounded-xl border border-purple-100 bg-purple-50/60 px-3 py-2 text-xs font-medium text-purple-800">
+                          {metric}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="rounded-2xl border border-gray-100 bg-gray-50 p-3">
+                      <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-gray-500">Workflow</div>
+                      <div className="flex flex-wrap gap-2">
+                        {tool.workflow.map((step, idx) => (
+                          <span key={idx} className="rounded-full bg-white px-3 py-1 text-xs text-gray-600 shadow-sm">
+                            {idx + 1}. {step}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <button
+                  onClick={() => isBrowser ? navigate("/jbrowse") : null}
+                  className="mt-auto inline-flex w-fit items-center justify-center rounded-full bg-purple-600 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-purple-700"
+                >
+                  {t("tools.launch")}
+                </button>
               </div>
-              <button
-                onClick={() => isBrowser ? navigate("/jbrowse") : null}
-                className="w-full rounded-full bg-purple-600 px-3 py-2 text-sm text-white transition-colors hover:bg-purple-700"
-              >
-                {t("tools.launch")}
-              </button>
             </div>
           );
         })}

@@ -4,8 +4,14 @@ from . import views
 app_name = 'safflower'
 
 urlpatterns = [
+    path('nutrition-data/', views.NutritionDataView.as_view(), name='nutrition-data-list'),
+    path('nutrition-data/<int:pk>/', views.NutritionDataDetailView.as_view(), name='nutrition-data-detail'),
+    path('search/', views.GlobalSearchView.as_view(), name='global-search'),
+    path('visualizations/', views.VisualizationSummaryView.as_view(), name='visualization-summary'),
+    path('export/<str:entity>/', views.DataExportView.as_view(), name='data-export'),
     path('download/files/', views.DownloadFileView.as_view(), name='download-file-list'),
     path('download/files/<int:pk>/', views.DownloadFileDetailView.as_view(), name='download-file-detail'),
+    path('download/files/<int:pk>/download/', views.DownloadFileDownloadView.as_view(), name='download-file-download'),
     
     path('regions/', views.RegionView.as_view(), name='region-list'),
     path('regions/<int:pk>/', views.RegionDetailView.as_view(), name='region-detail'),

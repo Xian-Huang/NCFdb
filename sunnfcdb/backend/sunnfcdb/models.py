@@ -76,6 +76,30 @@ class Variety(models.Model):
         return self.name
 
 
+class NutritionData(models.Model):
+    variety = models.ForeignKey(Variety, on_delete=models.CASCADE, related_name="nutrition_records", verbose_name="品种")
+    sample_code = models.CharField(max_length=100, verbose_name="样品编号")
+    oil_content = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, verbose_name="含油量(%)")
+    protein = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, verbose_name="蛋白质(%)")
+    fatty_acid = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, verbose_name="特征脂肪酸(%)")
+    lignan = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="特征营养成分")
+    moisture = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, verbose_name="水分(%)")
+    method = models.CharField(max_length=100, default="HPLC/NIR", verbose_name="检测方法")
+    test_date = models.DateField(null=True, blank=True, verbose_name="检测日期")
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
+
+    class Meta:
+        db_table = "sunnfcdb_nutrition_data"
+        verbose_name = "营养数据"
+        verbose_name_plural = "营养数据"
+        ordering = ['-test_date', 'sample_code']
+        unique_together = [['variety', 'sample_code']]
+
+    def __str__(self):
+        return f"{self.variety.name} - {self.sample_code}"
+
+
 # 基因信息表
 class Gene(models.Model):
     gene_id = models.CharField(max_length=50, unique=True, verbose_name="基因ID")

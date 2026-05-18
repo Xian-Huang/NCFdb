@@ -260,3 +260,23 @@ export const updateDownloadFile = async (id: number, data: any) => {
 export const deleteDownloadFile = async (id: number) => {
     await fetchRequest(`/api/download/files/${id}/`, "DELETE");
 }
+
+export const fetchSunflowerNutritionData = async () => {
+    const response = await fetchRequest("/api/nutrition-data/", "GET");
+    return await response.json();
+};
+
+export const createSunflowerNutritionData = async (data: any) => {
+    const response = await fetchRequest("/api/nutrition-data/", "POST", data);
+    return await response.json();
+};
+
+export const updateSunflowerNutritionData = async (id: number, data: any) => {
+    const response = await fetchRequest(`/api/nutrition-data/${id}/`, "PUT", data);
+    return await response.json();
+};
+
+export const deleteSunflowerNutritionData = async (id: number) => {
+    const response = await fetchRequest(`/api/nutrition-data/${id}/`, "DELETE");
+    return await response.json();
+};

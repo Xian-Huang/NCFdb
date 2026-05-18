@@ -219,3 +219,24 @@ export const deleteFlaxDownloadFile = async (id: number) => {
   const response = await fetchRequest(`/api/download/files/${id}/`, "DELETE");
   return await response.json();
 };
+
+
+export const fetchFlaxNutritionData = async () => {
+    const response = await fetchRequest("/nutrition-data/", "GET", undefined, true);
+    return await response.json();
+};
+
+export const createFlaxNutritionData = async (data: any) => {
+    const response = await fetchRequest("/nutrition-data/", "POST", data, true);
+    return await response.json();
+};
+
+export const updateFlaxNutritionData = async (id: number, data: any) => {
+    const response = await fetchRequest(`/nutrition-data/${id}/`, "PUT", data, true);
+    return await response.json();
+};
+
+export const deleteFlaxNutritionData = async (id: number) => {
+    const response = await fetchRequest(`/nutrition-data/${id}/`, "DELETE", undefined, true);
+    return await response.json();
+};

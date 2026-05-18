@@ -219,3 +219,24 @@ export const deleteSafflowerDownloadFile = async (id: number) => {
   const response = await fetchRequest(`/api/download/files/${id}/`, "DELETE");
   return await response.json();
 };
+
+
+export const fetchSafflowerNutritionData = async () => {
+    const response = await fetchRequest("/nutrition-data/", "GET", undefined, true);
+    return await response.json();
+};
+
+export const createSafflowerNutritionData = async (data: any) => {
+    const response = await fetchRequest("/nutrition-data/", "POST", data, true);
+    return await response.json();
+};
+
+export const updateSafflowerNutritionData = async (id: number, data: any) => {
+    const response = await fetchRequest(`/nutrition-data/${id}/`, "PUT", data, true);
+    return await response.json();
+};
+
+export const deleteSafflowerNutritionData = async (id: number) => {
+    const response = await fetchRequest(`/nutrition-data/${id}/`, "DELETE", undefined, true);
+    return await response.json();
+};

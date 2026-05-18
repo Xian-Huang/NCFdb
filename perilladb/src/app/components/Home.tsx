@@ -78,7 +78,7 @@ export function Home() {
       {/* Hero Section - Centered */}
       <section className="relative h-[450px] overflow-hidden mb-8 rounded-[2rem] shadow-2xl">
         <ImageWithFallback
-          src="/hero-bg.jpg"
+          src="/perilla-hero.png"
           alt="Perilla leaves"
           className="w-full h-full object-cover"
         />

@@ -6,14 +6,17 @@ import { useTranslation } from "react-i18next";
 export function Navigation() {
   const location = useLocation();
   const { t } = useTranslation();
+  const navLanguage = location.pathname.startsWith("/research") ? "en" : undefined;
+  const navText = (key: string) => t(key, navLanguage ? { lng: navLanguage } : undefined);
   
   const navItems = [
-    { path: "/", label: t("nav.home") },
-    { path: "/data", label: t("nav.data") },
-    { path: "/news", label: t("nav.news") },
-    { path: "/events", label: t("nav.events") },
-    { path: "/tools", label: t("nav.tools") },
-    { path: "/contact", label: t("nav.contact") },
+    { path: "/", label: navText("nav.home") },
+    { path: "/data", label: navText("nav.data") },
+    { path: "/news", label: navText("nav.news") },
+    { path: "/events", label: navText("nav.events") },
+    { path: "/tools", label: navText("nav.tools") },
+    { path: "/research", label: navText("nav.research") },
+    { path: "/contact", label: navText("nav.contact") },
   ];
 
   const isActive = (path: string) => {
@@ -33,7 +36,7 @@ export function Navigation() {
             </div>
             <div>
               <span className="text-xl font-bold">{t("home.title")}</span>
-              <span className="text-xs text-black-600 block">{t("home.subtitle")}</span>
+              <span className="text-xs text-black-600 block">{navText("home.subtitle")}</span>
             </div>
           </Link>
           

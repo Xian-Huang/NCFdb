@@ -87,13 +87,17 @@ export function News() {
         </div>
       ) : (
         <div className="grid gap-5 lg:grid-cols-2">
-          {filteredNews.map((item) => (
+          {filteredNews.map((item) => {
+            const hasImage = Boolean(item.image);
+            return (
             <Link
               key={item.id}
               to={`/news/${item.id}`}
-              className="group grid overflow-hidden rounded-[1.5rem] border border-green-100 bg-white shadow-sm transition-all hover:bg-green-50/40 hover:shadow-lg sm:grid-cols-[180px_1fr]"
+              className={`group grid w-full overflow-hidden rounded-[1.5rem] border border-green-100 bg-white shadow-sm transition-all hover:bg-green-50/40 hover:shadow-lg ${
+                hasImage ? "sm:grid-cols-[180px_1fr]" : "sm:grid-cols-1"
+              }`}
             >
-              {item.image && (
+              {hasImage && (
                 <div className="h-44 overflow-hidden sm:h-full">
                   <img
                     src={item.image}
@@ -102,7 +106,7 @@ export function News() {
                   />
                 </div>
               )}
-              <div className="p-5">
+              <div className="w-full p-5">
                 <div className="flex items-center justify-between mb-2">
                   {item.category && (
                     <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-800 ring-1 ring-green-100">
@@ -126,7 +130,8 @@ export function News() {
                 </div>
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

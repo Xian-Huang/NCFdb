@@ -1,189 +1,122 @@
-import { Mail, MapPin, Phone, Send } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { Building2, Globe, Mail, MapPin, Phone, Send, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+type Institution = Record<string, any>;
+
+const fallbackPartners = [
+  "Chinese Academy of Agricultural Sciences",
+  "National Crop Improvement Center",
+  "International Research Network",
+];
+
+const hasCjk = (value: unknown) => /[\u3400-\u9fff]/.test(String(value ?? ""));
+const cleanText = (value: unknown, fallback: string) => {
+  const text = String(value ?? "").trim();
+  if (!text || hasCjk(text)) return fallback;
+  return text;
+};
+
+const asArray = (value: unknown): Institution[] => {
+  if (Array.isArray(value)) return value as Institution[];
+  if (value && typeof value === "object" && Array.isArray((value as { results?: unknown }).results)) {
+    return (value as { results: Institution[] }).results;
+  }
+  return [];
+};
 
 export function Contact() {
   const { t } = useTranslation();
+  const [institutions, setInstitutions] = useState<Institution[]>([]);
+
+  useEffect(() => {
+    fetch("/api/institutions/?limit=12")
+      .then((response) => response.ok ? response.json() : [])
+      .then((data) => setInstitutions(asArray(data)))
+      .catch(() => setInstitutions([]));
+  }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">{t("contact.title")}</h1>
-        <p className="text-lg text-gray-600">
-          {t("contact.subtitle")}
-        </p>
-      </div>
+    <div className="space-y-8">
+      <section className="border border-amber-100 bg-gradient-to-br from-amber-50 to-yellow-50 p-7 shadow-sm">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">About & Contact</p>
+        <h1 className="mt-3 text-3xl font-bold text-slate-950">{t("contact.title")}</h1>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">{t("contact.subtitle")}</p>
+      </section>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Contact Form */}
-        <div className="bg-white rounded-lg shadow-md p-8 border border-gray-200">
-          <h2 className="text-2xl font-semibold mb-6">{t("contact.form")}</h2>
+      <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+        <section className="border border-slate-100 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-900"><Send className="h-5 w-5 text-amber-600" />{t("contact.form")}</h2>
           <form className="space-y-4">
+            <Field label={t("contact.name")} placeholder={t("contact.name")} />
+            <Field label={t("contact.email")} placeholder="your@email.com" type="email" />
+            <Field label={t("contact.subject")} placeholder={t("contact.subject")} />
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("contact.name")} *
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none"
-                placeholder="Your full name"
-              />
+              <label className="mb-1 block text-sm font-medium text-slate-700">{t("contact.message")}</label>
+              <textarea rows={5} className="w-full border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-amber-500" placeholder={t("contact.message")} />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("contact.email")} *
-              </label>
-              <input
-                type="email"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none"
-                placeholder="your.email@example.com"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Institution / Organization
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none"
-                placeholder="Your institution"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("contact.subject")} *
-              </label>
-              <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none">
-                <option>General Inquiry</option>
-                <option>Data Access</option>
-                <option>Technical Support</option>
-                <option>Collaboration</option>
-                <option>Data Submission</option>
-                <option>Bug Report</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("contact.message")} *
-              </label>
-              <textarea
-                rows={6}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none"
-                placeholder="Please describe your inquiry..."
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full flex items-center justify-center px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
-            >
-              <Send className="h-5 w-5 mr-2" />
+            <button type="submit" className="w-full bg-amber-600 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-amber-700">
               {t("contact.send")}
             </button>
           </form>
-        </div>
+        </section>
 
-        {/* Contact Information */}
         <div className="space-y-6">
-          <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-            <h2 className="text-2xl font-semibold mb-6">{t("contact.info")}</h2>
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <Mail className="h-6 w-6 text-amber-500 mr-3 mt-1" />
-                <div>
-                  <div className="font-medium">{t("contact.email")}</div>
-                  <div className="text-gray-600">sunflower@example.com</div>
-                </div>
+          <section className="border border-slate-100 bg-white p-6 shadow-sm">
+            <h2 className="mb-5 flex items-center gap-2 text-lg font-semibold text-slate-900"><Mail className="h-5 w-5 text-amber-600" />{t("contact.info")}</h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Info icon={<MapPin className="h-5 w-5" />} label={t("contact.address")} value="Beijing, China" />
+              <Info icon={<Mail className="h-5 w-5" />} label={t("contact.email")} value="sunflower@example.com" />
+              <Info icon={<Phone className="h-5 w-5" />} label={t("contact.phone")} value="+86 10 1234 5678" />
+              <Info icon={<Globe className="h-5 w-5" />} label={t("contact.website")} value="www.sunnfcdb.org" />
+            </div>
+          </section>
+
+          <section className="border border-amber-100 bg-white p-6 shadow-sm">
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <div>
+                <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900"><Users className="h-5 w-5 text-amber-600" />{t("contact.collaborators")}</h2>
+                <p className="mt-1 text-sm text-slate-500">Partner institutions are maintained here so analysis pages can stay focused on data exploration.</p>
               </div>
-              <div className="flex items-start">
-                <Phone className="h-6 w-6 text-amber-500 mr-3 mt-1" />
-                <div>
-                  <div className="font-medium">{t("contact.phone")}</div>
-                  <div className="text-gray-600">+86-371-65720774 (China)</div>
-                  <div className="text-sm text-gray-500">Monday - Friday, 9:00 AM - 5:00 PM (China Standard Time)</div>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <MapPin className="h-6 w-6 text-amber-500 mr-3 mt-1" />
-                <div>
-                  <div className="font-medium">{t("contact.address")}</div>
-                  <div className="text-gray-600">
-                  Specialty Oil Crops R&D Center<br />
-                  National Specialty Oil Crops Industry Technology System<br />
-                  Henan Sesame Research Center<br />
-                  Henan Academy of Agricultural Sciences<br />
-                  #116 HuayuanRoad, Zhengzhou, Henan, China<br />
-                  450002
+              <span className="bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">Sunflower Functional Trait Consortium</span>
+            </div>
+            <div className="grid gap-3 md:grid-cols-2">
+              {(institutions.length ? institutions : fallbackPartners.map((name, id) => ({ id, name }))).map((item, index) => (
+                <article key={item.id ?? index} className="border border-slate-100 bg-slate-50 p-4">
+                  <div className="flex items-start gap-3">
+                    <Building2 className="mt-0.5 h-5 w-5 text-amber-600" />
+                    <div className="min-w-0">
+                      <h3 className="truncate font-semibold text-slate-900">{cleanText(item.abbreviation || item.name, "Institution translation pending")}</h3>
+                      <p className="mt-1 text-sm text-slate-500">{cleanText(item.institution_type, "Research partner")} · {cleanText(item.city || item.country, "Location pending")}</p>
+                      <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500">{cleanText(item.website || item.email || item.description, "Institution profile pending")}</p>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </article>
+              ))}
             </div>
-          </div>
-
-          {/* Team */}
-          <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-            <h2 className="text-xl font-semibold mb-4">Project Leadership</h2>
-            <div className="space-y-4">
-              <div>
-                <div className="font-medium">Principal Investigator</div>
-                <div className="text-gray-600">Dr. Hongmei Miao</div>
-              </div>
-              <div>
-                <div className="font-medium">Technical Support</div>
-                <div className="text-gray-600">Dr. Hengchun Cao</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Collaboration */}
-          <div className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg p-6 text-white">
-            <h2 className="text-xl font-semibold mb-3">Interested in Collaboration?</h2>
-            <p className="mb-4">
-              We welcome collaborations with research institutions, breeding companies, and individual researchers
-            </p>
-            <button className="px-4 py-2 bg-white text-amber-600 rounded hover:bg-gray-100 transition-colors">
-              Learn More
-            </button>
-          </div>
+          </section>
         </div>
       </div>
+    </div>
+  );
+}
 
-      {/* FAQ Section */}
-      <div className="mt-12 bg-gray-50 rounded-lg p-8">
-        <h2 className="text-2xl font-semibold mb-6">Frequently Asked Questions</h2>
-        <div className="space-y-4">
-          <details className="bg-white p-4 rounded-lg border border-gray-200">
-            <summary className="font-medium cursor-pointer">
-              How can I download genomic data?
-            </summary>
-            <p className="mt-2 text-gray-600">
-              Visit our Data page to browse and download available datasets. All data is freely available for research purposes.
-            </p>
-          </details>
-          <details className="bg-white p-4 rounded-lg border border-gray-200">
-            <summary className="font-medium cursor-pointer">
-              Can I submit my own data to the database?
-            </summary>
-            <p className="mt-2 text-gray-600">
-              Yes! We encourage researchers to submit their sunflower genomic data. Please contact us at submission@sunflowergenome.org for guidelines.
-            </p>
-          </details>
-          <details className="bg-white p-4 rounded-lg border border-gray-200">
-            <summary className="font-medium cursor-pointer">
-              How do I cite the database in my publication?
-            </summary>
-            <p className="mt-2 text-gray-600">
-              Please cite our main publication: Chen et al. (2025) "Sunflower Genome Database: A comprehensive resource for genomic research" in Plant Journal.
-            </p>
-          </details>
-          <details className="bg-white p-4 rounded-lg border border-gray-200">
-            <summary className="font-medium cursor-pointer">
-              Is there an API for programmatic access?
-            </summary>
-            <p className="mt-2 text-gray-600">
-              Yes, we provide a REST API for programmatic access to our data. Visit the Tools page and check the API Access section for documentation.
-            </p>
-          </details>
-        </div>
+function Field({ label, placeholder, type = "text" }: { label: string; placeholder: string; type?: string }) {
+  return (
+    <div>
+      <label className="mb-1 block text-sm font-medium text-slate-700">{label}</label>
+      <input type={type} className="w-full border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-amber-500" placeholder={placeholder} />
+    </div>
+  );
+}
+
+function Info({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+  return (
+    <div className="flex items-start gap-3 text-sm">
+      <div className="text-amber-600">{icon}</div>
+      <div>
+        <div className="font-medium text-slate-900">{label}</div>
+        <div className="mt-1 text-slate-500">{value}</div>
       </div>
     </div>
   );

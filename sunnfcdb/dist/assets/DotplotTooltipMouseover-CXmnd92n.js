@@ -1,1 +1,0 @@
-import{o as a,j as s,y as x,bZ as i}from"./index-BrHud4ZW.js";const j=a(function({model:e,mouserect:o,mouserectClient:t,xdistance:l}){const{hview:n,vview:r,viewHeight:p}=e;return o?s.jsxs(x,{placement:l<0?"left":"right",clientPoint:t?{x:t[0],y:t[1]}:void 0,children:[`x - ${i(o[0],n)}`,s.jsx("br",{}),`y - ${i(p-o[1],r)}`,s.jsx("br",{})]}):null});export{j as default};

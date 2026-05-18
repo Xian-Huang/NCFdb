@@ -100,7 +100,7 @@ export function News() {
             key={item.id}
             className="group overflow-hidden rounded-[1.5rem] border border-amber-100 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
           >
-            <div className="md:flex">
+            <div className="w-full md:flex">
               {item.image && (
                 <div className="h-64 overflow-hidden md:w-80">
                   <ImageWithFallback
@@ -110,7 +110,7 @@ export function News() {
                   />
                 </div>
               )}
-              <div className="p-6 flex-1">
+              <div className="w-full flex-1 p-6">
                 <div className="flex items-center gap-3 mb-3">
                   {item.category && (
                     <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800">

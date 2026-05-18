@@ -79,7 +79,7 @@ export function Home() {
       <section className="relative h-[380px] overflow-hidden mb-8 rounded-[1.75rem] shadow-xl">
         <div className="absolute inset-0">
           <ImageWithFallback
-            src="/hero-bg.jpg"
+            src="/safflower-hero.png"
             alt="Safflower red flowers"
             className="w-full h-full object-cover"
           />

@@ -95,7 +95,7 @@ export function Data() {
                   {dataset.downloads || 0} {t("data.stats.downloads")}
                 </div>
               </div>
-              <a href={dataset.file_url ? `/api${dataset.file_url}` : "#"} target="_blank" rel="noopener noreferrer" download className="ml-4 flex items-center rounded-xl bg-amber-500 px-4 py-2 text-white transition-colors hover:bg-amber-600">
+              <a href={dataset.id ? `/api/download/files/${dataset.id}/download/` : "#"} target="_blank" rel="noopener noreferrer" download className="ml-4 flex items-center rounded-xl bg-amber-500 px-4 py-2 text-white transition-colors hover:bg-amber-600">
                 <Download className="h-4 w-4 mr-2" />
                 {t("data.download")}
               </a>

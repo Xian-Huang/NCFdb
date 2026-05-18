@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import DownloadFile, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, Institution, Announcement, News, Changelog
+from .models import DownloadFile, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, Institution, Announcement, News, Changelog, NutritionData
 
 class DownloadFileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -61,4 +61,13 @@ class NewsSerializer(serializers.ModelSerializer):
 class ChangelogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Changelog
+        fields = '__all__'
+
+
+class NutritionDataSerializer(serializers.ModelSerializer):
+    variety_name = serializers.CharField(source='variety.name', read_only=True)
+    region_name = serializers.CharField(source='variety.region.name', read_only=True)
+
+    class Meta:
+        model = NutritionData
         fields = '__all__'

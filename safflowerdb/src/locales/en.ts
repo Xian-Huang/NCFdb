@@ -5,6 +5,7 @@ export const en = {
     news: "News",
     events: "Events",
     tools: "Tools",
+    research: "Research",
     contact: "Contact"
   },
   home: {
@@ -93,7 +94,54 @@ export const en = {
     videos: "Video Tutorials",
     apiDocs: "API Documentation"
   },
-  contact: {
+  research: {
+    eyebrow: "Safflower Research Workspace",
+    title: "Regional Nutritional Trait Analysis",
+    subtitle: "Integrated nutrition testing, regional germplasm, gene expression, partner institutions, and data export for fast search and analysis.",
+    stats: {
+      nutrition: "Nutrition records",
+      regions: "Regions",
+      genes: "Genes",
+      institutions: "Institutions"
+    },
+    searchPlaceholder: "Search samples, varieties, or regions",
+    pageSize: "Rows per page",
+    showing: "Showing {{shown}} of {{total}} records",
+    previous: "Previous",
+    next: "Next",
+    noResults: "No matching records",
+    sections: {
+      nutritionMatrix: "Nutrition Data Matrix",
+      nutritionChart: "Nutrition Trait Chart",
+      regionHeat: "Regional Distribution",
+      expressionHeat: "Gene Expression Heatmap",
+      proteinNetwork: "Protein Interaction Network",
+      institutions: "Partner Institutions"
+    },
+    columns: {
+      sample: "Sample",
+      variety: "Variety",
+      region: "Region",
+      oil: "Oil",
+      protein: "Protein",
+      traitComponent: "Trait component",
+      method: "Method"
+    },
+    fallback: {
+      samplePrefix: "Sample",
+      variety: "Variety translation pending",
+      region: "Region translation pending",
+      gene: "Gene translation pending",
+      institution: "Institution translation pending",
+      climatePending: "Climate pending",
+      partner: "Research partner",
+      institutionDescription: "Institution description pending"
+    },
+    units: {
+      percent: "%",
+      varieties: "varieties"
+    }
+  },  contact: {
     title: "Contact Us",
     subtitle: "Questions about safflower data? We'd love to hear from you!",
     form: "Send Message",

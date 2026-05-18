@@ -3,8 +3,11 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "pnpm -r --parallel run dev",
-    "dev:all": "pnpm -r --parallel run dev",
+    "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-all.ps1",
+    "start:all": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-all.ps1",
+    "start:all:no-browser": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-all.ps1 -SkipBrowser",
+    "dev:all": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-all.ps1",
+    "dev:frontends": "pnpm -r --parallel run dev",
     "dev:flax": "pnpm --filter flaxdb run dev",
     "dev:perilla": "pnpm --filter perilladb run dev",
     "dev:safflower": "pnpm --filter safflowerdb run dev",

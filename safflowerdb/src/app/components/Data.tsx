@@ -107,7 +107,7 @@ export function Data() {
                     </div>
                     <p className="text-sm text-gray-500 mt-2">{dataset.description || "No description available."}</p>
                   </div>
-                  <a href={dataset.download_url || "#"} target="_blank" rel="noopener noreferrer" className="ml-4 bg-red-600 px-4 py-2 text-sm text-white transition-colors hover:bg-red-700">
+                  <a href={dataset.id ? `/api/download/files/${dataset.id}/download/` : dataset.download_url || "#"} target="_blank" rel="noopener noreferrer" download className="ml-4 bg-red-600 px-4 py-2 text-sm text-white transition-colors hover:bg-red-700">
                     {t("data.download")}
                   </a>
                 </div>

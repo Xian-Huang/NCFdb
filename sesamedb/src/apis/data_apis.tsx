@@ -227,3 +227,24 @@ export const deleteSesameDownloadFile = async (id: number) => {
     const response = await fetchRequest(`/download/files/${id}/`, "DELETE", undefined, true);
     return await response.json();
 };
+
+
+export const fetchSesameNutritionData = async () => {
+    const response = await fetchRequest("/nutrition-data/", "GET", undefined, true);
+    return await response.json();
+};
+
+export const createSesameNutritionData = async (data: any) => {
+    const response = await fetchRequest("/nutrition-data/", "POST", data, true);
+    return await response.json();
+};
+
+export const updateSesameNutritionData = async (id: number, data: any) => {
+    const response = await fetchRequest(`/nutrition-data/${id}/`, "PUT", data, true);
+    return await response.json();
+};
+
+export const deleteSesameNutritionData = async (id: number) => {
+    const response = await fetchRequest(`/nutrition-data/${id}/`, "DELETE", undefined, true);
+    return await response.json();
+};

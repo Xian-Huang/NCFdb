@@ -87,7 +87,7 @@ export function News() {
             <Link
               key={item.id}
               to={`/news/${item.id}`}
-              className="group overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-100"
+              className="group block h-full w-full overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-100"
             >
               {(item.image_url || item.image) && (
                 <div className="h-44 overflow-hidden">
@@ -98,7 +98,7 @@ export function News() {
                   />
                 </div>
               )}
-              <div className="p-5">
+              <div className="w-full p-5">
                 <div className="flex items-center justify-between mb-2">
                   {item.category && (
                     <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-700">
