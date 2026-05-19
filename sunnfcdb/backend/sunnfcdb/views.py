@@ -6,6 +6,7 @@ from django.db.models import Avg, Count, Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from .models import *
 from .serializers import *
 from rest_framework import serializers
@@ -92,6 +93,8 @@ class DownloadFilesView(APIView):
         return Response(serializer.data)
 
 class NewsView(APIView):
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+
     def get(self, request, format=None):
         news = News.objects.all()
         serializer = NewsSerializer(news, many=True, context={'request': request})
@@ -111,6 +114,8 @@ class ScrollingNewsView(APIView):
         return Response(serializer.data)
 
 class NewsDetailView(APIView):
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+
     def get(self, request, pk, format=None):
         try:
             news = News.objects.get(pk=pk)

@@ -277,6 +277,5 @@ export const updateSunflowerNutritionData = async (id: number, data: any) => {
 };
 
 export const deleteSunflowerNutritionData = async (id: number) => {
-    const response = await fetchRequest(`/api/nutrition-data/${id}/`, "DELETE");
-    return await response.json();
+    await fetchRequest(`/api/nutrition-data/${id}/`, "DELETE");
 };

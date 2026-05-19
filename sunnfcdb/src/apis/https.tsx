@@ -28,5 +28,10 @@ export const fetchRequest = async (url: string, method: string, body?: any) => {
         }
     }
     
-    return fetch(url, options);
+    const response = await fetch(url, options);
+    if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || `Request failed with status ${response.status}`);
+    }
+    return response;
 }

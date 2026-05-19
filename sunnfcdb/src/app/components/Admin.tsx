@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { 
   User, Plus, Edit, Trash2, X, Shield, LogOut,
   FileText, MapPin, Leaf, Dna, Building, Bell,
-  Search, RefreshCw, Download, Beaker
+  Search, RefreshCw, Download, Beaker, Save, Loader2,
+  AlertCircle, Image as ImageIcon, ChevronDown
 } from "lucide-react";
 import {
   fetchUsers, createUser, updateUser, deleteUser,
@@ -182,6 +183,8 @@ export function Admin() {
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [formData, setFormData] = useState<any>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   // Foreign key options
   const [regions, setRegions] = useState<any[]>([]);
@@ -227,36 +230,9 @@ export function Admin() {
           result = await fetchNews();
           break;
         case "nutrition_data":
-        return (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sample</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variety</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Oil</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Protein</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {(filteredData as NutritionData[]).map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.sample_code}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.variety_name || item.variety || "-"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.oil_content ?? "-"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.protein ?? "-"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.method}</td>
-                  <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
-                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        );
-      case "changelog":
+          result = await fetchSunflowerNutritionData();
+          break;
+        case "changelog":
           result = await fetchChangelog();
           break;
         case "regions":
@@ -309,13 +285,17 @@ export function Admin() {
       setEditingItem(null);
       setFormData(getEmptyForm());
     }
+    setFormError("");
+    setIsSubmitting(false);
     setShowModal(true);
   };
 
-  const closeModal = () => {
+  const closeModal = (force = false) => {
+    if (isSubmitting && !force) return;
     setShowModal(false);
     setEditingItem(null);
     setFormData({});
+    setFormError("");
   };
 
   const getEmptyForm = () => {
@@ -336,8 +316,6 @@ export function Admin() {
         return { gene_id: "", name: "", symbol: "", chromosome: "", start_position: null, end_position: null, strand: "", gene_type: "", description: "", function: "", pathway: "" };
       case "gene_expressions":
         return { gene: null, variety: null, tissue: "", stage: "", expression_value: null, fpkm: null, tpm: null, sample_id: "" };
-      case "nutrition_data":
-        return { variety: null, sample_code: "", oil_content: null, protein: null, fatty_acid: null, lignan: null, moisture: null, method: "HPLC/NIR", test_date: "" };
       case "environmental_factors":
         return { name: "", code: "", unit: "", category: "", description: "", min_value: null, max_value: null };
       case "nutrition":
@@ -355,15 +333,18 @@ export function Admin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setFormError("");
 
     // Validate required fields
     if (!editingItem) {
       if (activeType === 'changelog' && !formData.release_date) {
-        alert('Release Date is required');
+        setFormError('Release Date is required');
         return;
       }
     }
 
+    setIsSubmitting(true);
     try {
       // Filter out null values and empty strings before submitting (for optional fields)
       const submitData = { ...formData };
@@ -408,36 +389,13 @@ export function Admin() {
           }
           break;
         case "nutrition_data":
-        return (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sample</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variety</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Oil</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Protein</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {(filteredData as NutritionData[]).map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.sample_code}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.variety_name || item.variety || "-"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.oil_content ?? "-"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.protein ?? "-"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.method}</td>
-                  <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
-                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        );
-      case "changelog":
+          if (editingItem) {
+            await updateSunflowerNutritionData(editingItem.id, submitData);
+          } else {
+            await createSunflowerNutritionData(submitData);
+          }
+          break;
+        case "changelog":
           if (editingItem) {
             await updateChangelog(editingItem.id, submitData);
           } else {
@@ -509,9 +467,12 @@ export function Admin() {
           break;
       }
       fetchData();
-      closeModal();
+      closeModal(true);
     } catch (err) {
       console.error("Failed to save:", err);
+      setFormError("Save failed. Please check the form values and try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -526,36 +487,9 @@ export function Admin() {
           await deleteNews(id);
           break;
         case "nutrition_data":
-        return (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sample</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variety</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Oil</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Protein</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {(filteredData as NutritionData[]).map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.sample_code}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.variety_name || item.variety || "-"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.oil_content ?? "-"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.protein ?? "-"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.method}</td>
-                  <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
-                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        );
-      case "changelog":
+          await deleteSunflowerNutritionData(id);
+          break;
+        case "changelog":
           await deleteChangelog(id);
           break;
         case "regions":
@@ -1063,22 +997,38 @@ export function Admin() {
       { value: 'bioinformatics', label: 'Bioinformatics' },
     ];
 
+    const getFieldLabel = (key: string) => key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    const wideFields = new Set(['content', 'description', 'function', 'tags', 'image', 'address']);
+    const requiredFields = new Set(['title', 'name', 'username', 'email', 'sample_code']);
+    const fieldWrapperClass = (key: string) =>
+      `space-y-2 rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-colors focus-within:border-amber-300 focus-within:bg-amber-50/30 ${
+        wideFields.has(key) ? 'md:col-span-2' : ''
+      }`;
+    const inputClass = "w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20";
+    const paddedInputClass = "w-full rounded-md border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20";
+    const selectClass = "w-full appearance-none rounded-md border border-slate-300 bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20";
+
     return (
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Form Fields - Single Column */}
-        <div className="grid grid-cols-1 gap-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {formError && (
+          <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+            <span>{formError}</span>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {formFields.map((key) => (
-            <div key={key} className="space-y-2">
+            <div key={key} className={fieldWrapperClass(key)}>
               <div className="flex items-center justify-between">
                 <label 
                   htmlFor={key} 
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-semibold text-slate-700"
                 >
-                  {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  {getFieldLabel(key)}
                 </label>
-                {/* Required field indicator */}
-                {['title', 'name', 'username', 'email'].includes(key) && (
-                  <span className="text-red-500 font-medium">*</span>
+                {requiredFields.has(key) && (
+                  <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-600">Required</span>
                 )}
               </div>
               
@@ -1090,7 +1040,7 @@ export function Admin() {
                         id={key}
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 resize-none shadow-sm"
+                        className={`${inputClass} min-h-32 resize-y`}
                         rows={5}
                         placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
                       />
@@ -1099,9 +1049,7 @@ export function Admin() {
                 } else if (key === 'image' && activeType === 'news') {
                   return (
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        🖼️
-                      </span>
+                      <ImageIcon className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
                       <input
                         id={key}
                         type="file"
@@ -1112,15 +1060,15 @@ export function Admin() {
                             setFormData({ ...formData, [key]: file });
                           }
                         }}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                        className="w-full cursor-pointer rounded-lg border border-dashed border-slate-300 bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-700 file:mr-4 file:rounded-md file:border-0 file:bg-amber-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:border-amber-300 hover:bg-amber-50/50"
                       />
                       {formData[key] && typeof formData[key] === 'string' && (
-                        <div className="mt-2 text-sm text-gray-600">
+                        <div className="mt-2 rounded-md bg-slate-100 px-3 py-2 text-sm text-slate-600">
                           Current image: {formData[key].split('/').pop()}
                         </div>
                       )}
                       {formData[key] && typeof formData[key] === 'object' && (
-                        <div className="mt-2 text-sm text-gray-600">
+                        <div className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
                           Selected image: {formData[key].name}
                         </div>
                       )}
@@ -1129,10 +1077,10 @@ export function Admin() {
                 } else if (key === 'is_active' || key === 'is_published' || key === 'is_scrolling') {
                   const isChecked = formData[key] === true || formData[key] === 'true';
                   return (
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-between rounded-md bg-slate-50 px-3 py-2">
                       <label
                         htmlFor={key}
-                        className="text-sm text-gray-600 cursor-pointer flex-1"
+                        className="cursor-pointer text-sm text-slate-600"
                       >
                         {key === 'is_active' ? 'Active' : key === 'is_published' ? 'Published' : 'Scrolling Display'}
                       </label>
@@ -1157,14 +1105,11 @@ export function Admin() {
                 } else if (key === 'region') {
                   return (
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        📍
-                      </span>
                       <select
                         id={key}
                         value={formData[key] ?? ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                        className={selectClass}
                       >
                         <option value="">Select Region</option>
                         {regions.map((region) => (
@@ -1173,22 +1118,18 @@ export function Admin() {
                           </option>
                         ))}
                       </select>
-                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                        ▼
-                      </span>
+                      <MapPin className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                      <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
                     </div>
                   );
                 } else if (key === 'variety') {
                   return (
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        🌱
-                      </span>
                       <select
                         id={key}
                         value={formData[key] ?? ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                        className={selectClass}
                       >
                         <option value="">Select Variety</option>
                         {varieties.map((variety) => (
@@ -1197,22 +1138,18 @@ export function Admin() {
                           </option>
                         ))}
                       </select>
-                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                        ▼
-                      </span>
+                      <Leaf className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                      <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
                     </div>
                   );
                 } else if (key === 'gene') {
                   return (
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        🧬
-                      </span>
                       <select
                         id={key}
                         value={formData[key] ?? ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                        className={selectClass}
                       >
                         <option value="">Select Gene</option>
                         {genes.map((gene) => (
@@ -1221,22 +1158,18 @@ export function Admin() {
                           </option>
                         ))}
                       </select>
-                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                        ▼
-                      </span>
+                      <Dna className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                      <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
                     </div>
                   );
                 } else if (key === 'institution') {
                   return (
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        🏢
-                      </span>
                       <select
                         id={key}
                         value={formData[key] ?? ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                        className={selectClass}
                       >
                         <option value="">Select Institution</option>
                         {institutions.map((institution) => (
@@ -1245,23 +1178,20 @@ export function Admin() {
                           </option>
                         ))}
                       </select>
-                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                        ▼
-                      </span>
+                      <Building className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                      <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
                     </div>
                   );
                 } else if (key.includes('password')) {
                   return (
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        ••••
-                      </span>
+                      <span className="pointer-events-none absolute left-3 top-2.5 text-sm font-semibold text-slate-400">•••</span>
                       <input
                         id={key}
                         type="password"
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                        className={paddedInputClass}
                         placeholder="Enter password"
                       />
                     </div>
@@ -1277,7 +1207,7 @@ export function Admin() {
                         type="email"
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                        className={paddedInputClass}
                         placeholder="Enter email address"
                       />
                     </div>
@@ -1285,30 +1215,26 @@ export function Admin() {
                 } else if (key.includes('date')) {
                   return (
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        📅
-                      </span>
+                      <span className="pointer-events-none absolute left-3 top-2.5 text-sm text-slate-400">Date</span>
                       <input
                         id={key}
                         type="date"
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                        className="w-full rounded-md border border-slate-300 bg-white py-2.5 pl-14 pr-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
                       />
                     </div>
                   );
                 } else if (key.includes('url') || key.includes('website')) {
                   return (
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        🔗
-                      </span>
+                      <span className="pointer-events-none absolute left-3 top-2.5 text-sm font-medium text-slate-400">URL</span>
                       <input
                         id={key}
                         type="url"
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                        className={paddedInputClass}
                         placeholder="Enter URL"
                       />
                     </div>
@@ -1316,14 +1242,11 @@ export function Admin() {
                 } else if (key === 'importance') {
                   return (
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        ⭐
-                      </span>
                       <select
                         id={key}
                         value={formData[key] || 'normal'}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                        className={selectClass}
                       >
                         {importanceOptions.map((option) => (
                           <option key={option.value} value={option.value}>
@@ -1331,22 +1254,18 @@ export function Admin() {
                           </option>
                         ))}
                       </select>
-                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                        ▼
-                      </span>
+                      <Bell className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                      <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
                     </div>
                   );
                 } else if (key === 'institution_type') {
                   return (
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        🏢
-                      </span>
                       <select
                         id={key}
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                        className={selectClass}
                       >
                         <option value="">Select institution type</option>
                         {institutionTypeOptions.map((option) => (
@@ -1355,22 +1274,18 @@ export function Admin() {
                           </option>
                         ))}
                       </select>
-                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                        ▼
-                      </span>
+                      <Building className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                      <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
                     </div>
                   );
                 } else if (key === 'announcement_type') {
                   return (
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        📢
-                      </span>
                       <select
                         id={key}
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                        className={selectClass}
                       >
                         <option value="">Select announcement type</option>
                         {announcementTypeOptions.map((option) => (
@@ -1379,22 +1294,18 @@ export function Admin() {
                           </option>
                         ))}
                       </select>
-                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                        ▼
-                      </span>
+                      <Bell className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                      <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
                     </div>
                   );
                 } else if (key === 'category' && activeType === 'news') {
                   return (
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        📰
-                      </span>
                       <select
                         id={key}
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                        className={selectClass}
                       >
                         <option value="">Select Category</option>
                         {newsCategoryOptions.map((option) => (
@@ -1403,9 +1314,8 @@ export function Admin() {
                           </option>
                         ))}
                       </select>
-                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                        ▼
-                      </span>
+                      <FileText className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                      <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
                     </div>
                   );
                 } else if (key === 'tags' && activeType === 'news') {
@@ -1433,10 +1343,10 @@ export function Admin() {
                               key={option.value}
                               type="button"
                               onClick={() => toggleTag(option.value)}
-                              className={`px-3 py-1.5 text-sm rounded-full transition-all duration-200 ${
+                              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
                                 isSelected
-                                  ? 'bg-amber-500 text-white shadow-md'
-                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                  ? 'bg-amber-500 text-white shadow-sm'
+                                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                               }`}
                             >
                               {option.label}
@@ -1459,7 +1369,7 @@ export function Admin() {
                         type="number"
                         value={formData[key] ?? ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseFloat(e.target.value) })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                        className={inputClass}
                         placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
                       />
                     </div>
@@ -1472,7 +1382,7 @@ export function Admin() {
                         type="text"
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                        className={inputClass}
                         placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
                       />
                     </div>
@@ -1484,19 +1394,22 @@ export function Admin() {
         </div>
         
         {/* Form Actions */}
-        <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-gray-200">
+        <div className="sticky bottom-0 -mx-1 flex flex-col gap-3 border-t border-slate-200 bg-white/95 px-1 pt-4 backdrop-blur sm:flex-row sm:justify-end">
           <button
             type="button"
-            onClick={closeModal}
-            className="px-8 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 flex-1 sm:flex-none font-medium shadow-sm hover:shadow"
+            onClick={() => closeModal()}
+            disabled={isSubmitting}
+            className="rounded-md border border-slate-300 bg-white px-6 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-8 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-200 flex-1 sm:flex-none font-medium shadow-sm hover:shadow"
+            disabled={isSubmitting}
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-amber-500 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:bg-amber-300"
           >
-            {editingItem ? 'Save Changes' : 'Add'}
+            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {isSubmitting ? 'Saving...' : editingItem ? 'Save Changes' : 'Add'}
           </button>
         </div>
       </form>
@@ -1543,25 +1456,25 @@ export function Admin() {
         </div>
       </aside>
 
-      <main className="flex-1 bg-gray-100 p-6 ml-64">
-        <div className="bg-white rounded-lg shadow">
-            <div className="p-4 border-b flex items-center justify-between">
+      <main className="flex-1 bg-slate-100 p-6 ml-64">
+        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+            <div className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white p-4">
               <div className="flex items-center gap-4">
-                <h2 className="text-xl font-semibold">{dataTypeConfig[activeType].title} Management</h2>
+                <h2 className="text-xl font-semibold text-slate-900">{dataTypeConfig[activeType].title} Management</h2>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
                     placeholder="Search..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    className="rounded-md border border-slate-300 py-2 pl-10 pr-4 text-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
                   />
                 </div>
               </div>
               <button
                 onClick={() => openModal()}
-                className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600"
+                className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-600"
               >
                 <Plus className="h-5 w-5" /> Add {dataTypeConfig[activeType].title.slice(0, -1)}
               </button>
@@ -1582,17 +1495,24 @@ export function Admin() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white">
-              <h2 className="text-xl font-semibold">
-                {editingItem ? 'Edit' : 'Add'} {dataTypeConfig[activeType].title.slice(0, -1)}
-              </h2>
-              <button onClick={closeModal} className="text-gray-400 hover:text-gray-600">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm">
+          <div className="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black/10">
+            <div className="sticky top-0 z-10 flex items-start justify-between border-b border-slate-200 bg-white px-6 py-5">
+              <div>
+                <p className="text-sm font-medium text-amber-700">{dataTypeConfig[activeType].title}</p>
+                <h2 className="text-2xl font-semibold text-slate-950">
+                  {editingItem ? 'Edit record' : 'Add record'}
+                </h2>
+              </div>
+              <button
+                onClick={() => closeModal()}
+                disabled={isSubmitting}
+                className="rounded-md p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
                 <X className="h-6 w-6" />
               </button>
             </div>
-            <div className="p-4">{renderForm()}</div>
+            <div className="overflow-y-auto bg-slate-50 p-6">{renderForm()}</div>
           </div>
         </div>
       )}
