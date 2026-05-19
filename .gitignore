@@ -15,4 +15,3 @@ sunnfcdb/backend/.env
 build
 .qwen
 *.docx
-dist
