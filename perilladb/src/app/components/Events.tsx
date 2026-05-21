@@ -68,8 +68,8 @@ export function Events() {
   const { t } = useTranslation();
 
   return (
-    <div className="bg-slate-50">
-      <div className="mx-auto max-w-7xl space-y-8 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="relative">
+      <div className="mx-auto max-w-7xl space-y-10 px-4 py-12 sm:px-6 lg:px-8">
         <section className="relative overflow-hidden rounded-[1.75rem] p-8 text-white shadow-xl" style={{ backgroundImage: `linear-gradient(90deg, rgba(15,23,42,.82), rgba(15,23,42,.36)), url(${cropConfig.pageImages.events})`, backgroundSize: "cover", backgroundPosition: "center" }}>
           <div className="relative max-w-4xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur"><Calendar className="h-4 w-4" />{cropConfig.cropName} event calendar</div>
@@ -80,18 +80,18 @@ export function Events() {
         </section>
 
 
-        <section className="grid gap-6 lg:grid-cols-3">
-          <div className="rounded-[1.25rem] border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
+        <section className="grid gap-8 border-l-4 py-2 pl-6 lg:grid-cols-3" style={{ borderColor: cropConfig.accent }}>
+          <div className="lg:col-span-2">
             <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: cropConfig.accent }}>Program scope</p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-950">Events connect field work, database curation and analysis training</h2>
             <p className="mt-3 text-sm leading-7 text-slate-600">
               The event calendar is organized around the full database lifecycle: sample collection, phenotype scoring, molecular profiling, data upload, quality review and public communication. Each event record is written to help participants understand what data products or training outcomes are expected.
             </p>
           </div>
-          <div className="rounded-[1.25rem] p-6 text-white shadow-sm" style={{ backgroundColor: cropConfig.accentDark }}>
+          <div className="border-y border-slate-200 py-6 text-slate-900">
             <h3 className="text-xl font-semibold">Common tracks</h3>
-            <div className="mt-5 space-y-3 text-sm text-white/82">
-              {["Field sampling", "Curation workshop", "Omics interpretation", "Database release review"].map((item) => <div key={item} className="rounded-xl bg-white/10 p-3">{item}</div>)}
+            <div className="mt-5 divide-y divide-slate-200 text-sm text-slate-700">
+              {["Field sampling", "Curation workshop", "Omics interpretation", "Database release review"].map((item) => <div key={item} className="py-3">{item}</div>)}
             </div>
           </div>
         </section>
@@ -115,11 +115,11 @@ export function Events() {
           ))}
         </section>
 
-        <section>
+        <section className="border-t border-slate-200 pt-8">
           <h2 className="mb-6 text-2xl font-semibold text-slate-950">{t("events.past")}</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-0 divide-y divide-slate-200 md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-3">
             {pastEvents.map((event) => (
-              <div key={event.title} className="rounded-[1.25rem] border border-slate-200 bg-white p-5 shadow-sm">
+              <div key={event.title} className="p-5">
                 <span className="rounded-full px-3 py-1 text-sm font-medium" style={{ backgroundColor: cropConfig.accentSoft, color: cropConfig.accentDark }}>{event.type}</span>
                 <h3 className="mt-3 text-lg font-semibold text-slate-950">{event.title}</h3>
                 <p className="mt-3 flex items-center text-sm text-slate-600"><Calendar className="mr-2 h-4 w-4" />{event.date}</p>

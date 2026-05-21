@@ -25,8 +25,8 @@ export function Contact() {
       </section>
 
 
-      <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-[1.25rem] border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="grid gap-8 border-l-4 py-2 pl-6 lg:grid-cols-[1.1fr_0.9fr]" style={{ borderColor: cropConfig.accent }}>
+        <div>
           <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: cropConfig.accent }}>Database profile</p>
           <h2 className="mt-2 text-2xl font-semibold text-slate-950">A shared workspace for crop functional component data</h2>
           <p className="mt-3 text-sm leading-7 text-slate-600">
@@ -36,11 +36,11 @@ export function Contact() {
             The contact channel is intended for dataset submissions, correction requests, collaborative event planning and questions about integrating local experimental records with the public database model.
           </p>
         </div>
-        <div className="rounded-[1.25rem] p-6 text-white shadow-sm" style={{ backgroundColor: cropConfig.accentDark }}>
+        <div className="border-y border-slate-200 py-6 text-slate-900">
           <h3 className="text-xl font-semibold">Collaboration requests</h3>
-          <div className="mt-5 space-y-3 text-sm text-white/82">
+          <div className="mt-5 divide-y divide-slate-200 text-sm text-slate-700">
             {["New dataset registration", "Trait vocabulary correction", "Genome browser track preparation", "Training and workshop coordination"].map((item) => (
-              <div key={item} className="rounded-xl bg-white/10 p-3">{item}</div>
+              <div key={item} className="py-3">{item}</div>
             ))}
           </div>
         </div>
@@ -49,9 +49,9 @@ export function Contact() {
         <section className="rounded-[1.25rem] border border-slate-200 bg-white p-6 shadow-sm"><h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-900"><Send className="h-5 w-5" style={{ color: cropConfig.accent }} />{t("contact.form")}</h2><form className="space-y-4"><Field label={t("contact.name")} placeholder={t("contact.name")} /><Field label={t("contact.email")} placeholder="your@email.com" type="email" /><Field label={t("contact.subject")} placeholder={t("contact.subject")} /><div><label className="mb-1 block text-sm font-medium text-slate-700">{t("contact.message")}</label><textarea rows={5} className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2" placeholder={t("contact.message")} /></div><button type="submit" className="w-full rounded-xl py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90" style={{ backgroundColor: cropConfig.accent }}>{t("contact.send")}</button></form></section>
 
         <div className="space-y-6">
-          <section className="rounded-[1.25rem] border border-slate-200 bg-white p-6 shadow-sm"><h2 className="mb-5 flex items-center gap-2 text-lg font-semibold text-slate-900"><Mail className="h-5 w-5" style={{ color: cropConfig.accent }} />{t("contact.info")}</h2><div className="grid gap-4 sm:grid-cols-2"><Info icon={<MapPin className="h-5 w-5" />} label={t("contact.address")} value={cropConfig.fieldNetwork} /><Info icon={<Mail className="h-5 w-5" />} label={t("contact.email")} value={`contact@${cropConfig.key}.org`} /><Info icon={<Phone className="h-5 w-5" />} label={t("contact.phone")} value="+86 10 1234 5678" /><Info icon={<Globe className="h-5 w-5" />} label={t("contact.website")} value={`www.${cropConfig.key}.org`} /></div></section>
+          <section className="border-y border-slate-200 py-6"><h2 className="mb-5 flex items-center gap-2 text-lg font-semibold text-slate-900"><Mail className="h-5 w-5" style={{ color: cropConfig.accent }} />{t("contact.info")}</h2><div className="grid gap-4 sm:grid-cols-2"><Info icon={<MapPin className="h-5 w-5" />} label={t("contact.address")} value={cropConfig.fieldNetwork} /><Info icon={<Mail className="h-5 w-5" />} label={t("contact.email")} value={`contact@${cropConfig.key}.org`} /><Info icon={<Phone className="h-5 w-5" />} label={t("contact.phone")} value="+86 10 1234 5678" /><Info icon={<Globe className="h-5 w-5" />} label={t("contact.website")} value={`www.${cropConfig.key}.org`} /></div></section>
 
-          <section className="rounded-[1.25rem] border border-slate-200 bg-white p-6 shadow-sm"><div className="mb-5 flex items-center justify-between gap-4"><div><h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900"><Users className="h-5 w-5" style={{ color: cropConfig.accent }} />{t("contact.collaborators")}</h2><p className="mt-1 text-sm text-slate-500">Partner profiles support traceable data ownership and project communication.</p></div><span className="rounded-full px-3 py-1 text-xs font-semibold" style={{ backgroundColor: cropConfig.accentSoft, color: cropConfig.accentDark }}>{cropConfig.cropName} consortium</span></div><div className="grid gap-3 md:grid-cols-2">{(institutions.length ? institutions : fallbackPartners.map((name, id) => ({ id, name }))).map((item, index) => <article key={item.id ?? index} className="rounded-xl border border-slate-200 bg-slate-50 p-4"><div className="flex items-start gap-3"><Building2 className="mt-0.5 h-5 w-5" style={{ color: cropConfig.accent }} /><div className="min-w-0"><h3 className="truncate font-semibold text-slate-900">{cleanText(item.abbreviation || item.name, "Research institution")}</h3><p className="mt-1 text-sm text-slate-500">{cleanText(item.institution_type, "Research partner")} · {cleanText(item.city || item.country, "Location pending")}</p><p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500">{cleanText(item.website || item.email || item.description, "Institution profile pending")}</p></div></div></article>)}</div></section>
+          <section className="py-1"><div className="mb-5 flex items-center justify-between gap-4"><div><h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900"><Users className="h-5 w-5" style={{ color: cropConfig.accent }} />{t("contact.collaborators")}</h2><p className="mt-1 text-sm text-slate-500">Partner profiles support traceable data ownership and project communication.</p></div><span className="rounded-full px-3 py-1 text-xs font-semibold" style={{ backgroundColor: cropConfig.accentSoft, color: cropConfig.accentDark }}>{cropConfig.cropName} consortium</span></div><div className="grid gap-3 md:grid-cols-2">{(institutions.length ? institutions : fallbackPartners.map((name, id) => ({ id, name }))).map((item, index) => <article key={item.id ?? index} className="border-l border-slate-200 py-2 pl-4"><div className="flex items-start gap-3"><Building2 className="mt-0.5 h-5 w-5" style={{ color: cropConfig.accent }} /><div className="min-w-0"><h3 className="truncate font-semibold text-slate-900">{cleanText(item.abbreviation || item.name, "Research institution")}</h3><p className="mt-1 text-sm text-slate-500">{cleanText(item.institution_type, "Research partner")} · {cleanText(item.city || item.country, "Location pending")}</p><p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500">{cleanText(item.website || item.email || item.description, "Institution profile pending")}</p></div></div></article>)}</div></section>
         </div>
       </div>
     </div>

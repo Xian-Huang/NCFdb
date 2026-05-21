@@ -322,16 +322,48 @@ export function Home() {
         </div>
       </section>
 
-      <section className="bg-gradient-to-r from-green-500 to-yellow-500 py-12 text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 gap-6 text-center md:grid-cols-4">
-            {dataOverview.map((item) => (
-              <div key={item.label} className="rounded-2xl bg-white/12 p-5 backdrop-blur">
-                <div className="text-4xl font-bold">{item.value}</div>
-                <div className="mt-2 text-sm font-medium text-green-50">{item.label}</div>
-                <div className="mt-1 text-xs text-green-100">{item.note}</div>
-              </div>
-            ))}
+      <section className="border-y border-green-100 bg-white py-14">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:px-8">
+          <div className="relative overflow-hidden rounded-[1.75rem]">
+            <ImageWithFallback
+              src="/hero-bg.jpg"
+              alt="Sunflower field"
+              className="h-full min-h-[300px] w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/15 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-green-100">Species context</p>
+              <h2 className="mt-2 text-3xl font-bold">Helianthus annuus evidence map</h2>
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-green-700">Beyond summary metrics</p>
+            <h2 className="mt-2 text-3xl font-bold text-slate-950">Research signals organized for sunflower quality discovery</h2>
+            <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600">
+              Instead of repeating headline counts, this section explains how SunflowerDB connects oil composition, stress adaptation and candidate gene evidence across germplasm records, field notes and omics files.
+            </p>
+
+            <div className="mt-7 divide-y divide-green-100 border-y border-green-100">
+              {[
+                ["Oil quality axis", "Fatty acid composition, seed nutrition indicators and functional component records are linked to accession metadata."],
+                ["Adaptation axis", "Salt tolerance, broomrape resistance and regional trial notes help users compare germplasm under field-relevant conditions."],
+                ["Molecular evidence axis", "Genome annotation, expression evidence and variation records support candidate gene screening and downstream validation."],
+              ].map(([title, desc]) => (
+                <div key={title} className="grid gap-3 py-4 sm:grid-cols-[180px_1fr]">
+                  <h3 className="font-semibold text-green-900">{title}</h3>
+                  <p className="text-sm leading-6 text-slate-600">{desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              {["oil composition", "seed nutrition", "salt tolerance", "broomrape resistance", "candidate genes"].map((tag) => (
+                <span key={tag} className="rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-800 ring-1 ring-green-100">
+                  {tag}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -342,7 +374,7 @@ export function Home() {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-green-700">Release Notes</p>
             <h2 className="mt-2 text-3xl font-bold text-slate-950">{t("home.newsUpdates")}</h2>
           </div>
-          <BookOpen className="hidden h-10 w-10 text-amber-400 sm:block" />
+          <BookOpen className="hidden h-10 w-10 sm:block" style={{ color: cropConfig.accent }} />
         </div>
         {loading ? (
           <p className="text-gray-500">{t("home.loading")}</p>

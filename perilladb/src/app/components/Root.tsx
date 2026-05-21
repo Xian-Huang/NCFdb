@@ -8,6 +8,8 @@ export function Root() {
 
   return (
     <div className="flex min-h-screen flex-col" style={{ backgroundColor: cropConfig.accentSoft }}>
+      <div className="pointer-events-none absolute inset-0 -z-10" style={{ background: `radial-gradient(circle at 12% 8%, ${cropConfig.accentSoft} 0, transparent 28%), radial-gradient(circle at 86% 18%, ${cropConfig.accentSoft} 0, transparent 24%), linear-gradient(180deg, #ffffff 0%, #f8fafc 38%, #ffffff 100%)` }} />
+      <div className="pointer-events-none absolute left-[-5rem] top-28 -z-10 h-64 w-64 rounded-full opacity-40 blur-3xl" style={{ backgroundColor: cropConfig.accentSoft }} />
       <Navigation />
       <main className="container mx-auto flex-1 px-4 py-6">
         <Outlet />

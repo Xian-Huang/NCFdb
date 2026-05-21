@@ -67,8 +67,8 @@ export function News() {
   }
 
   return (
-    <div className="bg-slate-50">
-      <div className="mx-auto max-w-7xl space-y-8 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="relative">
+      <div className="mx-auto max-w-7xl space-y-10 px-4 py-12 sm:px-6 lg:px-8">
         <section className="relative overflow-hidden rounded-[1.75rem] p-8 text-white shadow-xl" style={{ backgroundImage: `linear-gradient(90deg, rgba(15,23,42,.84), rgba(15,23,42,.42)), url(${cropConfig.pageImages.news})`, backgroundSize: "cover", backgroundPosition: "center" }}>
           <div className="relative max-w-4xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur">
@@ -81,7 +81,7 @@ export function News() {
           </div>
         </section>
 
-        <div className="flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+        <div className="flex flex-wrap gap-2 border-y border-slate-200 py-4">
           {categories.map((category) => (
             <button key={category} onClick={() => setSelectedCategory(category)} className="rounded-full border px-4 py-2 text-sm transition-colors" style={selectedCategory === category ? { backgroundColor: cropConfig.accent, borderColor: cropConfig.accent, color: "white" } : { backgroundColor: "white", borderColor: "#e5e7eb", color: "#334155" }}>
               {category === "All" ? t("news.categories.all") : category}
@@ -90,18 +90,18 @@ export function News() {
         </div>
 
 
-        <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-[1.25rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="grid gap-8 border-l-4 py-2 pl-6 lg:grid-cols-[0.9fr_1.1fr]" style={{ borderColor: cropConfig.accent }}>
+          <div>
             <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: cropConfig.accent }}>Editorial scope</p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-950">What appears in database news</h2>
             <p className="mt-3 text-sm leading-7 text-slate-600">
               News records document dataset releases, curation decisions, trait highlights, community events and analysis notes. Each story is treated as a lightweight release note so users can understand what changed and where to find the related database evidence.
             </p>
           </div>
-          <div className="rounded-[1.25rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <div>
             <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: cropConfig.accent }}>Reading guide</p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              {["Release context", "Linked resource", "Research impact"].map((item) => <div key={item} className="rounded-xl bg-slate-50 p-4 text-sm font-medium text-slate-700">{item}</div>)}
+            <div className="mt-4 divide-y divide-slate-200 text-sm font-medium text-slate-700">
+              {["Release context", "Linked resource", "Research impact"].map((item) => <div key={item} className="py-3">{item}</div>)}
             </div>
           </div>
         </section>

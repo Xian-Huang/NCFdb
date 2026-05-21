@@ -31,20 +31,20 @@ export function Tools() {
       </div>
 
 
-      <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        <div className="rounded-[1.25rem] border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="grid gap-8 border-l-4 py-2 pl-6 lg:grid-cols-[1.05fr_0.95fr]" style={{ borderColor: cropConfig.accent }}>
+        <div>
           <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: cropConfig.accent }}>Analysis workflow</p>
           <h2 className="mt-2 text-2xl font-semibold text-slate-950">From query to evidence package</h2>
           <p className="mt-3 text-sm leading-7 text-slate-600">
             The tool bench is designed for repeated research tasks: start with a gene, accession or sequence query, inspect linked annotations, compare trait evidence, then export a compact result set for downstream statistics or figure preparation.
           </p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="mt-5 grid gap-x-6 gap-y-3 sm:grid-cols-2">
             {["Search genome and annotation indexes", "Review browser tracks and variation panels", "Compare expression and nutrition evidence", "Export tables, figures and API-ready identifiers"].map((item, index) => (
-              <div key={item} className="rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700"><span className="font-semibold" style={{ color: cropConfig.accentDark }}>0{index + 1}</span> {item}</div>
+              <div key={item} className="border-t border-slate-200 py-3 text-sm leading-6 text-slate-700"><span className="font-semibold" style={{ color: cropConfig.accentDark }}>0{index + 1}</span> {item}</div>
             ))}
           </div>
         </div>
-        <div className="rounded-[1.25rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="border-y border-slate-200 py-6">
           <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: cropConfig.accent }}>Output standards</p>
           <h2 className="mt-2 text-2xl font-semibold text-slate-950">Reusable results</h2>
           <p className="mt-3 text-sm leading-7 text-slate-600">

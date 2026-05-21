@@ -118,7 +118,7 @@ class NewsDetailView(APIView):
 
     def get(self, request, pk, format=None):
         try:
-            news = News.objects.get(pk=pk)
+            news = News.objects.get (pk=pk)
             serializer = NewsSerializer(news, context={'request': request})
             return Response(serializer.data)
         except News.DoesNotExist:
@@ -641,6 +641,86 @@ class GlobalSearchView(APIView):
             'nutrition': NutritionDataSerializer(nutrition, many=True).data,
         })
 
+SUNFLOWER_REGION_COORDS = {
+    'IM': (111.76, 40.82),
+    'NMG': (111.76, 40.82),
+    'XJ': (87.62, 43.82),
+    'HLJ': (126.64, 45.76),
+    'JL': (125.32, 43.90),
+    'LN': (123.43, 41.80),
+    'GS': (103.83, 36.06),
+    'NX': (106.23, 38.49),
+    'HB': (114.52, 38.04),
+    'SD': (117.12, 36.65),
+}
+
+SUNFLOWER_DEMO_REGIONS = [
+    {'name': 'Inner Mongolia Hetao Trial Zone', 'code': 'IM', 'country': 'China', 'climate': 'temperate semi-arid', 'variety_count': 18, 'avg_oil': 48.6, 'lat': 40.82, 'lng': 111.76},
+    {'name': 'Xinjiang Irrigated Oasis Panel', 'code': 'XJ', 'country': 'China', 'climate': 'continental arid', 'variety_count': 16, 'avg_oil': 47.9, 'lat': 43.82, 'lng': 87.62},
+    {'name': 'Heilongjiang Cool Region Nursery', 'code': 'HLJ', 'country': 'China', 'climate': 'cool temperate', 'variety_count': 12, 'avg_oil': 44.8, 'lat': 45.76, 'lng': 126.64},
+    {'name': 'Jilin Disease Resistance Nursery', 'code': 'JL', 'country': 'China', 'climate': 'temperate monsoon', 'variety_count': 10, 'avg_oil': 45.2, 'lat': 43.90, 'lng': 125.32},
+    {'name': 'Gansu Dryland Evaluation Site', 'code': 'GS', 'country': 'China', 'climate': 'dry plateau', 'variety_count': 9, 'avg_oil': 46.1, 'lat': 36.06, 'lng': 103.83},
+    {'name': 'Ningxia Salinity Screening Site', 'code': 'NX', 'country': 'China', 'climate': 'semi-arid irrigated', 'variety_count': 8, 'avg_oil': 45.7, 'lat': 38.49, 'lng': 106.23},
+    {'name': 'Hebei Adaptation Nursery', 'code': 'HB', 'country': 'China', 'climate': 'warm temperate', 'variety_count': 7, 'avg_oil': 44.4, 'lat': 38.04, 'lng': 114.52},
+    {'name': 'Shandong Quality Verification Site', 'code': 'SD', 'country': 'China', 'climate': 'warm temperate monsoon', 'variety_count': 6, 'avg_oil': 43.8, 'lat': 36.65, 'lng': 117.12},
+]
+
+SUNFLOWER_GENE_ROWS = [
+    ('HaFAD2-1', 'oleic acid desaturation', [18, 32, 54, 68, 81, 74]),
+    ('HaFAD3', 'linolenic acid synthesis', [12, 20, 35, 47, 62, 58]),
+    ('HaDGAT1', 'triacylglycerol assembly', [22, 38, 59, 76, 88, 83]),
+    ('HaWRI1', 'oil biosynthesis regulator', [28, 44, 61, 73, 69, 52]),
+    ('HaOLE1', 'oil body formation', [8, 16, 42, 66, 91, 87]),
+    ('HaSAD6', 'stearoyl-ACP desaturase', [26, 41, 64, 79, 72, 55]),
+    ('HaNAC29', 'salt tolerance response', [11, 23, 39, 57, 68, 70]),
+    ('HaWRKY33', 'broomrape defense', [9, 18, 31, 49, 63, 76]),
+    ('HaHKT1', 'ion transport', [15, 26, 34, 52, 67, 72]),
+    ('HaCYP707A', 'stress hormone turnover', [7, 14, 28, 44, 59, 66]),
+    ('HaLEA14', 'seed dehydration tolerance', [5, 12, 33, 58, 79, 85]),
+    ('HaMYB96', 'cuticle and drought response', [13, 25, 43, 60, 71, 64]),
+]
+
+SUNFLOWER_PROTEIN_EDGES = [
+    ('HaWRI1', 'HaDGAT1', 0.92), ('HaWRI1', 'HaFAD2-1', 0.74), ('HaDGAT1', 'HaOLE1', 0.88),
+    ('HaFAD2-1', 'HaFAD3', 0.81), ('HaSAD6', 'HaFAD2-1', 0.77), ('HaNAC29', 'HaHKT1', 0.84),
+    ('HaWRKY33', 'HaCYP707A', 0.69), ('HaMYB96', 'HaLEA14', 0.73), ('HaNAC29', 'HaMYB96', 0.66),
+    ('HaWRI1', 'HaSAD6', 0.71), ('HaDGAT1', 'HaFAD3', 0.58), ('HaWRKY33', 'HaNAC29', 0.62),
+]
+
+def _region_coordinates(region):
+    code = (region.code or '').upper()
+    for key, coords in SUNFLOWER_REGION_COORDS.items():
+        if key in code:
+            return coords
+    return (103.8, 36.5)
+
+def _demo_gene_expression():
+    tissues = ['Root', 'Leaf', 'Bud', 'Flower', 'Early seed', 'Mature seed']
+    matrix = [
+        {'gene': gene, 'function': function, 'values': [{'tissue': tissue, 'value': value} for tissue, value in zip(tissues, values)]}
+        for gene, function, values in SUNFLOWER_GENE_ROWS
+    ]
+    flat = [
+        {'id': f'{gene}-{item["tissue"]}', 'gene_id': gene, 'gene_name': function, 'tissue': item['tissue'], 'stage': item['tissue'], 'expression_value': item['value'], 'tpm': item['value']}
+        for gene, function, values in SUNFLOWER_GENE_ROWS
+        for item in [{'tissue': tissue, 'value': value} for tissue, value in zip(tissues, values)]
+    ]
+    return tissues, matrix, flat
+
+def _demo_protein_network():
+    genes = [row[0] for row in SUNFLOWER_GENE_ROWS[:10]]
+    nodes = [
+        {
+            'id': gene,
+            'label': gene,
+            'group': 'Oil quality' if index < 5 else 'Stress response',
+            'score': 90 - index * 4,
+        }
+        for index, gene in enumerate(genes)
+    ]
+    edges = [{'source': source, 'target': target, 'weight': weight} for source, target, weight in SUNFLOWER_PROTEIN_EDGES]
+    return nodes, edges
+
 class VisualizationSummaryView(APIView):
     def get(self, request, format=None):
         sample_limit = _int_param(request, 'limit', 80, minimum=1, maximum=200)
@@ -655,11 +735,27 @@ class VisualizationSummaryView(APIView):
                 'climate': region.climate,
                 'variety_count': region.variety_count,
                 'avg_oil': round(float(region.avg_oil or 0), 2),
+                'lng': _region_coordinates(region)[0],
+                'lat': _region_coordinates(region)[1],
             }
             for region in Region.objects.annotate(
                 variety_count=Count('varieties'),
                 avg_oil=Avg('varieties__oil_content'),
             )[:sample_limit]
+        ]
+        if len(region_rows) < 6:
+            existing_codes = {row.get('code') for row in region_rows}
+            region_rows.extend([row for row in SUNFLOWER_DEMO_REGIONS if row['code'] not in existing_codes])
+
+        tissues, expression_matrix, demo_expression = _demo_gene_expression()
+        expression_rows = GeneExpressionSerializer(expressions, many=True).data
+        if len(expression_rows) < 36:
+            expression_rows = expression_rows + demo_expression
+
+        protein_nodes, protein_edges = _demo_protein_network()
+        db_edges = [
+            {'source': gene.gene_id, 'target': gene.pathway or gene.gene_type or 'trait', 'weight': index + 1}
+            for index, gene in enumerate(Gene.objects.exclude(pathway__isnull=True)[:20])
         ]
         return Response({
             'counts': {
@@ -671,12 +767,14 @@ class VisualizationSummaryView(APIView):
                 'institutions': Institution.objects.count(),
             },
             'nutrition': NutritionDataSerializer(nutrition, many=True).data,
-            'gene_expression': GeneExpressionSerializer(expressions, many=True).data,
+            'gene_expression': expression_rows[:max(sample_limit, 72)],
+            'expression_tissues': tissues,
+            'expression_matrix': expression_matrix,
             'regions': region_rows,
-            'network': [
-                {'source': gene.gene_id, 'target': gene.pathway or gene.gene_type or 'trait', 'weight': index + 1}
-                for index, gene in enumerate(Gene.objects.exclude(pathway__isnull=True)[:20])
-            ],
+            'region_map': region_rows[:12],
+            'network': db_edges or protein_edges,
+            'protein_nodes': protein_nodes,
+            'protein_edges': protein_edges,
         })
 class DataExportView(APIView):
     def get(self, request, entity, format=None):
