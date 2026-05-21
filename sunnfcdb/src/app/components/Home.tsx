@@ -16,6 +16,7 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { fetchChangelog, fetchScrollingNews } from "../../apis/data_apis";
+import { cropConfig } from "../cropConfig";
 
 interface ScrollingNewsItem {
   id: number;
