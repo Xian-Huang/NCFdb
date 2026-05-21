@@ -1,0 +1,2 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/DrawerHeaderHelpDialog-D9xZjPHz.js","assets/index-BQx3fFix.js","assets/index-BujaOf3c.css"])))=>i.map(i=>d[i]);
+import{o as a,j as e,bK as l,aT as s,aU as i,b as n,_ as p}from"./index-BQx3fFix.js";const u=n.lazy(()=>p(()=>import("./DrawerHeaderHelpDialog-D9xZjPHz.js"),__vite__mapDeps([0,1,2]))),H=a(function({session:o,helpText:r}){return e.jsx(l,{title:"Help",children:e.jsx(s,{color:"inherit",onClick:()=>{o.queueDialog(t=>[u,{onClose:t,helpText:r}])},children:e.jsx(i,{})})})});export{H as default};

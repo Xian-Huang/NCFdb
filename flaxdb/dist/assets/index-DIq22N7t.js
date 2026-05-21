@@ -1,1 +1,0 @@
-import{C as m}from"./Container-BAIhfw68.js";import{e as i,g as e}from"./index-BJcYz3hb.js";import"./styled-C1QIf2Wv.js";function r(t){return e("MuiContainer",t)}const n=i("MuiContainer",["root","disableGutters","fixed","maxWidthXs","maxWidthSm","maxWidthMd","maxWidthLg","maxWidthXl"]);export{n as containerClasses,m as default,r as getContainerUtilityClass};
