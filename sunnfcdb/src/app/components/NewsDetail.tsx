@@ -1,15 +1,17 @@
-import { Calendar, User, Tag, ArrowLeft, Eye } from "lucide-react";
+import { ArrowLeft, Calendar, Eye, Tag, User } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { fetchNewsDetail } from "../../apis/data_apis";
+import { cropConfig } from "../cropConfig";
 
 interface NewsItem {
   id: number;
   title: string;
   content: string;
   author: string;
-  image: string;
+  image?: string;
+  image_url?: string;
   category: string;
   tags: string;
   views: number;
@@ -18,6 +20,18 @@ interface NewsItem {
   update_time: string;
   publish_time: string;
 }
+
+const hasCjk = (value: unknown) => /[\u3400-\u9fff]/.test(String(value ?? ""));
+const cleanText = (value: unknown, fallback: string) => {
+  const text = String(value ?? "").trim();
+  return !text || hasCjk(text) ? fallback : text;
+};
+const normalizeParagraphs = (value: string) => String(value || "").replace(/<\/p>/g, "\n").replace(/<[^>]*>/g, "").split("\n").map((item) => item.trim()).filter((item) => item && !hasCjk(item));
+const imageSrc = (item: NewsItem) => {
+  const source = item.image_url || item.image || "";
+  if (source && !source.includes("/media/http") && !hasCjk(source)) return source;
+  return cropConfig.fallbackNewsImages[0] || cropConfig.pageImages.news;
+};
 
 export function NewsDetail() {
   const { id } = useParams<{ id: string }>();
@@ -46,132 +60,53 @@ export function NewsDetail() {
   const formatDateTime = (dateString: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleString("en-US", { 
-      year: "numeric", 
-      month: "short", 
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
+    return date.toLocaleString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
   };
 
-  if (loading) {
-    return (
-      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="text-center">Loading...</div>
-      </div>
-    );
-  }
+  if (loading) return <div className="mx-auto max-w-4xl px-4 py-12 text-center sm:px-6 lg:px-8">Loading...</div>;
 
   if (!news) {
-    return (
-      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">News not found</h1>
-          <Link to="/news" className="text-amber-600 hover:text-amber-700 mt-4 inline-block">
-            Back to News
-          </Link>
-        </div>
-      </div>
-    );
+    return <div className="mx-auto max-w-4xl px-4 py-12 text-center sm:px-6 lg:px-8"><h1 className="text-2xl font-bold text-slate-900">News not found</h1><Link to="/news" className="mt-4 inline-block" style={{ color: cropConfig.accent }}>Back to News</Link></div>;
   }
 
-  const tagList = news.tags ? news.tags.split(",").map(t => t.trim()) : [];
+  const tagList = news.tags ? news.tags.split(",").map((t) => cleanText(t.trim(), "")).filter(Boolean) : [];
+  const paragraphs = normalizeParagraphs(news.content);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-      {/* Back Button */}
-      <Link 
-        to="/news" 
-        className="mb-6 inline-flex items-center text-slate-600 transition-colors hover:text-amber-700"
-      >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to News
-      </Link>
+    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+      <Link to="/news" className="mb-6 inline-flex items-center text-slate-600 transition-colors hover:opacity-80"><ArrowLeft className="mr-2 h-4 w-4" />Back to News</Link>
 
-      {/* Article */}
-      <article className="overflow-hidden rounded-[1.75rem] border border-amber-100 bg-white shadow-xl shadow-amber-100/70">
-        {/* Cover Image */}
-        {news.image && (
-          <div className="h-64 w-full overflow-hidden md:h-96">
-            <ImageWithFallback
-              src={news.image}
-              alt={news.title || ""}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        )}
-
-        <div className="p-6 md:p-8">
-          {/* Meta Info */}
-          <div className="mb-6 flex flex-wrap items-center gap-4">
-            {news.category && (
-              <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800">
-                {news.category}
-              </span>
-            )}
-            <div className="flex items-center text-sm text-gray-500">
-              <Calendar className="h-4 w-4 mr-1" />
-              {formatDate(news.publish_time)}
+      <article className="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-xl">
+        <div className="relative min-h-[360px] overflow-hidden">
+          <ImageWithFallback src={imageSrc(news)} alt={cleanText(news.title, `${cropConfig.cropName} database news`)} className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent" />
+          <div className="relative flex min-h-[360px] flex-col justify-end p-7 text-white md:p-10">
+            <div className="mb-5 flex flex-wrap items-center gap-3 text-sm text-white/85">
+              {news.category && <span className="rounded-full bg-white/15 px-3 py-1 font-medium backdrop-blur">{cleanText(news.category, "Update")}</span>}
+              <span className="inline-flex items-center gap-1"><Calendar className="h-4 w-4" />{formatDate(news.publish_time)}</span>
+              <span className="inline-flex items-center gap-1"><User className="h-4 w-4" />{cleanText(news.author, "NCFdb Team")}</span>
+              <span className="inline-flex items-center gap-1"><Eye className="h-4 w-4" />{news.views} views</span>
             </div>
-            <div className="flex items-center text-sm text-gray-500">
-              <User className="h-4 w-4 mr-1" />
-              {news.author}
-            </div>
-            <div className="flex items-center text-sm text-gray-500">
-              <Eye className="h-4 w-4 mr-1" />
-              {news.views} views
-            </div>
-          </div>
-
-          {/* Title */}
-          <h1 className="mb-6 text-3xl font-bold text-slate-950 md:text-4xl">
-            {news.title}
-          </h1>
-
-          {/* Tags */}
-          {tagList.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-8">
-              {tagList.map((tag, index) => (
-                <span 
-                  key={index}
-                  className="inline-flex items-center rounded-full bg-amber-50 px-3 py-1 text-sm text-amber-800"
-                >
-                  <Tag className="h-3 w-3 mr-1" />
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Content */}
-          <div className="prose prose-lg max-w-none text-slate-700">
-            {news.content.split('\n').map((paragraph, index) => (
-              <p key={index} className="mb-4">
-                {paragraph}
-              </p>
-            ))}
-          </div>
-
-          {/* Footer */}
-          <div className="mt-8 pt-6 border-t border-gray-200 text-sm text-gray-500">
-            <p>
-              Published on {formatDateTime(news.publish_time)} | Updated on {formatDateTime(news.update_time)}
-            </p>
+            <h1 className="max-w-4xl text-3xl font-bold leading-tight md:text-5xl">{cleanText(news.title, `${cropConfig.cropName} database update`)}</h1>
           </div>
         </div>
-      </article>
 
-      {/* Related News */}
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-6">Related News</h2>
-        <Link 
-          to="/news" 
-        className="inline-flex items-center font-medium text-amber-700 hover:text-amber-800"
-        >
-          View All News →
-        </Link>
-      </div>
+        <div className="grid gap-8 p-6 md:grid-cols-[1fr_240px] md:p-10">
+          <div>
+            {tagList.length > 0 && <div className="mb-8 flex flex-wrap gap-2">{tagList.map((tag) => <span key={tag} className="inline-flex items-center rounded-full px-3 py-1 text-sm" style={{ backgroundColor: cropConfig.accentSoft, color: cropConfig.accentDark }}><Tag className="mr-1 h-3 w-3" />{tag}</span>)}</div>}
+            <div className="max-w-none text-slate-700">
+              {(paragraphs.length ? paragraphs : [cropConfig.description]).map((paragraph, index) => <p key={index} className="mb-5 text-base leading-8">{paragraph}</p>)}
+            </div>
+            <div className="mt-8 border-t border-slate-200 pt-6 text-sm text-slate-500">Published on {formatDateTime(news.publish_time)} | Updated on {formatDateTime(news.update_time)}</div>
+          </div>
+          <aside className="h-fit rounded-2xl border border-slate-200 p-5" style={{ backgroundColor: cropConfig.accentSoft }}>
+            <h2 className="text-lg font-semibold text-slate-950">About {cropConfig.dbName}</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">{cropConfig.description}</p>
+            <Link to="/data" className="mt-5 inline-flex items-center text-sm font-semibold" style={{ color: cropConfig.accent }}>Browse datasets</Link>
+          </aside>
+        </div>
+      </article>
     </div>
   );
 }
+

@@ -1,11 +1,9 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import { useTranslation } from "react-i18next";
 
 export function Root() {
   const { t } = useTranslation();
-  const location = useLocation();
-  const footerLanguage = location.pathname.startsWith("/research") ? "en" : undefined;
 
   return (
     <div className="flex min-h-screen flex-col bg-red-50/30">
@@ -15,7 +13,7 @@ export function Root() {
       </main>
       <footer className="mt-auto bg-red-800 py-8 text-white">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-red-200">{t("footer.copyright", footerLanguage ? { lng: footerLanguage } : undefined)}</p>
+          <p className="text-red-200">{t("footer.copyright")}</p>
         </div>
       </footer>
     </div>

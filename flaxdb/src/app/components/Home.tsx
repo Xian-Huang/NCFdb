@@ -18,6 +18,13 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { fetchChangelog, fetchFlaxScrollingNews } from "../../apis/data_apis";
 
+const hasCjk = (value: unknown) => /[\u3400-\u9fff]/.test(String(value ?? ""));
+const cleanText = (value: unknown, fallback: string) => {
+  const text = String(value ?? "").trim();
+  return !text || hasCjk(text) ? fallback : text;
+};
+const plainText = (value: unknown) => String(value ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+
 interface ScrollingNewsItem {
   id: number;
   title: string;
@@ -189,31 +196,6 @@ export function Home() {
         </div>
       </section>
 
-      {scrollingNews.length > 0 && (
-        <section className="mx-auto mt-6 max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm md:grid-cols-[180px_1fr]">
-            <div className="flex items-center gap-2 bg-blue-600 px-5 py-3 text-sm font-medium text-white">
-              <Megaphone className="h-4 w-4 flex-shrink-0" />
-              最新通知
-            </div>
-            <div className="relative h-11 overflow-hidden">
-              {scrollingNews.map((news, index) => (
-                <div
-                  key={news.id}
-                  className={`h-11 items-center px-4 text-sm text-slate-700 ${index === currentNewsIndex ? "flex" : "hidden"}`}
-                >
-                  {news.category && (
-                    <span className="mr-3 flex-shrink-0 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
-                      {news.category}
-                    </span>
-                  )}
-                  <span className="truncate">{news.title}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-7">
@@ -246,6 +228,74 @@ export function Home() {
           })}
         </div>
       </section>
+      {scrollingNews.length > 0 && (() => {
+        const activeNews = scrollingNews[currentNewsIndex] || scrollingNews[0];
+        return (
+          <section className="mx-auto max-w-7xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
+            <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)] lg:items-stretch">
+              <aside className="rounded-2xl bg-slate-950 p-6 text-white shadow-xl">
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500 text-white">
+                  <Megaphone className="h-6 w-6" />
+                </div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-200">Database activity</p>
+                <h2 className="mt-2 text-2xl font-bold">News and release focus</h2>
+                <p className="mt-3 text-sm leading-7 text-slate-300">
+                  FlaxDB highlights resource releases, curation notes and analysis updates in a side-by-side module before the data pipeline section.
+                </p>
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  <div className="rounded-2xl bg-white/10 p-4">
+                    <div className="text-3xl font-bold">{scrollingNews.length}</div>
+                    <div className="mt-1 text-xs text-blue-100">active notices</div>
+                  </div>
+                  <div className="rounded-2xl bg-white/10 p-4">
+                    <div className="text-3xl font-bold">{String(currentNewsIndex + 1).padStart(2, "0")}</div>
+                    <div className="mt-1 text-xs text-blue-100">selected item</div>
+                  </div>
+                </div>
+              </aside>
+              <article className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
+                <div className="grid h-full gap-0 lg:grid-cols-[minmax(0,1fr)_180px]">
+                  <div className="flex min-h-[260px] flex-col justify-between p-6 sm:p-7">
+                    <div>
+                      <div className="mb-3 flex flex-wrap items-center gap-2 text-xs font-medium text-slate-500">
+                        <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 font-semibold uppercase tracking-[0.14em] text-blue-700">
+                          <Megaphone className="h-3.5 w-3.5" />
+                          Latest updates
+                        </span>
+                        {activeNews.category && <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{cleanText(activeNews.category, "Notice")}</span>}
+                        <span>{formatDate(activeNews.publish_time)}</span>
+                      </div>
+                      <h2 className="line-clamp-3 text-2xl font-bold leading-snug text-slate-950">{cleanText(activeNews.title, "Database content update")}</h2>
+                      <p className="mt-3 line-clamp-4 text-sm leading-7 text-slate-600">{cleanText(plainText(activeNews.content), "Database content and project updates are available for this release.")}</p>
+                    </div>
+                    <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+                      <Link to={`/news/${activeNews.id}`} className="inline-flex items-center text-sm font-semibold text-blue-700 hover:text-blue-900">
+                        Read update <ArrowRight className="ml-1 h-4 w-4" />
+                      </Link>
+                      <div className="flex gap-2">
+                        {scrollingNews.map((news, index) => (
+                          <button
+                            key={news.id}
+                            type="button"
+                            aria-label={`Show notice ${index + 1}`}
+                            onClick={() => setCurrentNewsIndex(index)}
+                            className={`h-2 rounded-full transition-all ${index === currentNewsIndex ? "w-7 bg-blue-600" : "w-2 bg-slate-300 hover:bg-blue-300"}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-t border-blue-100 bg-blue-50/70 p-5 lg:border-l lg:border-t-0">
+                    <div className="text-xs font-semibold uppercase tracking-[0.14em] text-blue-700">Current item</div>
+                    <div className="mt-2 text-3xl font-bold text-blue-800">{String(currentNewsIndex + 1).padStart(2, "0")}</div>
+                    <div className="mt-1 text-xs text-slate-500">of {scrollingNews.length} database notices</div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+        );
+      })()}
 
       <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
         <div className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
@@ -315,8 +365,8 @@ export function Home() {
                   </span>
                   <span className="text-xs text-slate-400">{formatDate(item.release_date)}</span>
                 </div>
-                <h3 className="font-semibold text-slate-950 hover:text-blue-700">{item.title}</h3>
-                <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{item.content}</p>
+                <h3 className="font-semibold text-slate-950 hover:text-blue-700">{cleanText(item.title, "Database release note")}</h3>
+                <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{cleanText(item.content, "Database content and interface updates are available for this release.")}</p>
               </Link>
             ))}
           </div>

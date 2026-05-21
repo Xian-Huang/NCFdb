@@ -5,8 +5,8 @@ import { Data } from "./components/Data";
 import { News } from "./components/News";
 import { NewsDetail } from "./components/NewsDetail";
 import { Events } from "./components/Events";
+import { EventDetail } from "./components/EventDetail";
 import { Tools } from "./components/Tools";
-import { Research } from "./components/Research";
 import { Contact } from "./components/Contact";
 import { Admin } from "./components/Admin";
 import { Login } from "./components/Login";
@@ -72,8 +72,8 @@ export const router = createBrowserRouter([
       { path: "news", Component: News },
       { path: "news/:id", Component: NewsDetail },
       { path: "events", Component: Events },
+      { path: "events/:id", Component: EventDetail },
       { path: "tools", Component: Tools },
-      { path: "research", Component: Research },
       { path: "jbrowse", Component: JBrowser },
       { path: "contact", Component: Contact },
       { path: "login", Component: LoginWrapper },
@@ -84,3 +84,5 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
+
+

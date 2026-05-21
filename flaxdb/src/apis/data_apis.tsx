@@ -240,3 +240,27 @@ export const deleteFlaxNutritionData = async (id: number) => {
     const response = await fetchRequest(`/nutrition-data/${id}/`, "DELETE", undefined, true);
     return await response.json();
 };
+
+export const fetchDownloadFiles = async () => {
+  const response = await fetch("/api/download/files/");
+  if (!response.ok) throw new Error("download files");
+  return response.json();
+};
+
+export const fetchNews = async () => {
+  const response = await fetch("/api/news/");
+  if (!response.ok) throw new Error("news");
+  return response.json();
+};
+
+export const fetchNewsDetail = async (id: number) => {
+  const response = await fetch(`/api/news/${id}/`);
+  if (!response.ok) throw new Error("news detail");
+  return response.json();
+};
+
+export const fetchScrollingNews = async () => {
+  const response = await fetch("/api/news/scrolling/");
+  if (!response.ok) throw new Error("scrolling news");
+  return response.json();
+};

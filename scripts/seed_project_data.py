@@ -99,6 +99,7 @@ def upsert_user(username, password, **defaults):
 def seed_common(label, info):
     Region = model(label, "Region")
     Variety = model(label, "Variety")
+    NutritionData = model(label, "NutritionData")
     Gene = model(label, "Gene")
     GeneExpression = model(label, "GeneExpression")
     EnvironmentalFactor = model(label, "EnvironmentalFactor")
@@ -125,26 +126,43 @@ def seed_common(label, info):
         regions.append(region)
 
     varieties = []
-    for index, trait in enumerate(info["traits"], start=1):
+    for index in range(1, 13):
+        trait = info["traits"][(index - 1) % len(info["traits"])]
         region = regions[(index - 1) % len(regions)]
         variety, _ = Variety.objects.update_or_create(
             variety_code=f"{info['prefix']}-V{index:03d}",
             defaults={
-                "name": f"{info['cn']}示范品种{index}",
+                "name": f"{info['cn']}核心材料{index:02d}",
                 "region": region,
                 "seed_color": info["seed_colors"][(index - 1) % len(info["seed_colors"])],
-                "oil_content": Decimal("38.50") + Decimal(index),
-                "maturity_days": 88 + index * 6,
-                "yield_per_hectare": Decimal("1850.00") + Decimal(index * 135),
-                "height": Decimal("92.00") + Decimal(index * 8),
-                "description": f"面向{trait}研究的{info['cn']}核心示范材料。",
+                "oil_content": Decimal("34.80") + Decimal(index) * Decimal("0.92"),
+                "maturity_days": 82 + index * 4,
+                "yield_per_hectare": Decimal("1680.00") + Decimal(index * 118),
+                "height": Decimal("76.00") + Decimal(index * 5),
+                "description": f"面向{trait}研究的{info['cn']}核心材料，记录了区域来源、籽粒颜色、产量表现和品质性状，可用于页面筛选、统计和下载演示。",
             },
         )
         varieties.append(variety)
 
+    for variety_index, variety in enumerate(varieties, start=1):
+        for rep in range(1, 4):
+            NutritionData.objects.update_or_create(
+                variety=variety,
+                sample_code=f"{info['prefix']}-N{variety_index:03d}-{rep}",
+                defaults={
+                    "oil_content": Decimal("32.40") + Decimal(variety_index) * Decimal("0.76") + Decimal(rep) * Decimal("0.35"),
+                    "protein": Decimal("16.20") + Decimal((variety_index % 5)) * Decimal("0.82") + Decimal(rep) * Decimal("0.22"),
+                    "fatty_acid": Decimal("48.50") + Decimal((variety_index % 7)) * Decimal("1.15"),
+                    "lignan": Decimal("2.100") + Decimal(variety_index) * Decimal("0.137") + Decimal(rep) * Decimal("0.041"),
+                    "moisture": Decimal("6.80") + Decimal(rep) * Decimal("0.18"),
+                    "method": "HPLC/NIR validation",
+                    "test_date": today - timedelta(days=variety_index * 3 + rep),
+                },
+            )
+
     genes = []
-    pathways = ["脂肪酸生物合成", "逆境响应", "开花调控", "种子发育", "次生代谢"]
-    for index in range(1, 6):
+    pathways = ["脂肪酸生物合成", "逆境响应", "开花调控", "种子发育", "次生代谢", "抗病防御", "营养品质调控"]
+    for index in range(1, 11):
         gene, _ = Gene.objects.update_or_create(
             gene_id=f"{info['prefix']}G{index:05d}",
             defaults={
@@ -155,8 +173,8 @@ def seed_common(label, info):
                 "end_position": 100000 * index + 7800,
                 "strand": "+" if index % 2 else "-",
                 "gene_type": "protein_coding",
-                "description": f"{info['cn']}候选基因 {index}，用于演示基因检索与详情展示。",
-                "function": f"可能参与{info['traits'][(index - 1) % len(info['traits'])]}相关调控。",
+                "description": f"{info['cn']}候选基因 {index}，包含染色体位置、功能注释和通路信息，用于演示基因检索、网络图和详情展示。",
+                "function": f"可能参与{info['traits'][(index - 1) % len(info['traits'])]}相关调控，并在籽粒发育或逆境处理样本中表现出差异表达。",
                 "pathway": pathways[(index - 1) % len(pathways)],
             },
         )
@@ -164,8 +182,8 @@ def seed_common(label, info):
 
     tissues = ["根", "茎", "叶", "种子"]
     stages = ["苗期", "开花期", "灌浆期"]
-    for gene_index, gene in enumerate(genes[:4], start=1):
-        for variety_index, variety in enumerate(varieties[:3], start=1):
+    for gene_index, gene in enumerate(genes[:8], start=1):
+        for variety_index, variety in enumerate(varieties[:6], start=1):
             tissue = tissues[(gene_index + variety_index) % len(tissues)]
             stage = stages[(gene_index - 1) % len(stages)]
             value = Decimal(gene_index * variety_index) + Decimal("3.2500")
@@ -202,7 +220,7 @@ def seed_common(label, info):
         )
 
     institutions = []
-    for index, city in enumerate(["北京", "哈尔滨", "乌鲁木齐"], start=1):
+    for index, city in enumerate(["北京", "哈尔滨", "乌鲁木齐", "郑州", "南京"], start=1):
         inst, _ = Institution.objects.update_or_create(
             name=f"{info['cn']}组学数据中心{index}",
             defaults={
@@ -214,7 +232,7 @@ def seed_common(label, info):
                 "email": f"contact-{info['prefix'].lower()}{index}@example.org",
                 "phone": f"010-88{index}{index}-2026",
                 "contact_person": f"{info['cn']}管理员{index}",
-                "description": f"负责{info['cn']}多组学数据整理、质控和共享。",
+                "description": f"负责{info['cn']}多组学数据整理、质控、区域试验协调和数据库共享服务。",
                 "institution_type": "科研机构",
             },
         )
@@ -242,23 +260,23 @@ def seed_common(label, info):
         )
 
     news_items = [
-        ("多组学数据库完成独立部署", "系统动态", True),
-        ("核心种质资源数据集上线", "资源发布", True),
-        ("候选基因注释结果完成更新", "基因组学", False),
-        ("环境因子与表型关联模块开放测试", "表型数据", False),
-        ("下载中心新增示例文件", "数据下载", False),
+        ("多组学数据库完成独立部署", "系统动态", True, "数据库完成前端页面、后端接口和独立数据表联调。当前版本重点整理了区域、品种、基因、表达量、营养指标和下载文件等核心对象。\n\n项目组同步建立了数据质控流程：导入前检查样品编号、区域代码和检测方法，导入后通过可视化摘要核对记录数量、缺失值和异常区间。该流程将持续用于后续真实数据批次。"),
+        ("核心种质资源数据集上线", "资源发布", True, "本次上线的核心种质资源覆盖多个生态区和参考群体，每份材料均记录来源区域、籽粒颜色、成熟期、株高、产量和含油量等基础信息。\n\n这些数据可支持不同区域间的材料筛选，也可与营养成分、表达谱和候选基因结果联动，用于构建更接近真实科研流程的检索与展示场景。"),
+        ("候选基因注释结果完成更新", "基因组学", False, "候选基因表补充了染色体位置、链方向、基因类型、功能描述和通路归属。脂肪酸合成、逆境响应、种子发育和次生代谢等通路均有代表性记录。\n\n后续版本将继续扩展同源基因、表达证据和变异位点链接，使基因页面可以承载从注释浏览到候选基因优先级排序的完整流程。"),
+        ("环境因子与表型关联模块开放测试", "表型数据", False, "环境因子记录新增温度、降水、土壤 pH 和盐分胁迫等字段，为区域适应性分析提供基础维度。\n\n测试阶段重点观察不同生态区材料的含油量、蛋白质和特征功能成分变化，帮助用户理解环境背景对品质性状的影响。"),
+        ("下载中心新增示例文件", "数据下载", False, "下载中心补充 Genome、Annotation、Expression、Variation、Nutrition 和 FieldTrial 六类文件记录。每条记录包含格式、版本、大小、描述和下载次数，可用于验证下载按钮、文件统计和详情说明。\n\n示例文件内容为演示用途，但字段命名尽量贴近真实数据库发布规范，便于后续替换为正式数据。"),
+        ("营养品质检测批次完成入库", "营养分析", False, "营养数据表新增多批次样本记录，覆盖含油量、蛋白质、特征脂肪酸、功能成分和水分等指标。\n\n检测方法统一标记为 HPLC/NIR validation，便于 Research 页面分页、搜索、矩阵和柱状图展示。"),
+        ("合作机构资料完成标准化", "合作网络", False, "机构信息补充了简称、城市、联系人、邮箱、网站和机构类型。联系页面将优先展示真实字段，并在缺失时使用统一占位说明。\n\n该结构可用于后续扩展数据提交单位、样品采集单位和分析审核单位之间的关系。"),
+        ("年度数据审核工作流启动", "项目进展", True, "项目组启动年度数据审核工作流，重点核对样品编号唯一性、区域代码规范性、新闻正文完整度和下载文件版本号。\n\n审核结果会以更新日志、滚动通知和新闻详情的形式同步给用户，保证前端展示与数据库记录保持一致。"),
     ]
-    for index, (title, category, scrolling) in enumerate(news_items):
+    for index, (title, category, scrolling, content) in enumerate(news_items):
         News.objects.update_or_create(
             title=f"{info['cn']}{title}",
             defaults={
-                "content": (
-                    f"{info['name']} 现已补充{info['cn']}示例数据。本条内容用于验证新闻列表、新闻详情、"
-                    f"滚动新闻和后台管理流程，覆盖{info['traits'][index % len(info['traits'])]}等主题。"
-                ),
+                "content": f"{content}\n\n关联主题：{info['traits'][index % len(info['traits'])]}；物种：{info['species']}；数据库：{info['name']}。",
                 "author": "NCFdb Team",
                 "category": category,
-                "tags": f"{info['cn']},数据库,示例数据",
+                "tags": f"{info['cn']},数据库,{category},{info['traits'][index % len(info['traits'])]}",
                 "views": 260 + index * 41,
                 "is_published": True,
                 "is_scrolling": scrolling,
@@ -283,7 +301,7 @@ def seed_common(label, info):
         )
 
     file_fields = {field.name for field in DownloadFile._meta.fields}
-    for index, category in enumerate(["Genome", "Annotation", "Expression"], start=1):
+    for index, category in enumerate(["Genome", "Annotation", "Expression", "Variation", "Nutrition", "FieldTrial"], start=1):
         if "file_name" in file_fields:
             DownloadFile.objects.update_or_create(
                 file_name=f"{info['prefix']}_{category.lower()}_demo_v1.tsv",
@@ -343,7 +361,7 @@ def main():
     )
     seed_common(label, info)
 
-    summary_models = ["News", "Announcement", "DownloadFile", "Region", "Variety", "Gene", "GeneExpression"]
+    summary_models = ["News", "Announcement", "DownloadFile", "Region", "Variety", "NutritionData", "Gene", "GeneExpression"]
     if label == "sunnfcdb":
         summary_models.append("Nutrition")
     print(f"{info['name']} seeded successfully.")

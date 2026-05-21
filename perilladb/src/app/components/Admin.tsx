@@ -526,7 +526,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.author}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.category}</td>
                   <td className="px-6 py-4">
-                    {item.is_published ? <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-slate-100 text-slate-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -680,7 +680,7 @@ export function Admin() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    {item.is_published ? <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-slate-100 text-slate-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -740,7 +740,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.title}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.release_date}</td>
                   <td className="px-6 py-4">
-                    {item.is_published ? <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-slate-100 text-slate-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -805,7 +805,7 @@ export function Admin() {
                     id={key}
                     value={formData[key] || ''}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 resize-none shadow-sm"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 resize-none shadow-sm"
                     rows={5}
                     placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
                   />
@@ -827,7 +827,7 @@ export function Admin() {
                         setFormData({ ...formData, [key]: file });
                       }
                     }}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm"
                   />
                   {formData[key] && typeof formData[key] === 'string' && (
                     <div className="mt-2 text-sm text-gray-600">
@@ -859,7 +859,7 @@ export function Admin() {
                       className="sr-only"
                     />
                     <span
-                      className={`inline-block w-12 h-6 rounded-full transition duration-200 ease-in-out ${formData[key] ? 'bg-purple-500' : 'bg-gray-200'}`}
+                      className={`inline-block w-12 h-6 rounded-full transition duration-200 ease-in-out ${formData[key] ? 'bg-slate-500' : 'bg-gray-200'}`}
                     >
                       <span
                         className={`inline-block w-5 h-5 mt-0.5 ml-0.5 rounded-full bg-white transition duration-200 ease-in-out transform ${formData[key] ? 'translate-x-6' : 'translate-x-0'}`}
@@ -878,7 +878,7 @@ export function Admin() {
                     id={key}
                     value={formData[key] || ''}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
                   >
                     <option value="">Select Category</option>
                     <option value="research">Research</option>
@@ -902,7 +902,7 @@ export function Admin() {
                     type="text"
                     value={formData[key] || ''}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm"
                     placeholder="Enter tags separated by commas"
                   />
                 </div>
@@ -917,7 +917,7 @@ export function Admin() {
                     id={key}
                     value={formData[key] ?? ''}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
                   >
                     <option value="">Select {key.charAt(0).toUpperCase() + key.slice(1)}</option>
                     {key === 'region' && regions && regions.map((item) => (
@@ -948,7 +948,7 @@ export function Admin() {
                     id={key}
                     value={formData[key] || 'normal'}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
                   >
                     <option value="low">Low</option>
                     <option value="normal">Normal</option>
@@ -970,7 +970,7 @@ export function Admin() {
                     type="email"
                     value={formData[key] || ''}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm"
                     placeholder="Enter email address"
                   />
                 </div>
@@ -986,7 +986,7 @@ export function Admin() {
                     type="date"
                     value={formData[key] || ''}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm"
                   />
                 </div>
               )
@@ -1001,7 +1001,7 @@ export function Admin() {
                     type="url"
                     value={formData[key] || ''}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm"
                     placeholder="Enter URL"
                   />
                 </div>
@@ -1016,7 +1016,7 @@ export function Admin() {
                     id={key}
                     value={formData[key] || 'normal'}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
                   >
                     {importanceOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -1039,7 +1039,7 @@ export function Admin() {
                     id={key}
                     value={formData[key] || ''}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
                   >
                     <option value="">Select institution type</option>
                     {institutionTypeOptions.map((option) => (
@@ -1061,7 +1061,7 @@ export function Admin() {
                     id={key}
                     value={formData[key] || ''}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm appearance-none bg-white"
                   >
                     <option value="">Select announcement type</option>
                     {announcementTypeOptions.map((option) => (
@@ -1087,7 +1087,7 @@ export function Admin() {
                       type="number"
                       value={formData[key] ?? ''}
                       onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseFloat(e.target.value) })}
-                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm"
                       placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
                     />
                   </div>
@@ -1119,7 +1119,7 @@ export function Admin() {
                       type="number"
                       value={formData[key] ?? ''}
                       onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
-                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm"
                       placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
                     />
                   </div>
@@ -1139,7 +1139,7 @@ export function Admin() {
                       type="number"
                       value={formData[key] ?? ''}
                       onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseFloat(e.target.value) })}
-                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm"
                       placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
                     />
                   </div>
@@ -1161,7 +1161,7 @@ export function Admin() {
                     type="text"
                     value={formData[key] || ''}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 shadow-sm"
                     placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
                   />
                 </div>
@@ -1180,7 +1180,7 @@ export function Admin() {
           </button>
           <button 
             type="submit" 
-            className="px-8 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-all duration-200 flex-1 sm:flex-none font-medium shadow-sm hover:shadow"
+            className="px-8 py-3 bg-slate-500 text-white rounded-lg hover:bg-slate-700 transition-all duration-200 flex-1 sm:flex-none font-medium shadow-sm hover:shadow"
           >
             {editingItem ? 'Save Changes' : 'Add'}
           </button>
@@ -1192,13 +1192,13 @@ export function Admin() {
   return (
     <div className="min-h-screen flex">
       {/* Left Sidebar */}
-      <aside className="w-64 bg-gradient-to-b from-purple-600 to-purple-800 text-white flex-shrink-0 flex flex-col h-screen absolute">
-        <div className="p-4 border-b border-purple-500/30">
+      <aside className="w-64 bg-gradient-to-b from-slate-700 to-slate-900 text-white flex-shrink-0 flex flex-col h-screen absolute">
+        <div className="p-4 border-b border-slate-600/30">
           <div className="flex items-center gap-3">
             <Shield className="h-8 w-8" />
             <div>
               <h1 className="text-xl font-bold">PerNCFdb</h1>
-              <p className="text-xs text-purple-200">Admin Panel</p>
+              <p className="text-xs text-slate-200">Admin Panel</p>
             </div>
           </div>
         </div>
@@ -1212,7 +1212,7 @@ export function Admin() {
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   activeType === key
                     ? 'bg-white/20 text-white'
-                    : 'text-purple-100 hover:bg-white/10'
+                    : 'text-slate-100 hover:bg-white/10'
                 }`}
               >
                 <Icon className="h-5 w-5" />
@@ -1221,8 +1221,8 @@ export function Admin() {
             );
           })}
         </nav>
-        <div className="p-4 border-t border-purple-500/30">
-          <div className="text-sm text-purple-200 mb-2">Welcome, {currentUser?.username || 'Admin'}</div>
+        <div className="p-4 border-t border-slate-600/30">
+          <div className="text-sm text-slate-200 mb-2">Welcome, {currentUser?.username || 'Admin'}</div>
           <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg hover:bg-white/20 w-full">
             <LogOut className="h-4 w-4" /> Logout
           </button>
@@ -1242,13 +1242,13 @@ export function Admin() {
                   placeholder="Search..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                 />
               </div>
             </div>
             <button
               onClick={() => openModal()}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
+              className="flex items-center gap-2 px-4 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-700"
             >
               <Plus className="h-5 w-5" /> Add {dataTypeConfig[activeType].title.slice(0, -1)}
             </button>
@@ -1284,3 +1284,4 @@ export function Admin() {
     </div>
   );
 }
+

@@ -1,84 +1,135 @@
-import { ArrowRight, Calendar, Clock, Droplets, MapPin, Users, Video } from "lucide-react";
+import { ArrowRight, Calendar, Clock, MapPin, Users, Video } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { cropConfig } from "../cropConfig";
+
+export const eventRecords = [
+  {
+    id: "annual-symposium-2026",
+    title: `${cropConfig.cropName} Functional Genomics Symposium 2026`,
+    date: "June 15-18, 2026",
+    time: "9:00 AM - 5:00 PM",
+    location: cropConfig.fieldNetwork,
+    type: "Conference",
+    attendees: "250+",
+    format: "Hybrid",
+    image: cropConfig.pageImages.events,
+    description: `A multi-day meeting focused on ${cropConfig.traitFocus}, population resources, database curation and breeding applications for ${cropConfig.species}.`,
+    agenda: ["Keynote reports on crop-specific genome resources", "Trait database curation and quality control roundtable", "Hands-on data exploration with genome browser and nutrition matrices"],
+  },
+  {
+    id: "database-workshop-2026",
+    title: `${cropConfig.dbName} Data Curation Workshop`,
+    date: "July 22, 2026",
+    time: "2:00 PM - 5:30 PM",
+    location: "Online training room",
+    type: "Workshop",
+    attendees: "120+",
+    format: "Virtual",
+    image: cropConfig.pageImages.tools,
+    description: `Training for batch metadata upload, evidence tagging, downloadable file preparation and dashboard interpretation in ${cropConfig.dbName}.`,
+    agenda: ["Template preparation for germplasm and omics records", "News and event content workflow", "Export, API and visualization checks"],
+  },
+  {
+    id: "field-day-2026",
+    title: `${cropConfig.cropName} Regional Trial Field Day`,
+    date: "August 9, 2026",
+    time: "8:30 AM - 3:00 PM",
+    location: cropConfig.fieldNetwork,
+    type: "Field Day",
+    attendees: "80+",
+    format: "In-person",
+    image: cropConfig.heroImage,
+    description: `Field plot observation, sample registration and trait scoring demonstrations for ${cropConfig.cropName.toLowerCase()} germplasm panels.`,
+    agenda: ["Plot walk and phenotype scoring", "Seed quality sampling workflow", "Breeding decision discussion with trial coordinators"],
+  },
+  {
+    id: "omics-webinar-2026",
+    title: `${cropConfig.cropName} Multi-omics Analysis Webinar`,
+    date: "September 3, 2026",
+    time: "10:30 AM - 12:00 PM",
+    location: "Online",
+    type: "Webinar",
+    attendees: "200+",
+    format: "Virtual",
+    image: cropConfig.pageImages.research,
+    description: `A focused session on expression heatmaps, candidate gene networks and nutrition trait association workflows in ${cropConfig.dbName}.`,
+    agenda: ["Expression profile interpretation", "Candidate gene prioritization", "Cross-table evidence export"],
+  },
+];
+
+const pastEvents = [
+  { title: `${cropConfig.dbName} Release Review Meeting`, date: "November 12-14, 2025", location: "Online", type: "Consortium", recording: true },
+  { title: `${cropConfig.cropName} Nutrition Trait Workshop`, date: "October 5, 2025", location: cropConfig.fieldNetwork, type: "Workshop", recording: true },
+  { title: "Database Launch Webinar", date: "September 15, 2025", location: "Online", type: "Webinar", recording: true },
+];
 
 export function Events() {
   const { t } = useTranslation();
 
-  const upcomingEvents = [
-    { title: "International Safflower Genomics Symposium 2026", date: "September 15-18, 2026", time: "9:00 - 17:00", location: "Gansu, China", type: "Conference", attendees: "200+", format: "Hybrid", focus: "Drought adaptation, pigment metabolism and oil composition" },
-    { title: "Bioinformatics Workshop: Safflower Genome Analysis", date: "June 20, 2026", time: "14:00 - 17:00", location: "Online", type: "Workshop", attendees: "100+", format: "Virtual", focus: "Variant browsing, candidate gene screening and annotation review" },
-    { title: "Safflower Breeding Innovation Forum", date: "July 10, 2026", time: "10:00 - 12:00", location: "Online", type: "Webinar", attendees: "150+", format: "Virtual", focus: "Flower color, branching architecture and stress tolerance" },
-  ];
-
-  const pastEvents = [
-    { title: "Safflower Research Conference 2025", date: "October 15-17, 2025", location: "Beijing, China", type: "Conference" },
-    { title: "Functional Genomics Workshop", date: "July 8, 2025", location: "Online", type: "Workshop" },
-    { title: "Database Launch & Training Webinar", date: "April 1, 2025", location: "Online", type: "Webinar" },
-  ];
-
   return (
-    <div className="space-y-7 text-gray-900">
-      <section className="relative overflow-hidden rounded-[1.75rem] bg-red-900 p-8 text-white shadow-xl shadow-red-100">
-        <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-gradient-to-l from-red-500/40 to-transparent md:block" />
-        <div className="relative max-w-3xl">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-red-500/80 px-4 py-2 text-sm font-medium">
-            <Droplets className="h-4 w-4" />
-            Safflower field agenda
+    <div className="bg-slate-50">
+      <div className="mx-auto max-w-7xl space-y-8 px-4 py-12 sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden rounded-[1.75rem] p-8 text-white shadow-xl" style={{ backgroundImage: `linear-gradient(90deg, rgba(15,23,42,.82), rgba(15,23,42,.36)), url(${cropConfig.pageImages.events})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+          <div className="relative max-w-4xl">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur"><Calendar className="h-4 w-4" />{cropConfig.cropName} event calendar</div>
+            <h1 className="mb-4 text-4xl font-bold">{t("events.title")}</h1>
+            <p className="max-w-3xl text-lg text-white/85">{t("events.subtitle")}</p>
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-white/75">Events connect database releases, field sampling, omics analysis and community training for {cropConfig.species}.</p>
           </div>
-          <h1 className="text-4xl font-bold sm:text-5xl">{t("events.title")}</h1>
-          <p className="mt-4 text-base leading-7 text-red-100">{t("events.subtitle")}</p>
-        </div>
-      </section>
+        </section>
 
-      <section className="space-y-4">
-        {upcomingEvents.map((event, index) => (
-          <article key={event.title} className="group grid overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm transition-all hover:border-red-200 hover:shadow-lg md:grid-cols-[140px_1fr]">
-            <div className="flex flex-col justify-between bg-red-50 p-5">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-red-700">{event.type}</p>
-                <p className="mt-2 text-3xl font-bold text-red-900">0{index + 1}</p>
-              </div>
-              <span className="mt-4 rounded-full bg-white px-3 py-1 text-xs font-medium text-red-700">{event.format}</span>
+
+        <section className="grid gap-6 lg:grid-cols-3">
+          <div className="rounded-[1.25rem] border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: cropConfig.accent }}>Program scope</p>
+            <h2 className="mt-2 text-2xl font-semibold text-slate-950">Events connect field work, database curation and analysis training</h2>
+            <p className="mt-3 text-sm leading-7 text-slate-600">
+              The event calendar is organized around the full database lifecycle: sample collection, phenotype scoring, molecular profiling, data upload, quality review and public communication. Each event record is written to help participants understand what data products or training outcomes are expected.
+            </p>
+          </div>
+          <div className="rounded-[1.25rem] p-6 text-white shadow-sm" style={{ backgroundColor: cropConfig.accentDark }}>
+            <h3 className="text-xl font-semibold">Common tracks</h3>
+            <div className="mt-5 space-y-3 text-sm text-white/82">
+              {["Field sampling", "Curation workshop", "Omics interpretation", "Database release review"].map((item) => <div key={item} className="rounded-xl bg-white/10 p-3">{item}</div>)}
             </div>
-            <div className="p-5">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-red-700">{event.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-gray-600">{event.focus}</p>
+          </div>
+        </section>
+        <section className="grid gap-6 lg:grid-cols-2">
+          {eventRecords.map((event) => (
+            <article key={event.id} className="group overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl">
+              <Link to={`/events/${event.id}`} className="block h-52 overflow-hidden"><img src={event.image} alt={event.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" /></Link>
+              <div className="p-5">
+                <div className="mb-3 flex flex-wrap gap-2"><span className="rounded-full px-3 py-1 text-sm font-medium" style={{ backgroundColor: cropConfig.accentSoft, color: cropConfig.accentDark }}>{event.type}</span><span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">{event.format}</span></div>
+                <h3 className="text-2xl font-semibold text-slate-950 group-hover:opacity-80"><Link to={`/events/${event.id}`}>{event.title}</Link></h3>
+                <p className="mb-5 mt-3 text-sm leading-6 text-slate-600">{event.description}</p>
+                <div className="grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
+                  <span className="flex items-center gap-2"><Calendar className="h-4 w-4" style={{ color: cropConfig.accent }} />{event.date}</span>
+                  <span className="flex items-center gap-2"><Clock className="h-4 w-4" style={{ color: cropConfig.accent }} />{event.time}</span>
+                  <span className="flex items-center gap-2">{event.format === "Virtual" ? <Video className="h-4 w-4" style={{ color: cropConfig.accent }} /> : <MapPin className="h-4 w-4" style={{ color: cropConfig.accent }} />}{event.location}</span>
+                  <span className="flex items-center gap-2"><Users className="h-4 w-4" style={{ color: cropConfig.accent }} />{event.attendees}</span>
                 </div>
-                <button className="inline-flex items-center justify-center gap-2 rounded-full bg-red-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-red-600">
-                  {t("events.register")} <ArrowRight className="h-4 w-4" />
-                </button>
+                <Link to={`/events/${event.id}`} className="mt-6 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90" style={{ backgroundColor: cropConfig.accent }}>View details <ArrowRight className="h-4 w-4" /></Link>
               </div>
-              <div className="mt-5 grid gap-3 text-sm text-gray-500 sm:grid-cols-2 lg:grid-cols-4">
-                <span className="flex items-center gap-2"><Calendar className="h-4 w-4 text-red-600" />{event.date}</span>
-                <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-red-600" />{event.time}</span>
-                <span className="flex items-center gap-2">{event.format === "Virtual" ? <Video className="h-4 w-4 text-red-600" /> : <MapPin className="h-4 w-4 text-red-600" />}{event.location}</span>
-                <span className="flex items-center gap-2"><Users className="h-4 w-4 text-red-600" />{event.attendees}</span>
-              </div>
-            </div>
-          </article>
-        ))}
-      </section>
-
-      <section>
-        <h2 className="mb-4 text-lg font-semibold text-gray-800">{t("events.past")}</h2>
-        <div className="grid gap-4 md:grid-cols-3">
-          {pastEvents.map((event) => (
-            <div key={event.title} className="rounded-xl border border-red-100 bg-white p-4 shadow-sm">
-              <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700">{event.type}</span>
-              <h3 className="mt-3 text-sm font-bold text-gray-800">{event.title}</h3>
-              <p className="mt-2 text-xs text-gray-400">{event.date} · {event.location}</p>
-            </div>
+            </article>
           ))}
-        </div>
-      </section>
+        </section>
 
-      <section className="rounded-xl bg-red-50 p-6 text-center">
-        <Calendar className="mx-auto mb-3 h-10 w-10 text-red-500" />
-        <h2 className="font-semibold text-gray-900">{t("events.subscribe")}</h2>
-        <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-gray-600">{t("events.subscribeDesc")}</p>
-      </section>
+        <section>
+          <h2 className="mb-6 text-2xl font-semibold text-slate-950">{t("events.past")}</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {pastEvents.map((event) => (
+              <div key={event.title} className="rounded-[1.25rem] border border-slate-200 bg-white p-5 shadow-sm">
+                <span className="rounded-full px-3 py-1 text-sm font-medium" style={{ backgroundColor: cropConfig.accentSoft, color: cropConfig.accentDark }}>{event.type}</span>
+                <h3 className="mt-3 text-lg font-semibold text-slate-950">{event.title}</h3>
+                <p className="mt-3 flex items-center text-sm text-slate-600"><Calendar className="mr-2 h-4 w-4" />{event.date}</p>
+                <p className="mt-2 flex items-center text-sm text-slate-600"><MapPin className="mr-2 h-4 w-4" />{event.location}</p>
+                {event.recording && <button className="mt-4 inline-flex items-center text-sm font-medium" style={{ color: cropConfig.accent }}><Video className="mr-1 h-4 w-4" />Watch Recording</button>}
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

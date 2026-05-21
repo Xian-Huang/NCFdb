@@ -5,8 +5,7 @@ import { useTranslation } from "react-i18next";
 export function Navigation() {
   const location = useLocation();
   const { t } = useTranslation();
-  const navLanguage = location.pathname.startsWith("/research") ? "en" : undefined;
-  const navText = (key: string) => t(key, navLanguage ? { lng: navLanguage } : undefined);
+  const navText = (key: string) => t(key);
   
   const navItems = [
     { path: "/", label: navText("nav.home") },
@@ -14,7 +13,6 @@ export function Navigation() {
     { path: "/news", label: navText("nav.news") },
     { path: "/events", label: navText("nav.events") },
     { path: "/tools", label: navText("nav.tools") },
-    { path: "/research", label: navText("nav.research") },
     { path: "/contact", label: navText("nav.contact") },
   ];
 

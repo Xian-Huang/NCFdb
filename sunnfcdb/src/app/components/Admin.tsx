@@ -553,8 +553,8 @@ export function Admin() {
                 <tr key={item.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="flex items-center">
-                      <div className="h-10 w-10 bg-amber-100 rounded-full flex items-center justify-center">
-                        <User className="h-5 w-5 text-amber-600" />
+                      <div className="h-10 w-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <User className="h-5 w-5 text-green-600" />
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium">{item.first_name || item.last_name || item.username}</div>
@@ -1001,12 +1001,12 @@ export function Admin() {
     const wideFields = new Set(['content', 'description', 'function', 'tags', 'image', 'address']);
     const requiredFields = new Set(['title', 'name', 'username', 'email', 'sample_code']);
     const fieldWrapperClass = (key: string) =>
-      `space-y-2 rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-colors focus-within:border-amber-300 focus-within:bg-amber-50/30 ${
+      `space-y-2 rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-colors focus-within:border-green-300 focus-within:bg-green-50/30 ${
         wideFields.has(key) ? 'md:col-span-2' : ''
       }`;
-    const inputClass = "w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20";
-    const paddedInputClass = "w-full rounded-md border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20";
-    const selectClass = "w-full appearance-none rounded-md border border-slate-300 bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20";
+    const inputClass = "w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20";
+    const paddedInputClass = "w-full rounded-md border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20";
+    const selectClass = "w-full appearance-none rounded-md border border-slate-300 bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 shadow-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20";
 
     return (
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -1060,7 +1060,7 @@ export function Admin() {
                             setFormData({ ...formData, [key]: file });
                           }
                         }}
-                        className="w-full cursor-pointer rounded-lg border border-dashed border-slate-300 bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-700 file:mr-4 file:rounded-md file:border-0 file:bg-amber-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:border-amber-300 hover:bg-amber-50/50"
+                        className="w-full cursor-pointer rounded-lg border border-dashed border-slate-300 bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-700 file:mr-4 file:rounded-md file:border-0 file:bg-green-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:border-green-300 hover:bg-green-50/50"
                       />
                       {formData[key] && typeof formData[key] === 'string' && (
                         <div className="mt-2 rounded-md bg-slate-100 px-3 py-2 text-sm text-slate-600">
@@ -1068,7 +1068,7 @@ export function Admin() {
                         </div>
                       )}
                       {formData[key] && typeof formData[key] === 'object' && (
-                        <div className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                        <div className="mt-2 rounded-md bg-green-50 px-3 py-2 text-sm text-green-800">
                           Selected image: {formData[key].name}
                         </div>
                       )}
@@ -1093,7 +1093,7 @@ export function Admin() {
                           className="sr-only peer"
                         />
                         <span
-                          className={`absolute inset-0 rounded-full transition duration-200 ease-in-out ${isChecked ? 'bg-amber-500' : 'bg-gray-200'}`}
+                          className={`absolute inset-0 rounded-full transition duration-200 ease-in-out ${isChecked ? 'bg-green-500' : 'bg-gray-200'}`}
                         >
                           <span
                             className={`absolute left-0.5 top-0.5 w-5 h-5 rounded-full bg-white transition duration-200 ease-in-out transform ${isChecked ? 'translate-x-6' : 'translate-x-0'}`}
@@ -1221,7 +1221,7 @@ export function Admin() {
                         type="date"
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                        className="w-full rounded-md border border-slate-300 bg-white py-2.5 pl-14 pr-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                        className="w-full rounded-md border border-slate-300 bg-white py-2.5 pl-14 pr-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20"
                       />
                     </div>
                   );
@@ -1345,7 +1345,7 @@ export function Admin() {
                               onClick={() => toggleTag(option.value)}
                               className={`rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
                                 isSelected
-                                  ? 'bg-amber-500 text-white shadow-sm'
+                                  ? 'bg-green-500 text-white shadow-sm'
                                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                               }`}
                             >
@@ -1406,7 +1406,7 @@ export function Admin() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center justify-center gap-2 rounded-md bg-amber-500 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:bg-amber-300"
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-green-500 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-green-600 disabled:cursor-not-allowed disabled:bg-green-300"
           >
             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {isSubmitting ? 'Saving...' : editingItem ? 'Save Changes' : 'Add'}
@@ -1419,13 +1419,13 @@ export function Admin() {
   return (
       <div className="min-h-screen flex">
       {/* Left Sidebar */}
-      <aside className="w-64 bg-gradient-to-b from-amber-600 to-amber-800 text-white flex-shrink-0 flex flex-col h-screen absolute">
-        <div className="p-4 border-b border-amber-500/30">
+      <aside className="w-64 bg-gradient-to-b from-green-600 to-green-800 text-white flex-shrink-0 flex flex-col h-screen absolute">
+        <div className="p-4 border-b border-green-500/30">
           <div className="flex items-center gap-3">
             <Shield className="h-8 w-8" />
             <div>
               <h1 className="text-xl font-bold">SunNCFdb</h1>
-              <p className="text-xs text-amber-200">Admin Panel</p>
+              <p className="text-xs text-green-200">Admin Panel</p>
             </div>
           </div>
         </div>
@@ -1439,7 +1439,7 @@ export function Admin() {
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   activeType === key
                     ? 'bg-white/20 text-white'
-                    : 'text-amber-100 hover:bg-white/10'
+                    : 'text-green-100 hover:bg-white/10'
                 }`}
               >
                 <Icon className="h-5 w-5" />
@@ -1448,8 +1448,8 @@ export function Admin() {
             );
           })}
         </nav>
-        <div className="p-4 border-t border-amber-500/30">
-          <div className="text-sm text-amber-200 mb-2">Welcome, {currentUser?.username || 'Admin'}</div>
+        <div className="p-4 border-t border-green-500/30">
+          <div className="text-sm text-green-200 mb-2">Welcome, {currentUser?.username || 'Admin'}</div>
           <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg hover:bg-white/20 w-full">
             <LogOut className="h-4 w-4" /> Logout
           </button>
@@ -1468,13 +1468,13 @@ export function Admin() {
                     placeholder="Search..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="rounded-md border border-slate-300 py-2 pl-10 pr-4 text-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                    className="rounded-md border border-slate-300 py-2 pl-10 pr-4 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20"
                   />
                 </div>
               </div>
               <button
                 onClick={() => openModal()}
-                className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-600"
+                className="inline-flex items-center gap-2 rounded-md bg-green-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-green-600"
               >
                 <Plus className="h-5 w-5" /> Add {dataTypeConfig[activeType].title.slice(0, -1)}
               </button>
@@ -1499,7 +1499,7 @@ export function Admin() {
           <div className="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black/10">
             <div className="sticky top-0 z-10 flex items-start justify-between border-b border-slate-200 bg-white px-6 py-5">
               <div>
-                <p className="text-sm font-medium text-amber-700">{dataTypeConfig[activeType].title}</p>
+                <p className="text-sm font-medium text-green-700">{dataTypeConfig[activeType].title}</p>
                 <h2 className="text-2xl font-semibold text-slate-950">
                   {editingItem ? 'Edit record' : 'Add record'}
                 </h2>

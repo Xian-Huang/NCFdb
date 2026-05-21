@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Sprout, Eye, EyeOff } from "lucide-react";
 import { fetchloginPerillaRegions } from "../../apis/user_api";
+import { cropConfig } from "../cropConfig";
 
 export function Login() {
   const [username, setUsername] = useState("");
@@ -41,11 +42,11 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: `linear-gradient(135deg, ${cropConfig.accentSoft}, #ffffff)` }}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-            <Sprout className="h-8 w-8 text-green-600" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style={{ backgroundColor: cropConfig.accentSoft }}>
+            <Sprout className="h-8 w-8" style={{ color: cropConfig.accent }} />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">PerillaDB Admin</h1>
           <p className="text-gray-500 mt-2">Please sign in to continue</p>
@@ -66,7 +67,8 @@ export function Login() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+              style={{ "--tw-ring-color": cropConfig.accent } as React.CSSProperties}
               placeholder="Enter your username"
               required
             />
@@ -81,7 +83,8 @@ export function Login() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent pr-12"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent pr-12"
+                style={{ "--tw-ring-color": cropConfig.accent } as React.CSSProperties}
                 placeholder="Enter your password"
                 required
               />
@@ -98,14 +101,15 @@ export function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 focus:ring-4 focus:ring-green-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full text-white py-3 rounded-lg font-medium focus:ring-4 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ backgroundColor: cropConfig.accent, "--tw-ring-color": `${cropConfig.accent}33` } as React.CSSProperties}
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
         <div className="mt-6 text-center">
-          <a href="/" className="text-sm text-green-600 hover:text-green-700">
+          <a href="/" className="text-sm" style={{ color: cropConfig.accent }}>
             ← Back to Home
           </a>
         </div>
