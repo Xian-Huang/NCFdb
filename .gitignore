@@ -15,3 +15,10 @@ sunnfcdb/backend/.env
 build
 .qwen
 *.docx
+*.ini
+*.log
+*.bak
+*.tmp
+*.swp
+*.pid
+*.htaccess
