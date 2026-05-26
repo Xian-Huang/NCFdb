@@ -1,1 +1,0 @@
-import{C as m}from"./Container-BfWF_kXh.js";import{e as i,g as e}from"./index-Df--Witu.js";import"./styled-Cubj2UaL.js";function r(t){return e("MuiContainer",t)}const n=i("MuiContainer",["root","disableGutters","fixed","maxWidthXs","maxWidthSm","maxWidthMd","maxWidthLg","maxWidthXl"]);export{n as containerClasses,m as default,r as getContainerUtilityClass};

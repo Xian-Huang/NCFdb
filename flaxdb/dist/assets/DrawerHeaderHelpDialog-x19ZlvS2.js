@@ -1,0 +1,1 @@
+import{j as e,ab as l,ac as n,m as i}from"./index-wT-v076S.js";const r=i()({max:{minWidth:"40em"}});function c({onClose:a,helpText:s}){const{classes:t}=r();return e.jsx(l,{open:!0,onClose:a,title:"Help",maxWidth:"xl",onClick:o=>{o.stopPropagation()},children:e.jsx(n,{className:t.max,children:s})})}export{c as default};
