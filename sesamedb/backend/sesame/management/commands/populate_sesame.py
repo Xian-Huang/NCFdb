@@ -156,7 +156,7 @@ class Command(BaseCommand):
                 'views': 1250,
                 'is_published': True,
                 'publish_time': '2026-03-15',
-                'image': 'https://images.unsplash.com/photo-1595854341625-f71831d39e71?w=800',
+                'image': 'news_images/sesame-high-oil-variety.png',
             },
             {
                 'title': 'International Sesame Genomics Consortium Meeting 2026',
@@ -167,7 +167,7 @@ class Command(BaseCommand):
                 'views': 890,
                 'is_published': True,
                 'publish_time': '2026-03-10',
-                'image': 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
+                'image': 'news_images/sesame-consortium-meeting.png',
             },
             {
                 'title': 'Sesame Genome Sequence v2.0 Now Available',
@@ -178,7 +178,7 @@ class Command(BaseCommand):
                 'views': 2100,
                 'is_published': True,
                 'publish_time': '2026-02-28',
-                'image': 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800',
+                'image': 'news_images/sesame-genome-v2.png',
             },
             {
                 'title': 'Workshop on Sesame Breeding Technologies',
@@ -189,7 +189,7 @@ class Command(BaseCommand):
                 'views': 650,
                 'is_published': True,
                 'publish_time': '2026-02-20',
-                'image': 'https://images.unsplash.com/photo-1531973819741-e27a5ce2bf5f?w=800',
+                'image': 'news_images/sesame-breeding-workshop.png',
             },
             {
                 'title': 'Global Sesame Production Reaches Record High',
@@ -200,7 +200,7 @@ class Command(BaseCommand):
                 'views': 1800,
                 'is_published': True,
                 'publish_time': '2026-02-15',
-                'image': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800',
+                'image': 'news_images/sesame-production-record.png',
             },
         ]
         

@@ -774,7 +774,7 @@ class VisualizationSummaryView(APIView):
             'region_map': region_rows[:12],
             'network': db_edges or protein_edges,
             'protein_nodes': protein_nodes,
-            'protein_edges': protein_edges,
+            'protein_edges': protein_edges,  
         })
 class DataExportView(APIView):
     def get(self, request, entity, format=None):
