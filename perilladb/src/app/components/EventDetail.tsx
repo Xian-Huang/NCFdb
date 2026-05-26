@@ -2,6 +2,7 @@ import { ArrowLeft, Calendar, Clock, MapPin, Users } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { cropConfig } from "../cropConfig";
 import { eventRecords } from "./Events";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 export function EventDetail() {
   const { id } = useParams<{ id: string }>();
@@ -16,7 +17,7 @@ export function EventDetail() {
       <Link to="/events" className="mb-6 inline-flex items-center text-slate-600 hover:opacity-80"><ArrowLeft className="mr-2 h-4 w-4" />Back to Events</Link>
       <article className="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-xl">
         <section className="relative min-h-[380px] overflow-hidden text-white">
-          <img src={event.image} alt={event.title} className="absolute inset-0 h-full w-full object-cover" />
+          <ImageWithFallback src={event.image} alt={event.title} className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/55 to-transparent" />
           <div className="relative flex min-h-[380px] flex-col justify-end p-8 md:p-10">
             <div className="mb-4 flex flex-wrap gap-2"><span className="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold backdrop-blur">{event.type}</span><span className="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold backdrop-blur">{event.format}</span></div>

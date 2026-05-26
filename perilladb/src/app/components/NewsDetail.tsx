@@ -27,10 +27,12 @@ const cleanText = (value: unknown, fallback: string) => {
   return !text || hasCjk(text) ? fallback : text;
 };
 const normalizeParagraphs = (value: string) => String(value || "").replace(/<\/p>/g, "\n").replace(/<[^>]*>/g, "").split("\n").map((item) => item.trim()).filter((item) => item && !hasCjk(item));
+const isMediaImage = (value: string) => value.includes("/media/") && !value.includes("/media/http") && !hasCjk(value);
+const newsMediaFallback = "/api/media/news_images/default-news.png";
 const imageSrc = (item: NewsItem) => {
   const source = item.image_url || item.image || "";
-  if (source && !source.includes("/media/http") && !hasCjk(source)) return source;
-  return cropConfig.fallbackNewsImages[0] || cropConfig.pageImages.news;
+  if (source && isMediaImage(source)) return source;
+  return newsMediaFallback;
 };
 
 export function NewsDetail() {

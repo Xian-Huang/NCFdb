@@ -28,10 +28,12 @@ const cleanText = (value: unknown, fallback: string) => {
   const text = String(value ?? "").trim();
   return !text || hasCjk(text) ? fallback : text;
 };
+const isMediaImage = (value: string) => value.includes("/media/") && !value.includes("/media/http") && !hasCjk(value);
+const newsMediaFallback = "/api/media/news_images/default-news.png";
 const imageSrc = (item: NewsItem, index = 0) => {
   const source = item.image_url || item.image || "";
-  if (source && !hasCjk(source) && !source.includes("/media/http")) return source;
-  return cropConfig.fallbackNewsImages[index % cropConfig.fallbackNewsImages.length] || cropConfig.pageImages.news;
+  if (source && isMediaImage(source)) return source;
+  return newsMediaFallback;
 };
 
 export function News() {
@@ -69,7 +71,7 @@ export function News() {
   return (
     <div className="relative">
       <div className="mx-auto max-w-7xl space-y-10 px-4 py-12 sm:px-6 lg:px-8">
-        <section className="relative overflow-hidden rounded-[1.75rem] p-8 text-white shadow-xl" style={{ backgroundImage: `linear-gradient(90deg, rgba(15,23,42,.84), rgba(15,23,42,.42)), url(${cropConfig.pageImages.news})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+        <section className="relative overflow-hidden rounded-[1.75rem] p-8 text-white shadow-xl" style={{ backgroundImage: `linear-gradient(90deg, rgba(15,23,42,.84), rgba(15,23,42,.42)), url(${newsMediaFallback})`, backgroundSize: "cover", backgroundPosition: "center" }}>
           <div className="relative max-w-4xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur">
               <Newspaper className="h-4 w-4" />

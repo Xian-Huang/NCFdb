@@ -1,7 +1,40 @@
-from email.mime import image
-
 from rest_framework import serializers
+from django.conf import settings
 from .models import DownloadFile, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, Institution, Announcement, News, Changelog, NutritionData
+
+DEFAULT_NEWS_IMAGE = "news_images/default-news.png"
+NEWS_IMAGE_POOL = [
+    "news_images/perilla-cold-climate-variety.png",
+    "news_images/perilla-symposium-2026.png",
+    "news_images/perilla-genome-release.png",
+    "news_images/perilla-metabolite-lab.png",
+]
+NEWS_IMAGE_BY_TITLE = {
+    "new high-oil perilla variety released": "news_images/perilla-cold-climate-variety.png",
+    "cold-climate": "news_images/perilla-cold-climate-variety.png",
+    "high-oil perilla": "news_images/perilla-cold-climate-variety.png",
+    "perilla variety": "news_images/perilla-cold-climate-variety.png",
+    "international perilla research symposium 2026": "news_images/perilla-symposium-2026.png",
+    "perilla research symposium": "news_images/perilla-symposium-2026.png",
+    "changchun": "news_images/perilla-symposium-2026.png",
+    "perilla genome sequence now available": "news_images/perilla-genome-release.png",
+    "perilla genome": "news_images/perilla-genome-release.png",
+    "initial release": "news_images/perilla-metabolite-lab.png",
+    "welcome to perilladb": "news_images/perilla-metabolite-lab.png",
+    "database update": "news_images/perilla-metabolite-lab.png",
+}
+def build_media_url(request, path):
+    url = f"{settings.MEDIA_URL}{str(path).lstrip('/')}"
+    return request.build_absolute_uri(url) if request else url
+
+def fallback_news_image(obj):
+    text = f"{getattr(obj, 'title', '')} {getattr(obj, 'category', '')} {getattr(obj, 'tags', '')}".lower()
+    for keyword, image_path in NEWS_IMAGE_BY_TITLE.items():
+        if keyword in text:
+            return image_path
+    if getattr(obj, "id", None):
+        return NEWS_IMAGE_POOL[obj.id % len(NEWS_IMAGE_POOL)]
+    return DEFAULT_NEWS_IMAGE
 
 class DownloadFileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -48,12 +81,16 @@ class NewsSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
     
     def get_image_url(self, obj):
-        if obj.image and hasattr(obj.image, 'url'):
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
-        return None
+        request = self.context.get('request')
+        if obj.image and getattr(obj.image, "name", ""):
+            image_name = str(obj.image.name).replace("\\", "/")
+            if not image_name.startswith(("http://", "https://")) and "/http" not in image_name:
+                if not image_name.lower().endswith(".svg") and obj.image.storage.exists(image_name):
+                    try:
+                        return request.build_absolute_uri(obj.image.url) if request else obj.image.url
+                    except ValueError:
+                        pass
+        return build_media_url(request, fallback_news_image(obj))
     
     class Meta:
         model = News

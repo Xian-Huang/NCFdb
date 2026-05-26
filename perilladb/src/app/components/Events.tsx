@@ -2,6 +2,7 @@ import { ArrowRight, Calendar, Clock, MapPin, Users, Video } from "lucide-react"
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cropConfig } from "../cropConfig";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 export const eventRecords = [
   {
@@ -98,7 +99,7 @@ export function Events() {
         <section className="grid gap-6 lg:grid-cols-2">
           {eventRecords.map((event) => (
             <article key={event.id} className="group overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl">
-              <Link to={`/events/${event.id}`} className="block h-52 overflow-hidden"><img src={event.image} alt={event.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" /></Link>
+              <Link to={`/events/${event.id}`} className="block h-52 overflow-hidden"><ImageWithFallback src={event.image} alt={event.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" /></Link>
               <div className="p-5">
                 <div className="mb-3 flex flex-wrap gap-2"><span className="rounded-full px-3 py-1 text-sm font-medium" style={{ backgroundColor: cropConfig.accentSoft, color: cropConfig.accentDark }}>{event.type}</span><span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">{event.format}</span></div>
                 <h3 className="text-2xl font-semibold text-slate-950 group-hover:opacity-80"><Link to={`/events/${event.id}`}>{event.title}</Link></h3>
