@@ -27,6 +27,10 @@ import {
 
 type DataType = "users" | "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "nutrition" | "institutions" | "announcements" | "downloads" | "nutrition_data";
 
+const NEWS_CONTENT_MIN_WORDS = 600;
+const countEnglishWords = (value: unknown) => String(value ?? "").match(/\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b/g)?.length ?? 0;
+const countParagraphs = (value: unknown) => String(value ?? "").trim().split(/\r?\n\s*\r?\n/).filter(Boolean).length;
+
 interface UserData {
   id: number;
   username: string;
@@ -340,6 +344,18 @@ export function Admin() {
     if (!editingItem) {
       if (activeType === 'changelog' && !formData.release_date) {
         setFormError('Release Date is required');
+        return;
+      }
+    }
+
+    if (activeType === 'news') {
+      const wordCount = countEnglishWords(formData.content);
+      if (wordCount < NEWS_CONTENT_MIN_WORDS) {
+        setFormError(`News content must contain at least ${NEWS_CONTENT_MIN_WORDS} English words. Current count: ${wordCount}.`);
+        return;
+      }
+      if (countParagraphs(formData.content) < 2) {
+        setFormError('News content must contain multiple paragraphs. Separate paragraphs with a blank line.');
         return;
       }
     }
@@ -1034,16 +1050,23 @@ export function Admin() {
               
               {(() => {
                 if (key === 'content' || key === 'description' || key === 'function') {
+                  const isNewsContent = activeType === 'news' && key === 'content';
+                  const wordCount = isNewsContent ? countEnglishWords(formData[key]) : 0;
                   return (
                     <div className="relative">
                       <textarea
                         id={key}
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                        className={`${inputClass} min-h-32 resize-y`}
-                        rows={5}
+                        className={`${inputClass} ${isNewsContent ? 'min-h-80' : 'min-h-32'} resize-y`}
+                        rows={isNewsContent ? 14 : 5}
                         placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
                       />
+                      {isNewsContent && (
+                        <p className={`mt-2 text-xs font-medium ${wordCount >= NEWS_CONTENT_MIN_WORDS ? 'text-green-700' : 'text-slate-500'}`}>
+                          {wordCount} / {NEWS_CONTENT_MIN_WORDS} words required; separate paragraphs with a blank line.
+                        </p>
+                      )}
                     </div>
                   );
                 } else if (key === 'image' && activeType === 'news') {
