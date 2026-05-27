@@ -54,6 +54,10 @@ import {
 
 type DataType = "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "institutions" | "announcements" | "downloads" | "nutrition_data";
 
+const NEWS_CONTENT_MIN_WORDS = 600;
+const countEnglishWords = (value: unknown) => String(value ?? "").match(/\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b/g)?.length ?? 0;
+const countParagraphs = (value: unknown) => String(value ?? "").trim().split(/\r?\n\s*\r?\n/).filter(Boolean).length;
+
 interface NewsData {
   id: number;
   title: string;
@@ -449,6 +453,16 @@ export function Admin() {
       });
     }
 
+    if (activeType === 'news') {
+      const wordCount = countEnglishWords(formData.content);
+      if (wordCount < NEWS_CONTENT_MIN_WORDS) {
+        errors.push(`content must contain at least ${NEWS_CONTENT_MIN_WORDS} English words (currently ${wordCount})`);
+      }
+      if (countParagraphs(formData.content) < 2) {
+        errors.push('content must contain multiple paragraphs separated by a blank line');
+      }
+    }
+
     // Show validation errors
     if (errors.length > 0) {
       alert('Please fix the following errors:\n\n' + errors.join('\n'));
@@ -806,9 +820,12 @@ export function Admin() {
                     value={formData[key] || ''}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 resize-none shadow-sm"
-                    rows={5}
+                    rows={activeType === 'news' && key === 'content' ? 14 : 5}
                     placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
                   />
+                  {activeType === 'news' && key === 'content' && (
+                    <p className="mt-1 text-xs text-gray-500">{countEnglishWords(formData[key])} / {NEWS_CONTENT_MIN_WORDS} words required; separate paragraphs with a blank line.</p>
+                  )}
                 </div>
               )
 

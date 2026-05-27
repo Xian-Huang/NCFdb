@@ -1,0 +1,1 @@
+import{bQ as i,bR as p}from"./index-Cvf_cxhZ.js";function m(n,r){if(!r||n.length===0||!n.some(t=>r in t))return n;const a=new Map;for(const t of n){const o=String(t[r]??"");a.set(o,(a.get(o)||0)+1)}const e=Object.fromEntries([...a.entries()].sort((t,o)=>t[1]-o[1]).map(([t],o)=>[t,i[o]||p(t)]));return n.map(t=>({...t,color:e[String(t[r]??"")]}))}export{m as a};

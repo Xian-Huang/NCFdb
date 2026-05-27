@@ -776,6 +776,7 @@ class VisualizationSummaryView(APIView):
             'protein_nodes': protein_nodes,
             'protein_edges': protein_edges,  
         })
+
 class DataExportView(APIView):
     def get(self, request, entity, format=None):
         exporters = {

@@ -54,6 +54,10 @@ import {
 
 type DataType = "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "institutions" | "announcements" | "downloads" | "nutrition_data";
 
+const NEWS_CONTENT_MIN_WORDS = 600;
+const countEnglishWords = (value: unknown) => String(value ?? "").match(/\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b/g)?.length ?? 0;
+const countParagraphs = (value: unknown) => String(value ?? "").trim().split(/\r?\n\s*\r?\n/).filter(Boolean).length;
+
 interface NewsData {
   id: number;
   title: string;
@@ -447,6 +451,16 @@ export function Admin() {
           errors.push(`${field.replace(/_/g, ' ')} is required`);
         }
       });
+    }
+
+    if (activeType === 'news') {
+      const wordCount = countEnglishWords(formData.content);
+      if (wordCount < NEWS_CONTENT_MIN_WORDS) {
+        errors.push(`content must contain at least ${NEWS_CONTENT_MIN_WORDS} English words (currently ${wordCount})`);
+      }
+      if (countParagraphs(formData.content) < 2) {
+        errors.push('content must contain multiple paragraphs separated by a blank line');
+      }
     }
 
     // Show validation errors
@@ -861,12 +875,17 @@ export function Admin() {
               {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </label>
             {key === 'content' || key === 'description' ? (
-              <textarea
-                value={formData[key] || ''}
-                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                rows={4}
-              />
+              <div>
+                <textarea
+                  value={formData[key] || ''}
+                  onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
+                  rows={activeType === 'news' && key === 'content' ? 14 : 4}
+                />
+                {activeType === 'news' && key === 'content' && (
+                  <p className="mt-1 text-xs text-gray-500">{countEnglishWords(formData[key])} / {NEWS_CONTENT_MIN_WORDS} words required; separate paragraphs with a blank line.</p>
+                )}
+              </div>
             ) : key === 'is_active' || key === 'is_published' ? (
               <input
                 type="checkbox"

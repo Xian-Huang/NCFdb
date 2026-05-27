@@ -1,3 +1,5 @@
+import re
+
 from rest_framework import serializers
 from django.conf import settings
 from .models import DownloadFile, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, Institution, Announcement, News, Changelog, NutritionData
@@ -23,6 +25,20 @@ NEWS_IMAGE_BY_TITLE = {
     "welcome to flaxdb": "news_images/flax-database-curation.png",
     "database update": "news_images/flax-database-curation.png",
 }
+NEWS_CONTENT_MIN_WORDS = 600
+NEWS_WORD_PATTERN = re.compile(r"\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b")
+
+
+def news_content_word_count(value):
+    return len(NEWS_WORD_PATTERN.findall(str(value or "")))
+
+
+def news_content_paragraph_count(value):
+    plain_text = re.sub(r"</p\s*>", "\n\n", str(value or ""), flags=re.IGNORECASE)
+    plain_text = re.sub(r"<[^>]*>", "", plain_text)
+    return len([paragraph for paragraph in re.split(r"\r?\n\s*\r?\n", plain_text) if paragraph.strip()])
+
+
 def build_media_url(request, path):
     url = f"{settings.MEDIA_URL}{str(path).lstrip('/')}"
     return request.build_absolute_uri(url) if request else url
@@ -79,6 +95,19 @@ class AnnouncementSerializer(serializers.ModelSerializer):
 
 class NewsSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
+    content = serializers.CharField(required=True, allow_blank=False, allow_null=False)
+
+    def validate_content(self, value):
+        word_count = news_content_word_count(value)
+        if word_count < NEWS_CONTENT_MIN_WORDS:
+            raise serializers.ValidationError(
+                f"News content must contain at least {NEWS_CONTENT_MIN_WORDS} English words; currently {word_count}."
+            )
+        if news_content_paragraph_count(value) < 2:
+            raise serializers.ValidationError(
+                "News content must be split into at least two paragraphs separated by a blank line."
+            )
+        return value
     
     def get_image_url(self, obj):
         request = self.context.get('request')
