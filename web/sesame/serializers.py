@@ -1,6 +1,17 @@
 from rest_framework import serializers
 from .models import DownloadFile, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, Institution, Announcement, News, Changelog
 
+API_MEDIA_URL = "/api/media/"
+
+
+def build_media_url(request, path):
+    path = str(path).replace("\\", "/")
+    if path.startswith("/media/"):
+        path = path[len("/media/"):]
+    url = f"{API_MEDIA_URL}{path.lstrip('/')}"
+    return request.build_absolute_uri(url) if request else url
+
+
 class DownloadFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = DownloadFile
@@ -48,9 +59,7 @@ class NewsSerializer(serializers.ModelSerializer):
     def get_image_url(self, obj):
         if obj.image:
             request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
+            return build_media_url(request, getattr(obj.image, "name", obj.image.url))
         return None
     
     class Meta:

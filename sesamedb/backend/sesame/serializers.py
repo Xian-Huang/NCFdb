@@ -34,6 +34,7 @@ NEWS_IMAGE_BY_TITLE = {
 }
 NEWS_CONTENT_MIN_WORDS = 600
 NEWS_WORD_PATTERN = re.compile(r"\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b")
+API_MEDIA_URL = "/api/media/"
 
 
 def news_content_word_count(value):
@@ -47,7 +48,11 @@ def news_content_paragraph_count(value):
 
 
 def build_media_url(request, path):
-    url = f"{settings.MEDIA_URL}{str(path).lstrip('/')}"
+    path = str(path).replace("\\", "/")
+    media_url = settings.MEDIA_URL.rstrip("/")
+    if path.startswith(media_url):
+        path = path[len(media_url):]
+    url = f"{API_MEDIA_URL}{path.lstrip('/')}"
     return request.build_absolute_uri(url) if request else url
 
 def fallback_news_image(obj):
@@ -123,7 +128,7 @@ class NewsSerializer(serializers.ModelSerializer):
             if not image_name.startswith(("http://", "https://")) and "/http" not in image_name:
                 if not image_name.lower().endswith(".svg") and obj.image.storage.exists(image_name):
                     try:
-                        return request.build_absolute_uri(obj.image.url) if request else obj.image.url
+                        return build_media_url(request, image_name)
                     except ValueError:
                         pass
         return build_media_url(request, fallback_news_image(obj))
