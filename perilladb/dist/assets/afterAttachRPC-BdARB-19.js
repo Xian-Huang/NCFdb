@@ -1,0 +1,1 @@
+import{b3 as n,b4 as a}from"./index-DK_Kc37D.js";import{s as t,c as o}from"./createRPCRenderingSetup-O3OY6-0D.js";function d(r){const e=o({self:r,rpcMethodName:"RenderLinearReadArcsDisplay",getRPCParams:()=>r.renderProps(),onResult:()=>{}});n(r,async()=>{a(r)&&e()},{delay:1e3,name:"PerformRender"}),t(r)}export{d as doAfterAttachRPC};

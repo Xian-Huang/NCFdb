@@ -1,0 +1,1 @@
+import{o as c,t as r,j as s}from"./index-DK_Kc37D.js";const x=c(function(o){const{model:t,children:i}=o,{offsetX:n=0,offsetY:a=0}=t.data||{},e=r(t),l=e.vview.offsetPx-a,f=-(e.hview.offsetPx-n);return s.jsxs("div",{style:{position:"relative"},children:[s.jsx(t.ReactComponent2,{...o,style:{position:"absolute",top:l,left:f}}),i]})});export{x as default};
