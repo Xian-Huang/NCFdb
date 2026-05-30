@@ -6,11 +6,11 @@ from django.db.models import Avg, Count, Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import DownloadFile, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, Institution, Announcement, News, Changelog, NutritionData
+from .models import DownloadFile, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, RegionalMapSite, RegionalEnvironmentValue, Institution, Announcement, News, Changelog, NutritionData
 from .serializers import (
     DownloadFileSerializer, RegionSerializer, VarietySerializer, GeneSerializer, GeneExpressionSerializer,
-    EnvironmentalFactorSerializer, InstitutionSerializer, AnnouncementSerializer,
-    NewsSerializer, ChangelogSerializer, NutritionDataSerializer
+    EnvironmentalFactorSerializer, RegionalMapSiteSerializer, RegionalEnvironmentValueSerializer, InstitutionSerializer, AnnouncementSerializer,
+    NewsSerializer, NewsListSerializer, ChangelogSerializer, NutritionDataSerializer
 )
 
 def _safe_download_name(name, extension):
@@ -398,7 +398,7 @@ class AnnouncementDetailView(APIView):
 class NewsView(APIView):
     def get(self, request, format=None):
         news = News.objects.filter(is_published=True)
-        serializer = NewsSerializer(news, many=True, context={'request': request})
+        serializer = NewsListSerializer(news, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request, format=None):
@@ -411,7 +411,7 @@ class NewsView(APIView):
 class ScrollingNewsView(APIView):
     def get(self, request, format=None):
         news = News.objects.filter(is_published=True, is_scrolling=True)
-        serializer = NewsSerializer(news, many=True, context={'request': request})
+        serializer = NewsListSerializer(news, many=True, context={'request': request})
         return Response(serializer.data)
 
 class NewsDetailView(APIView):
@@ -484,6 +484,95 @@ class ChangelogDetailView(APIView):
             return Response({"error": "Changelog not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
+class RegionalMapSiteView(APIView):
+    def get(self, request, format=None):
+        sites = RegionalMapSite.objects.select_related('region').prefetch_related('varieties', 'environment_values__factor').all()
+        region = request.query_params.get('region')
+        if region:
+            sites = sites.filter(region_id=region)
+        active = request.query_params.get('active')
+        if active in {'true', '1'}:
+            sites = sites.filter(is_active=True)
+        return _paginated_response(request, sites, RegionalMapSiteSerializer)
+
+    def post(self, request, format=None):
+        serializer = RegionalMapSiteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RegionalMapSiteDetailView(APIView):
+    def get(self, request, pk, format=None):
+        try:
+            site = RegionalMapSite.objects.prefetch_related('varieties', 'environment_values__factor').get(pk=pk)
+            return Response(RegionalMapSiteSerializer(site).data)
+        except RegionalMapSite.DoesNotExist:
+            return Response({"error": "Regional map site not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, pk, format=None):
+        try:
+            site = RegionalMapSite.objects.get(pk=pk)
+            serializer = RegionalMapSiteSerializer(site, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except RegionalMapSite.DoesNotExist:
+            return Response({"error": "Regional map site not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        try:
+            RegionalMapSite.objects.get(pk=pk).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except RegionalMapSite.DoesNotExist:
+            return Response({"error": "Regional map site not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class RegionalEnvironmentValueView(APIView):
+    def get(self, request, format=None):
+        values = RegionalEnvironmentValue.objects.select_related('site', 'factor').all()
+        site = request.query_params.get('site')
+        if site:
+            values = values.filter(site_id=site)
+        return _paginated_response(request, values, RegionalEnvironmentValueSerializer)
+
+    def post(self, request, format=None):
+        serializer = RegionalEnvironmentValueSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RegionalEnvironmentValueDetailView(APIView):
+    def get(self, request, pk, format=None):
+        try:
+            value = RegionalEnvironmentValue.objects.select_related('site', 'factor').get(pk=pk)
+            return Response(RegionalEnvironmentValueSerializer(value).data)
+        except RegionalEnvironmentValue.DoesNotExist:
+            return Response({"error": "Regional environment value not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, pk, format=None):
+        try:
+            value = RegionalEnvironmentValue.objects.get(pk=pk)
+            serializer = RegionalEnvironmentValueSerializer(value, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except RegionalEnvironmentValue.DoesNotExist:
+            return Response({"error": "Regional environment value not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        try:
+            RegionalEnvironmentValue.objects.get(pk=pk).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except RegionalEnvironmentValue.DoesNotExist:
+            return Response({"error": "Regional environment value not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
 class NutritionDataView(APIView):
     def get(self, request, format=None):
         records = NutritionData.objects.select_related('variety', 'variety__region').all()
@@ -548,6 +637,67 @@ class GlobalSearchView(APIView):
             'nutrition': NutritionDataSerializer(nutrition, many=True).data,
         })
 
+
+def _environment_display(value):
+    if value.display_value:
+        return value.display_value
+    unit = value.factor.unit or ''
+    if value.value_min is not None and value.value_max is not None:
+        return f"{value.value_min:g}-{value.value_max:g} {unit}".strip()
+    if value.value_min is not None:
+        return f"{value.value_min:g} {unit}".strip()
+    if value.value_max is not None:
+        return f"{value.value_max:g} {unit}".strip()
+    return ''
+
+
+def _factor_bucket(value):
+    text = f"{value.factor.code} {value.factor.name} {value.factor.category}".lower()
+    if any(token in text for token in ['temp', 'temperature', '温度', '气温']):
+        return 'temperature'
+    if any(token in text for token in ['precip', 'rain', '降水', '降雨']):
+        return 'precipitation'
+    if any(token in text for token in ['sun', 'light', '日照', '光照']):
+        return 'sunshine'
+    if any(token in text for token in ['soil', '土壤']):
+        return 'soil'
+    return ''
+
+
+def _map_site_payload(site):
+    varieties = list(site.varieties.all())
+    if not varieties:
+        varieties = list(site.region.varieties.all()[:5])
+    env_values = list(site.environment_values.all())
+    env = {}
+    for value in env_values:
+        bucket = _factor_bucket(value)
+        if bucket:
+            env[bucket] = _environment_display(value)
+    avg_oil_values = [float(variety.oil_content) for variety in varieties if variety.oil_content is not None]
+    return {
+        'id': site.id,
+        'name': site.name,
+        'code': site.code,
+        'province': site.province,
+        'region': site.region.name,
+        'region_code': site.region.code,
+        'country': site.region.country,
+        'climate': site.region.climate,
+        'trait': site.trait,
+        'component': site.component,
+        'soil': env.get('soil') or site.soil,
+        'lng': float(site.longitude),
+        'lat': float(site.latitude),
+        'varieties': [variety.name for variety in varieties],
+        'variety_count': len(varieties),
+        'avg_oil': round(sum(avg_oil_values) / len(avg_oil_values), 2) if avg_oil_values else 0,
+        'temperature': env.get('temperature', ''),
+        'precipitation': env.get('precipitation', ''),
+        'sunshine': env.get('sunshine', ''),
+        'environment_values': RegionalEnvironmentValueSerializer(env_values, many=True).data,
+    }
+
 class VisualizationSummaryView(APIView):
     def get(self, request, format=None):
         sample_limit = _int_param(request, 'limit', 80, minimum=1, maximum=200)
@@ -568,6 +718,8 @@ class VisualizationSummaryView(APIView):
                 avg_oil=Avg('varieties__oil_content'),
             )[:sample_limit]
         ]
+        map_sites = RegionalMapSite.objects.filter(is_active=True).select_related('region').prefetch_related('varieties', 'region__varieties', 'environment_values__factor')[:sample_limit]
+        region_map = [_map_site_payload(site) for site in map_sites]
         return Response({
             'counts': {
                 'nutrition': NutritionData.objects.count(),
@@ -580,6 +732,7 @@ class VisualizationSummaryView(APIView):
             'nutrition': NutritionDataSerializer(nutrition, many=True).data,
             'gene_expression': GeneExpressionSerializer(expressions, many=True).data,
             'regions': region_rows,
+            'region_map': region_map,
             'network': [
                 {'source': gene.gene_id, 'target': gene.pathway or gene.gene_type or 'trait', 'weight': index + 1}
                 for index, gene in enumerate(Gene.objects.exclude(pathway__isnull=True)[:20])

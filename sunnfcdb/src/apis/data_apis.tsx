@@ -1,6 +1,14 @@
 // Data 页面的API接口
 import { fetchRequest } from "./https";
 
+const normalizeListResponse = <T = any,>(data: unknown): T[] => {
+    if (Array.isArray(data)) return data as T[];
+    if (data && typeof data === "object" && Array.isArray((data as { results?: unknown }).results)) {
+        return (data as { results: T[] }).results;
+    }
+    return [];
+};
+
 export const fetchDownloadFiles = async () => {
     const response = await fetchRequest("/api/download/files/", "GET");
     const data = await response.json();
@@ -14,9 +22,9 @@ export const fetchChangelog = async () => {
 }
 
 export const fetchNews = async () => {
-    const response = await fetchRequest("/api/news/", "GET");
+    const response = await fetchRequest("/api/news/?limit=100", "GET");
     const data = await response.json();
-    return data;
+    return normalizeListResponse(data);
 }
 
 export const fetchNewsDetail = async (id: number) => {
@@ -26,8 +34,9 @@ export const fetchNewsDetail = async (id: number) => {
 }
 
 export const fetchScrollingNews = async () => {
-    const response = await fetchRequest("/api/news/scrolling/", "GET");
-    return response.json();
+    const response = await fetchRequest("/api/news/scrolling/?limit=10", "GET");
+    const data = await response.json();
+    return normalizeListResponse(data);
 }
 
 export const fetchChangelogDetail = async (id: number) => {
@@ -184,6 +193,48 @@ export const updateEnvironmentalFactor = async (id: number, data: any) => {
 
 export const deleteEnvironmentalFactor = async (id: number) => {
     await fetchRequest(`/api/environmental-factors/${id}/`, "DELETE");
+}
+
+// Regional Map Sites
+export const fetchRegionalMapSites = async () => {
+    const response = await fetchRequest("/api/regional-map-sites/?limit=500", "GET");
+    const data = await response.json();
+    return normalizeListResponse(data);
+}
+
+export const createRegionalMapSite = async (data: any) => {
+    const response = await fetchRequest("/api/regional-map-sites/", "POST", data);
+    return response.json();
+}
+
+export const updateRegionalMapSite = async (id: number, data: any) => {
+    const response = await fetchRequest(`/api/regional-map-sites/${id}/`, "PUT", data);
+    return response.json();
+}
+
+export const deleteRegionalMapSite = async (id: number) => {
+    await fetchRequest(`/api/regional-map-sites/${id}/`, "DELETE");
+}
+
+// Regional Environment Values
+export const fetchRegionalEnvironmentValues = async () => {
+    const response = await fetchRequest("/api/regional-environment-values/?limit=500", "GET");
+    const data = await response.json();
+    return normalizeListResponse(data);
+}
+
+export const createRegionalEnvironmentValue = async (data: any) => {
+    const response = await fetchRequest("/api/regional-environment-values/", "POST", data);
+    return response.json();
+}
+
+export const updateRegionalEnvironmentValue = async (id: number, data: any) => {
+    const response = await fetchRequest(`/api/regional-environment-values/${id}/`, "PUT", data);
+    return response.json();
+}
+
+export const deleteRegionalEnvironmentValue = async (id: number) => {
+    await fetchRequest(`/api/regional-environment-values/${id}/`, "DELETE");
 }
 
 // Nutrition

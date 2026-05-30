@@ -264,3 +264,46 @@ export const fetchScrollingNews = async () => {
   if (!response.ok) throw new Error("scrolling news");
   return response.json();
 };
+
+export const fetchChangelogDetail = fetchFlaxChangelogById;
+
+
+export const fetchFlaxRegionalMapSites = async () => {
+  const response = await fetchRequest("/api/regional-map-sites/", "GET");
+  return await response.json();
+};
+
+export const createFlaxRegionalMapSite = async (data: any) => {
+  const response = await fetchRequest("/api/regional-map-sites/", "POST", data);
+  return await response.json();
+};
+
+export const updateFlaxRegionalMapSite = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/regional-map-sites/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteFlaxRegionalMapSite = async (id: number) => {
+  const response = await fetchRequest(`/api/regional-map-sites/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const fetchFlaxRegionalEnvironmentValues = async () => {
+  const response = await fetchRequest("/api/regional-environment-values/", "GET");
+  return await response.json();
+};
+
+export const createFlaxRegionalEnvironmentValue = async (data: any) => {
+  const response = await fetchRequest("/api/regional-environment-values/", "POST", data);
+  return await response.json();
+};
+
+export const updateFlaxRegionalEnvironmentValue = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/regional-environment-values/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteFlaxRegionalEnvironmentValue = async (id: number) => {
+  const response = await fetchRequest(`/api/regional-environment-values/${id}/`, "DELETE");
+  return await response.json();
+};

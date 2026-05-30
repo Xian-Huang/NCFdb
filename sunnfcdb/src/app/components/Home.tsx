@@ -39,40 +39,9 @@ interface ChangelogItem {
 const hasCjk = (value: unknown) => /[\u3400-\u9fff]/.test(String(value ?? ""));
 const cleanText = (value: unknown, fallback: string) => {
   const text = String(value ?? "").trim();
-  return !text || hasCjk(text) ? fallback : text;
+  return text && hasCjk(text) ? text : fallback;
 };
 const plainText = (value: unknown) => String(value ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-
-const dataOverview = [
-  { value: "15", label: "Metabolome", note: "seed nutrition profiles" },
-  { value: "52", label: "Resequencing", note: "genetic variation records" },
-  { value: "17", label: "Proteome", note: "protein expression datasets" },
-  { value: "50+", label: "Publications", note: "curated references" },
-];
-
-const researchModules = [
-  {
-    title: "Nutrition Quality",
-    desc: "Oil composition, seed quality and nutrition-related indicators for sunflower germplasm evaluation.",
-    icon: FlaskConical,
-  },
-  {
-    title: "Multi-omics Resources",
-    desc: "Metabolome, proteome and resequencing datasets organized for trait discovery and comparative analysis.",
-    icon: Microscope,
-  },
-  {
-    title: "Germplasm Comparison",
-    desc: "Variety information, regional adaptation notes and trait summaries for breeding-oriented screening.",
-    icon: Sprout,
-  },
-];
-
-const workflowSteps = [
-  "Sample registration and metadata standardization",
-  "Nutrition trait, omics and literature curation",
-  "Search, visualization and analysis service integration",
-];
 
 export function Home() {
   const [changelog, setChangelog] = useState<ChangelogItem[]>([]);
@@ -115,8 +84,41 @@ export function Home() {
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    return date.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" });
   };
+
+  const dataOverview = [
+    { value: "15", label: t("home.dataOverview.metabolome.label"), note: t("home.dataOverview.metabolome.note") },
+    { value: "52", label: t("home.dataOverview.resequencing.label"), note: t("home.dataOverview.resequencing.note") },
+    { value: "17", label: t("home.dataOverview.proteome.label"), note: t("home.dataOverview.proteome.note") },
+    { value: "50+", label: t("home.dataOverview.publications.label"), note: t("home.dataOverview.publications.note") },
+  ];
+
+  const researchModules = [
+    { title: t("home.modules.nutritionTitle"), desc: t("home.modules.nutritionDesc"), icon: FlaskConical },
+    { title: t("home.modules.omicsTitle"), desc: t("home.modules.omicsDesc"), icon: Microscope },
+    { title: t("home.modules.germplasmTitle"), desc: t("home.modules.germplasmDesc"), icon: Sprout },
+  ];
+
+  const workflowSteps = [
+    t("home.scientific.workflow1"),
+    t("home.scientific.workflow2"),
+    t("home.scientific.workflow3"),
+  ];
+
+  const researchAxes = [
+    [t("home.context.axes.oilTitle"), t("home.context.axes.oilDesc")],
+    [t("home.context.axes.adaptationTitle"), t("home.context.axes.adaptationDesc")],
+    [t("home.context.axes.molecularTitle"), t("home.context.axes.molecularDesc")],
+  ];
+
+  const contextTags = [
+    t("home.context.tags.oil"),
+    t("home.context.tags.nutrition"),
+    t("home.context.tags.salt"),
+    t("home.context.tags.broomrape"),
+    t("home.context.tags.genes"),
+  ];
 
   return (
     <div className="bg-[#f8faf5]">
@@ -125,7 +127,7 @@ export function Home() {
           <div className="flex flex-col justify-center">
             <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-green-200 bg-white px-4 py-2 text-sm font-medium text-green-900 shadow-sm">
               <ShieldCheck className="h-4 w-4" />
-              Sunflower Nutrition & Functional Database
+              {t("home.heroBadge")}
             </div>
             <h1 className="max-w-3xl text-4xl font-bold leading-tight text-slate-950 sm:text-5xl">
               {t("home.title")}
@@ -134,7 +136,7 @@ export function Home() {
               {t("home.subtitle")}
             </p>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500">
-              The platform integrates sunflower germplasm, nutrition traits, multi-omics datasets and literature updates to support quality evaluation, functional component discovery and molecular breeding research.
+              {t("home.heroDescription")}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -159,14 +161,14 @@ export function Home() {
               <div className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem]">
                 <ImageWithFallback
                   src="/hero-bg.jpg"
-                  alt="Sunflower"
+                  alt={t("home.context.imageAlt")}
                   className="h-full w-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4 rounded-2xl bg-white/90 p-4 shadow-lg backdrop-blur">
-                  <div className="text-sm font-semibold text-slate-900">Helianthus annuus research atlas</div>
+                  <div className="text-sm font-semibold text-slate-900">{t("home.atlasTitle")}</div>
                   <div className="mt-1 text-xs leading-5 text-slate-600">
-                    Nutrition traits, omics evidence and curated database services in one searchable portal.
+                    {t("home.atlasDesc")}
                   </div>
                 </div>
               </div>
@@ -188,14 +190,14 @@ export function Home() {
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-green-700">Research Resources</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-950">Curated sunflower data services</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-green-700">{t("home.resourcesEyebrow")}</p>
+            <h2 className="mt-2 text-3xl font-bold text-slate-950">{t("home.resourcesTitle")}</h2>
             <p className="mt-3 max-w-3xl text-slate-600">
-              Data, tools and project updates are organized around the practical needs of sunflower nutrition analysis and database-driven discovery.
+              {t("home.resourcesDesc")}
             </p>
           </div>
           <Link to="/data" className="inline-flex items-center text-sm font-semibold text-green-800 hover:text-green-900">
-            Browse datasets <ArrowRight className="ml-1 h-4 w-4" />
+            {t("home.browseDatasets")} <ArrowRight className="ml-1 h-4 w-4" />
           </Link>
         </div>
 
@@ -226,19 +228,19 @@ export function Home() {
                 <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-500 text-slate-950">
                   <Megaphone className="h-6 w-6" />
                 </div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-green-200">Database activity</p>
-                <h2 className="mt-2 text-2xl font-bold">News and release focus</h2>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-green-200">{t("home.scrolling.eyebrow")}</p>
+                <h2 className="mt-2 text-2xl font-bold">{t("home.scrolling.title")}</h2>
                 <p className="mt-3 text-sm leading-7 text-slate-300">
-                  Curated notices summarize sunflower data releases, nutrition updates and project milestones before researchers enter the detailed news archive.
+                  {t("home.scrolling.desc")}
                 </p>
                 <div className="mt-6 grid grid-cols-2 gap-3">
                   <div className="rounded-2xl bg-white/10 p-4">
                     <div className="text-3xl font-bold">{scrollingNews.length}</div>
-                    <div className="mt-1 text-xs text-green-100">active notices</div>
+                    <div className="mt-1 text-xs text-green-100">{t("home.scrolling.activeNotices")}</div>
                   </div>
                   <div className="rounded-2xl bg-white/10 p-4">
                     <div className="text-3xl font-bold">{String(currentNewsIndex + 1).padStart(2, "0")}</div>
-                    <div className="mt-1 text-xs text-green-100">selected item</div>
+                    <div className="mt-1 text-xs text-green-100">{t("home.scrolling.selectedItem")}</div>
                   </div>
                 </div>
               </aside>
@@ -249,24 +251,24 @@ export function Home() {
                       <div className="mb-3 flex flex-wrap items-center gap-2 text-xs font-medium text-slate-500">
                         <span className="inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 font-semibold uppercase tracking-[0.14em] text-green-700">
                           <Megaphone className="h-3.5 w-3.5" />
-                          Latest updates
+                          {t("home.scrolling.latestUpdates")}
                         </span>
-                        {activeNews.category && <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{cleanText(activeNews.category, "Notice")}</span>}
+                        {activeNews.category && <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{cleanText(activeNews.category, t("common.notice"))}</span>}
                         <span>{formatDate(activeNews.publish_time)}</span>
                       </div>
-                      <h2 className="line-clamp-3 text-2xl font-bold leading-snug text-slate-950">{cleanText(activeNews.title, "Database content update")}</h2>
-                      <p className="mt-3 line-clamp-4 text-sm leading-7 text-slate-600">{cleanText(plainText(activeNews.content), "Database content and project updates are available for this release.")}</p>
+                      <h2 className="line-clamp-3 text-2xl font-bold leading-snug text-slate-950">{cleanText(activeNews.title, t("home.scrolling.fallbackTitle"))}</h2>
+                      <p className="mt-3 line-clamp-4 text-sm leading-7 text-slate-600">{cleanText(plainText(activeNews.content), t("home.scrolling.fallbackContent"))}</p>
                     </div>
                     <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
                       <Link to={`/news/${activeNews.id}`} className="inline-flex items-center text-sm font-semibold text-green-700 hover:text-green-900">
-                        Read update <ArrowRight className="ml-1 h-4 w-4" />
+                        {t("home.scrolling.readUpdate")} <ArrowRight className="ml-1 h-4 w-4" />
                       </Link>
                       <div className="flex gap-2">
                         {scrollingNews.map((news, index) => (
                           <button
                             key={news.id}
                             type="button"
-                            aria-label={`Show notice ${index + 1}`}
+                            aria-label={t("home.scrolling.showNotice", { index: index + 1 })}
                             onClick={() => setCurrentNewsIndex(index)}
                             className={`h-2 rounded-full transition-all ${index === currentNewsIndex ? "w-7 bg-green-600" : "w-2 bg-slate-300 hover:bg-green-300"}`}
                           />
@@ -275,9 +277,9 @@ export function Home() {
                     </div>
                   </div>
                   <div className="border-t border-green-100 bg-green-50/70 p-5 lg:border-l lg:border-t-0">
-                    <div className="text-xs font-semibold uppercase tracking-[0.14em] text-green-700">Current item</div>
+                    <div className="text-xs font-semibold uppercase tracking-[0.14em] text-green-700">{t("home.scrolling.currentItem")}</div>
                     <div className="mt-2 text-3xl font-bold text-green-800">{String(currentNewsIndex + 1).padStart(2, "0")}</div>
-                    <div className="mt-1 text-xs text-slate-500">of {scrollingNews.length} database notices</div>
+                    <div className="mt-1 text-xs text-slate-500">{t("home.scrolling.ofNotices", { count: scrollingNews.length })}</div>
                   </div>
                 </div>
               </article>
@@ -291,9 +293,9 @@ export function Home() {
           <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-500 text-slate-950">
             <BarChart3 className="h-7 w-7" />
           </div>
-          <h2 className="text-2xl font-bold">Scientific focus</h2>
+          <h2 className="text-2xl font-bold">{t("home.scientific.title")}</h2>
           <p className="mt-3 text-sm leading-7 text-slate-300">
-            The homepage highlights sunflower-specific research objects, including seed nutrition, oil quality, multi-omics evidence and traceable project updates.
+            {t("home.scientific.desc")}
           </p>
           <div className="mt-6 grid gap-3">
             {workflowSteps.map((step, index) => (
@@ -328,29 +330,25 @@ export function Home() {
           <div className="relative overflow-hidden rounded-[1.75rem]">
             <ImageWithFallback
               src="/hero-bg.jpg"
-              alt="Sunflower field"
+              alt={t("home.context.fieldAlt")}
               className="h-full min-h-[300px] w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/15 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-green-100">Species context</p>
-              <h2 className="mt-2 text-3xl font-bold">Helianthus annuus evidence map</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-green-100">{t("home.context.eyebrow")}</p>
+              <h2 className="mt-2 text-3xl font-bold">{t("home.context.title")}</h2>
             </div>
           </div>
 
           <div className="flex flex-col justify-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-green-700">Beyond summary metrics</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-950">Research signals organized for sunflower quality discovery</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-green-700">{t("home.context.signalEyebrow")}</p>
+            <h2 className="mt-2 text-3xl font-bold text-slate-950">{t("home.context.signalTitle")}</h2>
             <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600">
-              Instead of repeating headline counts, this section explains how SunflowerDB connects oil composition, stress adaptation and candidate gene evidence across germplasm records, field notes and omics files.
+              {t("home.context.signalDesc")}
             </p>
 
             <div className="mt-7 divide-y divide-green-100 border-y border-green-100">
-              {[
-                ["Oil quality axis", "Fatty acid composition, seed nutrition indicators and functional component records are linked to accession metadata."],
-                ["Adaptation axis", "Salt tolerance, broomrape resistance and regional trial notes help users compare germplasm under field-relevant conditions."],
-                ["Molecular evidence axis", "Genome annotation, expression evidence and variation records support candidate gene screening and downstream validation."],
-              ].map(([title, desc]) => (
+              {researchAxes.map(([title, desc]) => (
                 <div key={title} className="grid gap-3 py-4 sm:grid-cols-[180px_1fr]">
                   <h3 className="font-semibold text-green-900">{title}</h3>
                   <p className="text-sm leading-6 text-slate-600">{desc}</p>
@@ -359,7 +357,7 @@ export function Home() {
             </div>
 
             <div className="mt-6 flex flex-wrap gap-2">
-              {["oil composition", "seed nutrition", "salt tolerance", "broomrape resistance", "candidate genes"].map((tag) => (
+              {contextTags.map((tag) => (
                 <span key={tag} className="rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-800 ring-1 ring-green-100">
                   {tag}
                 </span>
@@ -372,7 +370,7 @@ export function Home() {
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-green-700">Release Notes</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-green-700">{t("home.releaseNotes")}</p>
             <h2 className="mt-2 text-3xl font-bold text-slate-950">{t("home.newsUpdates")}</h2>
           </div>
           <BookOpen className="hidden h-10 w-10 sm:block" style={{ color: cropConfig.accent }} />
@@ -393,8 +391,8 @@ export function Home() {
                     v{item.version}
                   </span>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-950 hover:text-green-700">{cleanText(item.title, "Database release note")}</h3>
-                <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{cleanText(item.content, "Database content and interface updates are available for this release.")}</p>
+                <h3 className="text-xl font-semibold text-slate-950 hover:text-green-700">{cleanText(item.title, t("home.releaseFallbackTitle"))}</h3>
+                <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{cleanText(item.content, t("home.releaseFallbackContent"))}</p>
               </Link>
             ))}
           </div>

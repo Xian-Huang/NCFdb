@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { 
   User, Plus, Edit, Trash2, X, Shield, LogOut,
   FileText, MapPin, Leaf, Dna, Building, Bell,
@@ -15,6 +16,8 @@ import {
   fetchGenes, createGene, updateGene, deleteGene,
   fetchGeneExpressions, createGeneExpression, updateGeneExpression, deleteGeneExpression,
   fetchEnvironmentalFactors, createEnvironmentalFactor, updateEnvironmentalFactor, deleteEnvironmentalFactor,
+  fetchRegionalMapSites, createRegionalMapSite, updateRegionalMapSite, deleteRegionalMapSite,
+  fetchRegionalEnvironmentValues, createRegionalEnvironmentValue, updateRegionalEnvironmentValue, deleteRegionalEnvironmentValue,
   fetchNutrition, createNutrition, updateNutrition, deleteNutrition,
   fetchInstitutions, createInstitution, updateInstitution, deleteInstitution,
   fetchAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement,
@@ -24,12 +27,17 @@ import {
   updateSunflowerNutritionData,
   deleteSunflowerNutritionData,
 } from "../../apis/data_apis";
+import { cropConfig } from "../cropConfig";
 
-type DataType = "users" | "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "nutrition" | "institutions" | "announcements" | "downloads" | "nutrition_data";
+type DataType = "users" | "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "regional_map_sites" | "regional_environment_values" | "nutrition" | "institutions" | "announcements" | "downloads" | "nutrition_data";
 
 const NEWS_CONTENT_MIN_WORDS = 600;
 const countEnglishWords = (value: unknown) => String(value ?? "").match(/\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b/g)?.length ?? 0;
 const countParagraphs = (value: unknown) => String(value ?? "").trim().split(/\r?\n\s*\r?\n/).filter(Boolean).length;
+const readOnlyFormFields = new Set([
+  "region_name", "region_code", "variety_name", "variety_names", "gene_name", "institution_name",
+  "site_name", "factor_name", "factor_code", "factor_unit", "factor_category", "environment_values",
+]);
 
 interface UserData {
   id: number;
@@ -166,6 +174,8 @@ const dataTypeConfig: Record<DataType, { title: string; icon: React.ElementType;
   genes: { title: "Genes", icon: Dna, endpoint: "genes/" },
   gene_expressions: { title: "Gene Expressions", icon: Dna, endpoint: "gene-expressions/" },
   environmental_factors: { title: "Environmental Factors", icon: Beaker, endpoint: "environmental-factors/" },
+  regional_map_sites: { title: "Regional Map Sites", icon: MapPin, endpoint: "regional-map-sites/" },
+  regional_environment_values: { title: "Regional Environment Values", icon: Beaker, endpoint: "regional-environment-values/" },
   nutrition: { title: "Nutrition", icon: Beaker, endpoint: "nutrition/" },
   institutions: { title: "Institutions", icon: Building, endpoint: "institutions/" },
   announcements: { title: "Announcements", icon: Bell, endpoint: "announcements/" },
@@ -181,6 +191,7 @@ const dataTypeConfig: Record<DataType, { title: string; icon: React.ElementType;
 };
 
 export function Admin() {
+  const { t } = useTranslation();
   const [activeType, setActiveType] = useState<DataType>("users");
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -195,7 +206,12 @@ export function Admin() {
   const [varieties, setVarieties] = useState<any[]>([]);
   const [genes, setGenes] = useState<any[]>([]);
   const [institutions, setInstitutions] = useState<any[]>([]);
+  const [environmentalFactors, setEnvironmentalFactors] = useState<any[]>([]);
+  const [regionalMapSites, setRegionalMapSites] = useState<any[]>([]);
   const navigate = useNavigate();
+  const typeTitle = (type: string) => t(`admin.types.${type}`);
+  const column = (key: string) => t(`admin.columns.${key}`);
+  const statusText = (key: string) => t(`admin.status.${key}`);
 
   const userStr = localStorage.getItem("user");
   const currentUser = userStr ? JSON.parse(userStr) : null;
@@ -207,16 +223,20 @@ export function Admin() {
 
   const fetchForeignKeyOptions = async () => {
     try {
-      const [regionsData, varietiesData, genesData, institutionsData] = await Promise.all([
+      const [regionsData, varietiesData, genesData, institutionsData, factorsData, mapSitesData] = await Promise.all([
         fetchRegions(),
         fetchVarieties(),
         fetchGenes(),
         fetchInstitutions(),
+        fetchEnvironmentalFactors(),
+        fetchRegionalMapSites(),
       ]);
       setRegions(regionsData);
       setVarieties(varietiesData);
       setGenes(genesData);
       setInstitutions(institutionsData);
+      setEnvironmentalFactors(factorsData);
+      setRegionalMapSites(mapSitesData);
     } catch (error) {
       console.error("Failed to fetch foreign key options:", error);
     }
@@ -253,6 +273,12 @@ export function Admin() {
           break;
         case "environmental_factors":
           result = await fetchEnvironmentalFactors();
+          break;
+        case "regional_map_sites":
+          result = await fetchRegionalMapSites();
+          break;
+        case "regional_environment_values":
+          result = await fetchRegionalEnvironmentValues();
           break;
         case "nutrition":
           result = await fetchNutrition();
@@ -322,6 +348,10 @@ export function Admin() {
         return { gene: null, variety: null, tissue: "", stage: "", expression_value: null, fpkm: null, tpm: null, sample_id: "" };
       case "environmental_factors":
         return { name: "", code: "", unit: "", category: "", description: "", min_value: null, max_value: null };
+      case "regional_map_sites":
+        return { region: null, name: "", code: "", province: "", longitude: null, latitude: null, varieties: [], trait: "", component: "", soil: "", display_order: 0, is_active: true, description: "" };
+      case "regional_environment_values":
+        return { site: null, factor: null, value_min: null, value_max: null, display_value: "", note: "" };
       case "nutrition":
         return { name: "", desc: "" };
       case "institutions":
@@ -364,6 +394,7 @@ export function Admin() {
     try {
       // Filter out null values and empty strings before submitting (for optional fields)
       const submitData = { ...formData };
+      readOnlyFormFields.forEach((key) => delete submitData[key]);
       Object.keys(submitData).forEach(key => {
         // Convert empty strings to null for optional fields
         if (submitData[key] === null || submitData[key] === '') {
@@ -453,6 +484,20 @@ export function Admin() {
             await createEnvironmentalFactor(submitData);
           }
           break;
+        case "regional_map_sites":
+          if (editingItem) {
+            await updateRegionalMapSite(editingItem.id, submitData);
+          } else {
+            await createRegionalMapSite(submitData);
+          }
+          break;
+        case "regional_environment_values":
+          if (editingItem) {
+            await updateRegionalEnvironmentValue(editingItem.id, submitData);
+          } else {
+            await createRegionalEnvironmentValue(submitData);
+          }
+          break;
         case "nutrition":
           if (editingItem) {
             await updateNutrition(editingItem.id, submitData);
@@ -486,14 +531,14 @@ export function Admin() {
       closeModal(true);
     } catch (err) {
       console.error("Failed to save:", err);
-      setFormError("Save failed. Please check the form values and try again.");
+      setFormError(t("admin.saveFailed"));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this item?")) return;
+    if (!confirm(t("admin.deleteConfirm"))) return;
     try {
       switch (activeType) {
         case "users":
@@ -522,6 +567,12 @@ export function Admin() {
           break;
         case "environmental_factors":
           await deleteEnvironmentalFactor(id);
+          break;
+        case "regional_map_sites":
+          await deleteRegionalMapSite(id);
+          break;
+        case "regional_environment_values":
+          await deleteRegionalEnvironmentValue(id);
           break;
         case "nutrition":
           await deleteNutrition(id);
@@ -557,11 +608,11 @@ export function Admin() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Joined</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("user")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("email")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("status")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("joined")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -569,8 +620,8 @@ export function Admin() {
                 <tr key={item.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="flex items-center">
-                      <div className="h-10 w-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <User className="h-5 w-5 text-green-600" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full" style={{ backgroundColor: cropConfig.accentSoft }}>
+                        <User className="h-5 w-5" style={{ color: cropConfig.accent }} />
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium">{item.first_name || item.last_name || item.username}</div>
@@ -581,8 +632,8 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.email || "-"}</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
-                      {item.is_staff && <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">Admin</span>}
-                      {item.is_active ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Active</span> : <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">Inactive</span>}
+                      {item.is_staff && <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">{statusText("admin")}</span>}
+                      {item.is_active ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">{statusText("active")}</span> : <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">{statusText("inactive")}</span>}
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{new Date(item.date_joined).toLocaleDateString()}</td>
@@ -600,11 +651,11 @@ export function Admin() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Author</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("title")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("author")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("category")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("status")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -614,7 +665,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.author}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.category}</td>
                   <td className="px-6 py-4">
-                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -630,11 +681,11 @@ export function Admin() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Country</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Climate</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("name")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("code")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("country")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("climate")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -658,12 +709,12 @@ export function Admin() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Region</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Oil Content</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Maturity Days</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("name")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("code")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("region")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("oilContent")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("maturityDays")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -673,7 +724,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.variety_code}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.region_name || "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.oil_content ?? "-"}{item.oil_content !== null && item.oil_content !== undefined ? '%' : ''}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.maturity_days ?? "-"}{item.maturity_days !== null && item.maturity_days !== undefined ? ' days' : ''}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.maturity_days ?? "-"}{item.maturity_days !== null && item.maturity_days !== undefined ? ' 天' : ''}</td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
@@ -688,12 +739,12 @@ export function Admin() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gene ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Symbol</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Chromosome</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("geneId")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("name")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("symbol")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("chromosome")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("type")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -718,12 +769,12 @@ export function Admin() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Abbreviation</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Country</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">City</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("name")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("abbreviation")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("country")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("city")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("type")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -748,13 +799,13 @@ export function Admin() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Author</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Institution</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Importance</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("title")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("type")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("author")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("institution")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("importance")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("status")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -772,7 +823,7 @@ export function Admin() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -788,12 +839,12 @@ export function Admin() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sample</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variety</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Oil</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Protein</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("sample")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("variety")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("oil")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("protein")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("method")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -818,11 +869,11 @@ export function Admin() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Version</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Release Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("version")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("title")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("releaseDate")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("status")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -832,7 +883,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.title}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.release_date}</td>
                   <td className="px-6 py-4">
-                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Published</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Draft</span>}
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -848,12 +899,12 @@ export function Admin() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gene</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variety</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tissue</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stage</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expression Value</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("gene")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("variety")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("tissue")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("stage")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("expressionValue")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -882,13 +933,13 @@ export function Admin() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Min Value</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Max Value</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("name")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("code")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("unit")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("category")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("minValue")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("maxValue")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -909,14 +960,78 @@ export function Admin() {
             </tbody>
           </table>
         );
+      case "regional_map_sites":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("name")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("region")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("province")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("representativeVarieties")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("coordinate")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("status")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredData.map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.name}<div className="text-xs text-gray-400">{item.code}</div></td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.region_name || regions.find(r => r.id === item.region)?.name || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.province}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{Array.isArray(item.variety_names) && item.variety_names.length ? item.variety_names.join("、") : "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.longitude ?? item.lng}, {item.latitude ?? item.lat}</td>
+                  <td className="px-6 py-4">
+                    {item.is_active ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">{statusText("visible")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("hidden")}</span>}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+      case "regional_environment_values":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("site")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("factor")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("range")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("display_value")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("note")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredData.map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.site_name || regionalMapSites.find(s => s.id === item.site)?.name || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.factor_name || environmentalFactors.find(f => f.id === item.factor)?.name || "-"}<div className="text-xs text-gray-400">{item.factor_code || ""}</div></td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.value_min ?? "-"} - {item.value_max ?? "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.display_value || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.note || "-"}</td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
       case "nutrition":
         return (
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("name")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("description")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -938,12 +1053,12 @@ export function Admin() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Format</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Size</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Version</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Downloads</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("title")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("format")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("size")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("version")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("downloads")}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -964,58 +1079,67 @@ export function Admin() {
           </table>
         );
       default:
-        return <p className="text-gray-500">No data available</p>;
+        return <p className="text-gray-500">{t("admin.noData")}</p>;
     }
   };
 
   const renderForm = () => {
-    const formFields = Object.keys(formData).filter(k => k !== 'id' && k !== 'create_time' && k !== 'update_time' && k !== 'date_joined');
+    const formFields = Object.keys(formData).filter(k => k !== 'id' && k !== 'create_time' && k !== 'update_time' && k !== 'date_joined' && !readOnlyFormFields.has(k));
 
     // Define options for select fields
     const importanceOptions = [
-      { value: 'low', label: 'Low' },
-      { value: 'normal', label: 'Normal' },
-      { value: 'high', label: 'High' },
+      { value: 'low', label: t("admin.options.low") },
+      { value: 'normal', label: t("admin.options.normal") },
+      { value: 'high', label: t("admin.options.high") },
     ];
 
     const institutionTypeOptions = [
-      { value: 'university', label: 'University' },
-      { value: 'research', label: 'Research Institute' },
-      { value: 'company', label: 'Company' },
-      { value: 'other', label: 'Other' },
+      { value: 'university', label: t("admin.options.university") },
+      { value: 'research', label: t("admin.options.research") },
+      { value: 'company', label: t("admin.options.company") },
+      { value: 'other', label: t("admin.options.other") },
     ];
 
     const announcementTypeOptions = [
-      { value: 'event', label: 'Event' },
-      { value: 'news', label: 'News' },
-      { value: 'alert', label: 'Alert' },
-      { value: 'other', label: 'Other' },
+      { value: 'event', label: t("admin.options.event") },
+      { value: 'news', label: t("admin.types.news") },
+      { value: 'alert', label: t("admin.options.alert") },
+      { value: 'other', label: t("admin.options.other") },
     ];
 
     const newsCategoryOptions = [
-      { value: 'research', label: 'Research' },
-      { value: 'publication', label: 'Publication' },
-      { value: 'conference', label: 'Conference' },
-      { value: 'update', label: 'Update' },
-      { value: 'other', label: 'Other' },
+      { value: 'research', label: t("news.categories.research") },
+      { value: 'publication', label: t("admin.options.publication") },
+      { value: 'conference', label: t("admin.options.conference") },
+      { value: 'update', label: t("common.update") },
+      { value: 'other', label: t("admin.options.other") },
+    ];
+
+    const seedColorOptions = [
+      { value: t("admin.seedColors.black"), color: "#111827" },
+      { value: t("admin.seedColors.white"), color: "#f8fafc" },
+      { value: t("admin.seedColors.gray"), color: "#94a3b8" },
+      { value: t("admin.seedColors.brown"), color: "#92400e" },
+      { value: t("admin.seedColors.striped"), color: "#facc15" },
+      { value: t("admin.seedColors.other"), color: "#22c55e" },
     ];
 
     const newsTagsOptions = [
-      { value: 'genomics', label: 'Genomics' },
-      { value: 'breeding', label: 'Breeding' },
-      { value: 'transcriptomics', label: 'Transcriptomics' },
-      { value: 'metabolomics', label: 'Metabolomics' },
-      { value: 'phenotyping', label: 'Phenotyping' },
-      { value: 'genetic-diversity', label: 'Genetic Diversity' },
-      { value: 'marker-development', label: 'Marker Development' },
-      { value: 'qtl-mapping', label: 'QTL Mapping' },
-      { value: 'genome-editing', label: 'Genome Editing' },
-      { value: 'bioinformatics', label: 'Bioinformatics' },
+      { value: 'genomics', label: t("admin.options.genomics") },
+      { value: 'breeding', label: t("admin.options.breeding") },
+      { value: 'transcriptomics', label: t("admin.options.transcriptomics") },
+      { value: 'metabolomics', label: t("admin.options.metabolomics") },
+      { value: 'phenotyping', label: t("admin.options.phenotyping") },
+      { value: 'genetic-diversity', label: t("admin.options.geneticDiversity") },
+      { value: 'marker-development', label: t("admin.options.markerDevelopment") },
+      { value: 'qtl-mapping', label: t("admin.options.qtlMapping") },
+      { value: 'genome-editing', label: t("admin.options.genomeEditing") },
+      { value: 'bioinformatics', label: t("admin.options.bioinformatics") },
     ];
 
-    const getFieldLabel = (key: string) => key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    const wideFields = new Set(['content', 'description', 'function', 'tags', 'image', 'address']);
-    const requiredFields = new Set(['title', 'name', 'username', 'email', 'sample_code']);
+    const getFieldLabel = (key: string) => t(`admin.columns.${key}`, { defaultValue: key.replace(/_/g, " ") });
+    const wideFields = new Set(['content', 'description', 'function', 'tags', 'image', 'address', 'varieties']);
+    const requiredFields = new Set(['title', 'name', 'username', 'email', 'sample_code', 'region', 'province', 'longitude', 'latitude', 'site', 'factor']);
     const fieldWrapperClass = (key: string) =>
       `space-y-2 rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-colors focus-within:border-green-300 focus-within:bg-green-50/30 ${
         wideFields.has(key) ? 'md:col-span-2' : ''
@@ -1044,7 +1168,7 @@ export function Admin() {
                   {getFieldLabel(key)}
                 </label>
                 {requiredFields.has(key) && (
-                  <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-600">Required</span>
+                  <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-600">{t("admin.required")}</span>
                 )}
               </div>
               
@@ -1060,11 +1184,11 @@ export function Admin() {
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
                         className={`${inputClass} ${isNewsContent ? 'min-h-80' : 'min-h-32'} resize-y`}
                         rows={isNewsContent ? 14 : 5}
-                        placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
+                        placeholder={t("admin.placeholders.text", { field: getFieldLabel(key) })}
                       />
                       {isNewsContent && (
                         <p className={`mt-2 text-xs font-medium ${wordCount >= NEWS_CONTENT_MIN_WORDS ? 'text-green-700' : 'text-slate-500'}`}>
-                          {wordCount} / {NEWS_CONTENT_MIN_WORDS} words required; separate paragraphs with a blank line.
+                          {t("admin.validation.wordsRequired", { count: wordCount, min: NEWS_CONTENT_MIN_WORDS })}
                         </p>
                       )}
                     </div>
@@ -1087,12 +1211,12 @@ export function Admin() {
                       />
                       {formData[key] && typeof formData[key] === 'string' && (
                         <div className="mt-2 rounded-md bg-slate-100 px-3 py-2 text-sm text-slate-600">
-                          Current image: {formData[key].split('/').pop()}
+                          {t("admin.placeholders.currentImage", { name: formData[key].split('/').pop() })}
                         </div>
                       )}
                       {formData[key] && typeof formData[key] === 'object' && (
                         <div className="mt-2 rounded-md bg-green-50 px-3 py-2 text-sm text-green-800">
-                          Selected image: {formData[key].name}
+                          {t("admin.placeholders.selectedImage", { name: formData[key].name })}
                         </div>
                       )}
                     </div>
@@ -1105,7 +1229,7 @@ export function Admin() {
                         htmlFor={key}
                         className="cursor-pointer text-sm text-slate-600"
                       >
-                        {key === 'is_active' ? 'Active' : key === 'is_published' ? 'Published' : 'Scrolling Display'}
+                        {key === 'is_active' ? t("admin.fields.is_active") : key === 'is_published' ? t("admin.fields.is_published") : t("admin.fields.is_scrolling")}
                       </label>
                       <label htmlFor={key} className="relative inline-block w-12 h-6 cursor-pointer">
                         <input
@@ -1125,6 +1249,39 @@ export function Admin() {
                       </label>
                     </div>
                   );
+                } else if (key === 'seed_color') {
+                  return (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-3 gap-2">
+                        {seedColorOptions.map((option) => {
+                          const selected = formData[key] === option.value;
+                          return (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => setFormData({ ...formData, [key]: option.value })}
+                              className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition ${
+                                selected
+                                  ? "border-green-500 bg-green-50 text-green-800 shadow-sm"
+                                  : "border-slate-200 bg-white text-slate-700 hover:border-green-300"
+                              }`}
+                            >
+                              <span className="h-4 w-4 rounded-full border border-slate-200" style={{ backgroundColor: option.color }} />
+                              <span>{option.value}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <input
+                        id={key}
+                        type="text"
+                        value={formData[key] || ""}
+                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                        className={inputClass}
+                        placeholder={t("admin.placeholders.text", { field: getFieldLabel(key) })}
+                      />
+                    </div>
+                  );
                 } else if (key === 'region') {
                   return (
                     <div className="relative">
@@ -1134,7 +1291,7 @@ export function Admin() {
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
                         className={selectClass}
                       >
-                        <option value="">Select Region</option>
+                        <option value="">{t("admin.placeholders.selectRegion")}</option>
                         {regions.map((region) => (
                           <option key={region.id} value={region.id}>
                             {region.name} ({region.code})
@@ -1143,6 +1300,35 @@ export function Admin() {
                       </select>
                       <MapPin className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
                       <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
+                    </div>
+                  );
+                } else if (key === 'varieties' && activeType === 'regional_map_sites') {
+                  const selectedIds = Array.isArray(formData[key]) ? formData[key].map((id: any) => Number(id)) : [];
+                  return (
+                    <div className="space-y-3">
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {varieties.map((variety) => {
+                          const selected = selectedIds.includes(Number(variety.id));
+                          return (
+                            <button
+                              key={variety.id}
+                              type="button"
+                              onClick={() => {
+                                const next = selected
+                                  ? selectedIds.filter((id: number) => id !== Number(variety.id))
+                                  : [...selectedIds, Number(variety.id)];
+                                setFormData({ ...formData, [key]: next });
+                              }}
+                              className={`rounded-md border px-3 py-2 text-left text-sm transition ${
+                                selected ? "border-green-500 bg-green-50 text-green-800" : "border-slate-200 bg-white text-slate-700 hover:border-green-300"
+                              }`}
+                            >
+                              <div className="font-medium">{variety.name}</div>
+                              <div className="text-xs text-slate-500">{variety.variety_code} · {variety.region_name || "-"}</div>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   );
                 } else if (key === 'variety') {
@@ -1154,7 +1340,7 @@ export function Admin() {
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
                         className={selectClass}
                       >
-                        <option value="">Select Variety</option>
+                        <option value="">{t("admin.placeholders.selectVariety")}</option>
                         {varieties.map((variety) => (
                           <option key={variety.id} value={variety.id}>
                             {variety.name} ({variety.variety_code})
@@ -1162,6 +1348,46 @@ export function Admin() {
                         ))}
                       </select>
                       <Leaf className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                      <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
+                    </div>
+                  );
+                } else if (key === 'site') {
+                  return (
+                    <div className="relative">
+                      <select
+                        id={key}
+                        value={formData[key] ?? ''}
+                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
+                        className={selectClass}
+                      >
+                        <option value="">{t("admin.placeholders.selectSite")}</option>
+                        {regionalMapSites.map((site) => (
+                          <option key={site.id} value={site.id}>
+                            {site.province} - {site.name} ({site.code})
+                          </option>
+                        ))}
+                      </select>
+                      <MapPin className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                      <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
+                    </div>
+                  );
+                } else if (key === 'factor') {
+                  return (
+                    <div className="relative">
+                      <select
+                        id={key}
+                        value={formData[key] ?? ''}
+                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
+                        className={selectClass}
+                      >
+                        <option value="">{t("admin.placeholders.selectFactor")}</option>
+                        {environmentalFactors.map((factor) => (
+                          <option key={factor.id} value={factor.id}>
+                            {factor.name} ({factor.code}, {factor.unit})
+                          </option>
+                        ))}
+                      </select>
+                      <Beaker className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
                       <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
                     </div>
                   );
@@ -1174,7 +1400,7 @@ export function Admin() {
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
                         className={selectClass}
                       >
-                        <option value="">Select Gene</option>
+                        <option value="">{t("admin.placeholders.selectGene")}</option>
                         {genes.map((gene) => (
                           <option key={gene.id} value={gene.id}>
                             {gene.gene_id} - {gene.name}
@@ -1194,7 +1420,7 @@ export function Admin() {
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
                         className={selectClass}
                       >
-                        <option value="">Select Institution</option>
+                        <option value="">{t("admin.placeholders.selectInstitution")}</option>
                         {institutions.map((institution) => (
                           <option key={institution.id} value={institution.id}>
                             {institution.name} ({institution.abbreviation || institution.country})
@@ -1215,7 +1441,7 @@ export function Admin() {
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
                         className={paddedInputClass}
-                        placeholder="Enter password"
+                        placeholder={t("admin.placeholders.password")}
                       />
                     </div>
                   );
@@ -1231,14 +1457,14 @@ export function Admin() {
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
                         className={paddedInputClass}
-                        placeholder="Enter email address"
+                        placeholder={t("admin.placeholders.email")}
                       />
                     </div>
                   );
                 } else if (key.includes('date')) {
                   return (
                     <div className="relative">
-                      <span className="pointer-events-none absolute left-3 top-2.5 text-sm text-slate-400">Date</span>
+                      <span className="pointer-events-none absolute left-3 top-2.5 text-sm text-slate-400">{column("releaseDate")}</span>
                       <input
                         id={key}
                         type="date"
@@ -1251,14 +1477,14 @@ export function Admin() {
                 } else if (key.includes('url') || key.includes('website')) {
                   return (
                     <div className="relative">
-                      <span className="pointer-events-none absolute left-3 top-2.5 text-sm font-medium text-slate-400">URL</span>
+                      <span className="pointer-events-none absolute left-3 top-2.5 text-sm font-medium text-slate-400">{column("url")}</span>
                       <input
                         id={key}
                         type="url"
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
                         className={paddedInputClass}
-                        placeholder="Enter URL"
+                        placeholder={t("admin.placeholders.url")}
                       />
                     </div>
                   );
@@ -1290,7 +1516,7 @@ export function Admin() {
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
                         className={selectClass}
                       >
-                        <option value="">Select institution type</option>
+                        <option value="">{t("admin.placeholders.selectInstitutionType")}</option>
                         {institutionTypeOptions.map((option) => (
                           <option key={option.value} value={option.value}>
                             {option.label}
@@ -1310,7 +1536,7 @@ export function Admin() {
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
                         className={selectClass}
                       >
-                        <option value="">Select announcement type</option>
+                        <option value="">{t("admin.placeholders.selectAnnouncementType")}</option>
                         {announcementTypeOptions.map((option) => (
                           <option key={option.value} value={option.value}>
                             {option.label}
@@ -1330,7 +1556,7 @@ export function Admin() {
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
                         className={selectClass}
                       >
-                        <option value="">Select Category</option>
+                        <option value="">{t("admin.placeholders.selectCategory")}</option>
                         {newsCategoryOptions.map((option) => (
                           <option key={option.value} value={option.value}>
                             {option.label}
@@ -1379,12 +1605,12 @@ export function Admin() {
                       </div>
                       {formData[key] && (
                         <div className="text-xs text-gray-500 mt-1">
-                          Selected: {existingTags.join(', ')}
+                          {t("admin.placeholders.selected", { items: existingTags.join(', ') })}
                         </div>
                       )}
                     </div>
                   );
-                } else if (key.includes('content') || key.includes('value') || key.includes('days') || key.includes('size') || key.includes('height') || key.includes('yield') || key.includes('position')) {
+                } else if (key.includes('content') || key.includes('value') || key.includes('days') || key.includes('size') || key.includes('height') || key.includes('yield') || key.includes('position') || key === 'longitude' || key === 'latitude' || key === 'display_order') {
                   return (
                     <div className="relative">
                       <input
@@ -1393,7 +1619,7 @@ export function Admin() {
                         value={formData[key] ?? ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseFloat(e.target.value) })}
                         className={inputClass}
-                        placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
+                        placeholder={t("admin.placeholders.text", { field: getFieldLabel(key) })}
                       />
                     </div>
                   );
@@ -1406,7 +1632,7 @@ export function Admin() {
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
                         className={inputClass}
-                        placeholder={`Enter ${key.replace(/_/g, ' ').toLowerCase()}`}
+                        placeholder={t("admin.placeholders.text", { field: getFieldLabel(key) })}
                       />
                     </div>
                   );
@@ -1424,7 +1650,7 @@ export function Admin() {
             disabled={isSubmitting}
             className="rounded-md border border-slate-300 bg-white px-6 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Cancel
+            {t("admin.cancel")}
           </button>
           <button
             type="submit"
@@ -1432,7 +1658,7 @@ export function Admin() {
             className="inline-flex items-center justify-center gap-2 rounded-md bg-green-500 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-green-600 disabled:cursor-not-allowed disabled:bg-green-300"
           >
             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            {isSubmitting ? 'Saving...' : editingItem ? 'Save Changes' : 'Add'}
+            {isSubmitting ? t("admin.saving") : editingItem ? t("admin.saveChanges") : t("admin.add")}
           </button>
         </div>
       </form>
@@ -1448,7 +1674,7 @@ export function Admin() {
             <Shield className="h-8 w-8" />
             <div>
               <h1 className="text-xl font-bold">SunNCFdb</h1>
-              <p className="text-xs text-green-200">Admin Panel</p>
+              <p className="text-xs text-green-200">{t("admin.panel")}</p>
             </div>
           </div>
         </div>
@@ -1466,15 +1692,15 @@ export function Admin() {
                 }`}
               >
                 <Icon className="h-5 w-5" />
-                {config.title}
+                {typeTitle(key)}
               </button>
             );
           })}
         </nav>
         <div className="p-4 border-t border-green-500/30">
-          <div className="text-sm text-green-200 mb-2">Welcome, {currentUser?.username || 'Admin'}</div>
+          <div className="text-sm text-green-200 mb-2">{t("admin.welcome", { name: currentUser?.username || statusText("admin") })}</div>
           <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg hover:bg-white/20 w-full">
-            <LogOut className="h-4 w-4" /> Logout
+            <LogOut className="h-4 w-4" /> {t("admin.logout")}
           </button>
         </div>
       </aside>
@@ -1483,12 +1709,12 @@ export function Admin() {
         <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
             <div className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white p-4">
               <div className="flex items-center gap-4">
-                <h2 className="text-xl font-semibold text-slate-900">{dataTypeConfig[activeType].title} Management</h2>
+                <h2 className="text-xl font-semibold text-slate-900">{t("admin.management", { type: typeTitle(activeType) })}</h2>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
-                    placeholder="Search..."
+                    placeholder={t("admin.search")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="rounded-md border border-slate-300 py-2 pl-10 pr-4 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20"
@@ -1499,15 +1725,15 @@ export function Admin() {
                 onClick={() => openModal()}
                 className="inline-flex items-center gap-2 rounded-md bg-green-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-green-600"
               >
-                <Plus className="h-5 w-5" /> Add {dataTypeConfig[activeType].title.slice(0, -1)}
+                <Plus className="h-5 w-5" /> {t("admin.addType", { type: typeTitle(activeType) })}
               </button>
             </div>
 
             <div className="overflow-x-auto">
               {loading ? (
-                <div className="p-8 text-center text-gray-500">Loading...</div>
+                <div className="p-8 text-center text-gray-500">{t("admin.loading")}</div>
               ) : filteredData.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">No data available</div>
+                <div className="p-8 text-center text-gray-500">{t("admin.noData")}</div>
               ) : (
                 renderTable()
               )}
@@ -1522,9 +1748,9 @@ export function Admin() {
           <div className="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black/10">
             <div className="sticky top-0 z-10 flex items-start justify-between border-b border-slate-200 bg-white px-6 py-5">
               <div>
-                <p className="text-sm font-medium text-green-700">{dataTypeConfig[activeType].title}</p>
+                <p className="text-sm font-medium text-green-700">{typeTitle(activeType)}</p>
                 <h2 className="text-2xl font-semibold text-slate-950">
-                  {editingItem ? 'Edit record' : 'Add record'}
+                  {editingItem ? t("admin.editRecord") : t("admin.addRecord")}
                 </h2>
               </div>
               <button

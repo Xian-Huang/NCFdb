@@ -158,6 +158,54 @@ class EnvironmentalFactor(models.Model):
         return self.name
 
 
+class RegionalMapSite(models.Model):
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, related_name="map_sites", verbose_name="关联区域")
+    name = models.CharField(max_length=150, verbose_name="试验点名称")
+    code = models.CharField(max_length=50, unique=True, verbose_name="试验点代码")
+    province = models.CharField(max_length=80, verbose_name="地图省份名称")
+    longitude = models.DecimalField(max_digits=9, decimal_places=5, verbose_name="经度")
+    latitude = models.DecimalField(max_digits=8, decimal_places=5, verbose_name="纬度")
+    varieties = models.ManyToManyField(Variety, blank=True, related_name="regional_map_sites", verbose_name="优势品种")
+    trait = models.CharField(max_length=150, null=True, blank=True, verbose_name="优势性状")
+    component = models.CharField(max_length=150, null=True, blank=True, verbose_name="功能成分")
+    soil = models.CharField(max_length=150, null=True, blank=True, verbose_name="土壤类型")
+    display_order = models.IntegerField(default=0, verbose_name="展示顺序")
+    is_active = models.BooleanField(default=True, verbose_name="是否展示")
+    description = models.TextField(null=True, blank=True, verbose_name="说明")
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
+
+    class Meta:
+        db_table = "flaxdb_regional_map_sites"
+        verbose_name = "区域优势地图点"
+        verbose_name_plural = "区域优势地图点"
+        ordering = ["display_order", "province", "name"]
+
+    def __str__(self):
+        return f"{self.province} - {self.name}"
+
+
+class RegionalEnvironmentValue(models.Model):
+    site = models.ForeignKey(RegionalMapSite, on_delete=models.CASCADE, related_name="environment_values", verbose_name="地图点")
+    factor = models.ForeignKey(EnvironmentalFactor, on_delete=models.CASCADE, related_name="regional_values", verbose_name="环境因子")
+    value_min = models.DecimalField(max_digits=10, decimal_places=3, null=True, blank=True, verbose_name="最小值")
+    value_max = models.DecimalField(max_digits=10, decimal_places=3, null=True, blank=True, verbose_name="最大值")
+    display_value = models.CharField(max_length=100, null=True, blank=True, verbose_name="展示值")
+    note = models.CharField(max_length=200, null=True, blank=True, verbose_name="备注")
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
+
+    class Meta:
+        db_table = "flaxdb_regional_environment_values"
+        verbose_name = "区域环境因子值"
+        verbose_name_plural = "区域环境因子值"
+        unique_together = [["site", "factor"]]
+        ordering = ["site__display_order", "factor__category", "factor__name"]
+
+    def __str__(self):
+        return f"{self.site.name} - {self.factor.name}"
+
+
 class Institution(models.Model):
     name = models.CharField(max_length=200, unique=True, verbose_name="机构名称")
     abbreviation = models.CharField(max_length=50, null=True, blank=True, verbose_name="简称")

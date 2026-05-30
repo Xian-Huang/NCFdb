@@ -27,6 +27,10 @@ urlpatterns = [
     
     path('environmental-factors/', views.EnvironmentalFactorView.as_view(), name='environmental-factor-list'),
     path('environmental-factors/<int:pk>/', views.EnvironmentalFactorDetailView.as_view(), name='environmental-factor-detail'),
+    path('regional-map-sites/', views.RegionalMapSiteView.as_view(), name='regional-map-site-list'),
+    path('regional-map-sites/<int:pk>/', views.RegionalMapSiteDetailView.as_view(), name='regional-map-site-detail'),
+    path('regional-environment-values/', views.RegionalEnvironmentValueView.as_view(), name='regional-environment-value-list'),
+    path('regional-environment-values/<int:pk>/', views.RegionalEnvironmentValueDetailView.as_view(), name='regional-environment-value-detail'),
     
     path('institutions/', views.InstitutionView.as_view(), name='institution-list'),
     path('institutions/<int:pk>/', views.InstitutionDetailView.as_view(), name='institution-detail'),

@@ -264,3 +264,47 @@ export const fetchScrollingNews = async () => {
   if (!response.ok) throw new Error("scrolling news");
   return response.json();
 };
+
+export const fetchChangelog = fetchSafflowerChangelog;
+export const fetchChangelogDetail = fetchSafflowerChangelogById;
+
+
+export const fetchSafflowerRegionalMapSites = async () => {
+  const response = await fetchRequest("/api/regional-map-sites/", "GET");
+  return await response.json();
+};
+
+export const createSafflowerRegionalMapSite = async (data: any) => {
+  const response = await fetchRequest("/api/regional-map-sites/", "POST", data);
+  return await response.json();
+};
+
+export const updateSafflowerRegionalMapSite = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/regional-map-sites/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteSafflowerRegionalMapSite = async (id: number) => {
+  const response = await fetchRequest(`/api/regional-map-sites/${id}/`, "DELETE");
+  return await response.json();
+};
+
+export const fetchSafflowerRegionalEnvironmentValues = async () => {
+  const response = await fetchRequest("/api/regional-environment-values/", "GET");
+  return await response.json();
+};
+
+export const createSafflowerRegionalEnvironmentValue = async (data: any) => {
+  const response = await fetchRequest("/api/regional-environment-values/", "POST", data);
+  return await response.json();
+};
+
+export const updateSafflowerRegionalEnvironmentValue = async (id: number, data: any) => {
+  const response = await fetchRequest(`/api/regional-environment-values/${id}/`, "PUT", data);
+  return await response.json();
+};
+
+export const deleteSafflowerRegionalEnvironmentValue = async (id: number) => {
+  const response = await fetchRequest(`/api/regional-environment-values/${id}/`, "DELETE");
+  return await response.json();
+};

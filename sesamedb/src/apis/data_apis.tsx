@@ -272,3 +272,47 @@ export const fetchScrollingNews = async () => {
   if (!response.ok) throw new Error("scrolling news");
   return response.json();
 };
+
+export const fetchChangelog = fetchSesameChangelogs;
+export const fetchChangelogDetail = fetchSesameChangelogById;
+
+
+export const fetchSesameRegionalMapSites = async () => {
+    const response = await fetchRequest("/regional-map-sites/", "GET", undefined, true);
+    return await response.json();
+};
+
+export const createSesameRegionalMapSite = async (data: any) => {
+    const response = await fetchRequest("/regional-map-sites/", "POST", data, true);
+    return await response.json();
+};
+
+export const updateSesameRegionalMapSite = async (id: number, data: any) => {
+    const response = await fetchRequest(`/regional-map-sites/${id}/`, "PUT", data, true);
+    return await response.json();
+};
+
+export const deleteSesameRegionalMapSite = async (id: number) => {
+    const response = await fetchRequest(`/regional-map-sites/${id}/`, "DELETE", undefined, true);
+    return await response.json();
+};
+
+export const fetchSesameRegionalEnvironmentValues = async () => {
+    const response = await fetchRequest("/regional-environment-values/", "GET", undefined, true);
+    return await response.json();
+};
+
+export const createSesameRegionalEnvironmentValue = async (data: any) => {
+    const response = await fetchRequest("/regional-environment-values/", "POST", data, true);
+    return await response.json();
+};
+
+export const updateSesameRegionalEnvironmentValue = async (id: number, data: any) => {
+    const response = await fetchRequest(`/regional-environment-values/${id}/`, "PUT", data, true);
+    return await response.json();
+};
+
+export const deleteSesameRegionalEnvironmentValue = async (id: number) => {
+    const response = await fetchRequest(`/regional-environment-values/${id}/`, "DELETE", undefined, true);
+    return await response.json();
+};

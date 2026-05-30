@@ -18,7 +18,7 @@ export function Root() {
         <div className="container mx-auto grid gap-4 px-4 text-sm text-slate-600 md:grid-cols-[1fr_auto] md:items-center">
           <div>
             <p className="font-semibold text-slate-950">{cropConfig.dbName}</p>
-            <p className="mt-1">{cropConfig.species} · {cropConfig.traitFocus}</p>
+            <p className="mt-1">{cropConfig.species} · {t("common.traitFocus")}</p>
           </div>
           <p>{t("footer.copyright")}</p>
         </div>

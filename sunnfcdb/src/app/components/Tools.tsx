@@ -8,18 +8,18 @@ export function Tools() {
   const navigate = useNavigate();
 
   const tools = [
-    { icon: Search, name: t("tools.blast"), description: t("tools.blastDesc"), features: ["BLASTN", "BLASTP", "BLASTX", "tBLASTn"], status: "Available" },
-    { icon: Database, name: t("tools.browser"), description: t("tools.browserDesc"), features: ["JBrowse 2", "Track customization", "Comparative view"], status: "Available" },
-    { icon: FileSearch, name: t("tools.geneSearch"), description: t("tools.geneSearchDesc"), features: ["Advanced filters", "Batch search", "Export results"], status: "Available" },
-    { icon: BarChart3, name: t("tools.expression"), description: t("tools.expressionDesc"), features: ["Heatmaps", "Co-expression", "Differential expression"], status: "Available" },
-    { icon: Microscope, name: t("tools.variant"), description: t("tools.variantDesc"), features: ["SNP viewer", "Structural variants", "Population data"], status: "Available" },
-    { icon: Code, name: t("tools.api"), description: t("tools.apiDesc"), features: ["REST API", "Python SDK", "Documentation"], status: "Beta" },
+    { icon: Search, name: t("tools.blast"), description: t("tools.blastDesc"), features: [t("tools.features.blastn"), t("tools.features.blastp"), t("tools.features.blastx"), t("tools.features.tblastn")], status: t("tools.statuses.available") },
+    { icon: Database, name: t("tools.browser"), description: t("tools.browserDesc"), features: [t("tools.features.jbrowse"), t("tools.features.tracks"), t("tools.features.comparative")], status: t("tools.statuses.available") },
+    { icon: FileSearch, name: t("tools.geneSearch"), description: t("tools.geneSearchDesc"), features: [t("tools.features.filters"), t("tools.features.batch"), t("tools.features.export")], status: t("tools.statuses.available") },
+    { icon: BarChart3, name: t("tools.expression"), description: t("tools.expressionDesc"), features: [t("tools.features.heatmaps"), t("tools.features.coexpression"), t("tools.features.differential")], status: t("tools.statuses.available") },
+    { icon: Microscope, name: t("tools.variant"), description: t("tools.variantDesc"), features: [t("tools.features.snp"), t("tools.features.sv"), t("tools.features.population")], status: t("tools.statuses.available") },
+    { icon: Code, name: t("tools.api"), description: t("tools.apiDesc"), features: [t("tools.features.rest"), t("tools.features.sdk"), t("tools.features.docs")], status: t("tools.statuses.beta") },
   ];
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 py-12 sm:px-6 lg:px-8">
       <section className="relative overflow-hidden rounded-[1.75rem] p-8 text-white shadow-xl" style={{ backgroundImage: `linear-gradient(90deg, rgba(15,23,42,.84), rgba(15,23,42,.36)), url(${cropConfig.pageImages.tools})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-        <div className="relative max-w-4xl"><p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-white/75">{cropConfig.cropName} tool bench</p><h1 className="text-4xl font-bold mb-4">{t("tools.title")}</h1><p className="max-w-3xl text-lg text-white/85">{t("tools.subtitle")}</p><p className="mt-4 max-w-3xl text-sm leading-7 text-white/75">Tools are tuned for {cropConfig.traitFocus}, from sequence lookup to visualization and export.</p></div>
+        <div className="relative max-w-4xl"><p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-white/75">{t("tools.heroEyebrow")}</p><h1 className="text-4xl font-bold mb-4">{t("tools.title")}</h1><p className="max-w-3xl text-lg text-white/85">{t("tools.subtitle")}</p><p className="mt-4 max-w-3xl text-sm leading-7 text-white/75">{t("tools.heroDesc")}</p></div>
       </section>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -33,28 +33,28 @@ export function Tools() {
 
       <section className="grid gap-8 border-l-4 py-2 pl-6 lg:grid-cols-[1.05fr_0.95fr]" style={{ borderColor: cropConfig.accent }}>
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: cropConfig.accent }}>Analysis workflow</p>
-          <h2 className="mt-2 text-2xl font-semibold text-slate-950">From query to evidence package</h2>
+          <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: cropConfig.accent }}>{t("tools.workflow.eyebrow")}</p>
+          <h2 className="mt-2 text-2xl font-semibold text-slate-950">{t("tools.workflow.title")}</h2>
           <p className="mt-3 text-sm leading-7 text-slate-600">
-            The tool bench is designed for repeated research tasks: start with a gene, accession or sequence query, inspect linked annotations, compare trait evidence, then export a compact result set for downstream statistics or figure preparation.
+            {t("tools.workflow.desc")}
           </p>
           <div className="mt-5 grid gap-x-6 gap-y-3 sm:grid-cols-2">
-            {["Search genome and annotation indexes", "Review browser tracks and variation panels", "Compare expression and nutrition evidence", "Export tables, figures and API-ready identifiers"].map((item, index) => (
+            {[t("tools.workflow.step1"), t("tools.workflow.step2"), t("tools.workflow.step3"), t("tools.workflow.step4")].map((item, index) => (
               <div key={item} className="border-t border-slate-200 py-3 text-sm leading-6 text-slate-700"><span className="font-semibold" style={{ color: cropConfig.accentDark }}>0{index + 1}</span> {item}</div>
             ))}
           </div>
         </div>
         <div className="border-y border-slate-200 py-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: cropConfig.accent }}>Output standards</p>
-          <h2 className="mt-2 text-2xl font-semibold text-slate-950">Reusable results</h2>
+          <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: cropConfig.accent }}>{t("tools.output.eyebrow")}</p>
+          <h2 className="mt-2 text-2xl font-semibold text-slate-950">{t("tools.output.title")}</h2>
           <p className="mt-3 text-sm leading-7 text-slate-600">
-            Result pages keep identifiers, genome builds, thresholds and timestamps visible. This makes it easier to cite database evidence, repeat an analysis session, and combine exported records with local breeding or omics workflows.
+            {t("tools.output.desc")}
           </p>
         </div>
       </section>
       <section className="grid gap-6 lg:grid-cols-[1fr_0.86fr]">
-        <div className="rounded-[1.5rem] border border-slate-200 bg-white p-8 shadow-sm"><h2 className="mb-4 flex items-center text-2xl font-semibold text-slate-950"><Search className="mr-3 h-7 w-7" style={{ color: cropConfig.accent }} />{t("tools.blastSearch")}</h2><p className="mb-6 text-sm leading-7 text-slate-600">Paste a sequence below to search against the {cropConfig.cropName.toLowerCase()} reference genome, transcriptome or protein catalog.</p><div className="space-y-4"><div><label className="mb-2 block text-sm font-medium text-slate-700">{t("tools.sequence")}</label><textarea className="h-32 w-full rounded-2xl border border-slate-200 px-4 py-2 outline-none focus:ring-2" placeholder=">seq1&#10;ATCGATCGATCGATCG..." /></div><div className="grid gap-4 md:grid-cols-2"><label className="block text-sm font-medium text-slate-700">{t("tools.program")}<select className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 outline-none"><option>BLASTN</option><option>BLASTP</option><option>BLASTX</option><option>tBLASTn</option></select></label><label className="block text-sm font-medium text-slate-700">{t("tools.database")}<select className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 outline-none"><option>Reference Genome</option><option>Transcriptome</option><option>Protein Sequences</option><option>Variation Panels</option></select></label></div><button className="rounded-xl px-6 py-3 text-white" style={{ backgroundColor: cropConfig.accent }}>{t("tools.run")}</button></div></div>
-        <div className="rounded-[1.5rem] p-8 text-white" style={{ backgroundColor: cropConfig.accentDark }}><h2 className="mb-4 text-2xl font-semibold">{t("tools.tutorials")}</h2><p className="mb-6 text-sm leading-7 text-white/75">Guides cover data upload conventions, genome browser tracks, API access and interpretation of {cropConfig.cropName.toLowerCase()} trait dashboards.</p><div className="grid gap-3"><button className="inline-flex items-center gap-3 rounded-xl px-4 py-3 text-left text-slate-800" style={{ backgroundColor: cropConfig.accentSoft }}><BookOpen className="h-5 w-5" />{t("tools.guides")}</button><button className="inline-flex items-center gap-3 rounded-xl px-4 py-3 text-left text-slate-800" style={{ backgroundColor: cropConfig.accentSoft }}><Video className="h-5 w-5" />{t("tools.videos")}</button><button className="inline-flex items-center gap-3 rounded-xl px-4 py-3 text-left text-slate-800" style={{ backgroundColor: cropConfig.accentSoft }}><FileCode className="h-5 w-5" />{t("tools.apiDocs")}</button></div></div>
+        <div className="rounded-[1.5rem] border border-slate-200 bg-white p-8 shadow-sm"><h2 className="mb-4 flex items-center text-2xl font-semibold text-slate-950"><Search className="mr-3 h-7 w-7" style={{ color: cropConfig.accent }} />{t("tools.blastSearch")}</h2><p className="mb-6 text-sm leading-7 text-slate-600">{t("tools.blastIntro")}</p><div className="space-y-4"><div><label className="mb-2 block text-sm font-medium text-slate-700">{t("tools.sequence")}</label><textarea className="h-32 w-full rounded-2xl border border-slate-200 px-4 py-2 outline-none focus:ring-2" placeholder={t("tools.sequencePlaceholder")} /></div><div className="grid gap-4 md:grid-cols-2"><label className="block text-sm font-medium text-slate-700">{t("tools.program")}<select className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 outline-none"><option>{t("tools.programs.blastn")}</option><option>{t("tools.programs.blastp")}</option><option>{t("tools.programs.blastx")}</option><option>{t("tools.programs.tblastn")}</option></select></label><label className="block text-sm font-medium text-slate-700">{t("tools.database")}<select className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 outline-none"><option>{t("tools.databases.genome")}</option><option>{t("tools.databases.transcriptome")}</option><option>{t("tools.databases.proteins")}</option><option>{t("tools.databases.variation")}</option></select></label></div><button className="rounded-xl px-6 py-3 text-white" style={{ backgroundColor: cropConfig.accent }}>{t("tools.run")}</button></div></div>
+        <div className="rounded-[1.5rem] p-8 text-white" style={{ backgroundColor: cropConfig.accentDark }}><h2 className="mb-4 text-2xl font-semibold">{t("tools.tutorials")}</h2><p className="mb-6 text-sm leading-7 text-white/75">{t("tools.tutorialDesc")}</p><div className="grid gap-3"><button className="inline-flex items-center gap-3 rounded-xl px-4 py-3 text-left text-slate-800" style={{ backgroundColor: cropConfig.accentSoft }}><BookOpen className="h-5 w-5" />{t("tools.guides")}</button><button className="inline-flex items-center gap-3 rounded-xl px-4 py-3 text-left text-slate-800" style={{ backgroundColor: cropConfig.accentSoft }}><Video className="h-5 w-5" />{t("tools.videos")}</button><button className="inline-flex items-center gap-3 rounded-xl px-4 py-3 text-left text-slate-800" style={{ backgroundColor: cropConfig.accentSoft }}><FileCode className="h-5 w-5" />{t("tools.apiDocs")}</button></div></div>
       </section>
     </div>
   );

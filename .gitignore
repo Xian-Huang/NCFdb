@@ -22,3 +22,5 @@ build
 *.swp
 *.pid
 *.htaccess
+*.pdf
+.caches

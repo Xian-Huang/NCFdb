@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Shield, Eye, EyeOff } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function Login() {
   const [username, setUsername] = useState("");
@@ -9,6 +10,7 @@ export function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,10 +31,10 @@ export function Login() {
         localStorage.setItem("token", data.token || "session");
         navigate("/admin");
       } else {
-        setError(data.error || "Invalid credentials");
+        setError(data.error || t("login.invalid"));
       }
     } catch (err) {
-      setError("Login failed. Please try again.");
+      setError(t("login.failed"));
     } finally {
       setLoading(false);
     }
@@ -45,8 +47,8 @@ export function Login() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
             <Shield className="h-8 w-8 text-green-700" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">NCFdb Admin</h1>
-          <p className="text-gray-500 mt-2">Please sign in to continue</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("login.title")}</h1>
+          <p className="text-gray-500 mt-2">{t("login.subtitle")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -58,21 +60,21 @@ export function Login() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Username
+              {t("login.username")}
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
-              placeholder="Enter your username"
+              placeholder={t("login.usernamePlaceholder")}
               required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Password
+              {t("login.password")}
             </label>
             <div className="relative">
               <input
@@ -80,7 +82,7 @@ export function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent pr-12"
-                placeholder="Enter your password"
+                placeholder={t("login.passwordPlaceholder")}
                 required
               />
               <button
@@ -98,13 +100,13 @@ export function Login() {
             disabled={loading}
             className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-700 focus:ring-4 focus:ring-amber-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? t("login.signingIn") : t("login.signIn")}
           </button>
         </form>
 
         <div className="mt-6 text-center">
           <a href="/" className="text-sm text-green-700 hover:text-green-800">
-            ← Back to Home
+            {t("common.backHome")}
           </a>
         </div>
       </div>

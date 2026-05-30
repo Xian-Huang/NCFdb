@@ -73,7 +73,7 @@ def _paginated_response(request, queryset, serializer_class, default_limit=None)
     limit_value = request.query_params.get('limit')
     offset_value = request.query_params.get('offset')
     if limit_value is None and offset_value is None and default_limit is None:
-        return Response(serializer_class(queryset, many=True).data)
+        return Response(serializer_class(queryset, many=True, context={'request': request}).data)
 
     limit = _int_param(request, 'limit', default_limit or 100, minimum=1, maximum=500)
     offset = _int_param(request, 'offset', 0, minimum=0, maximum=1000000)
@@ -83,7 +83,7 @@ def _paginated_response(request, queryset, serializer_class, default_limit=None)
         'count': total,
         'limit': limit,
         'offset': offset,
-        'results': serializer_class(rows, many=True).data,
+        'results': serializer_class(rows, many=True, context={'request': request}).data,
     })
 
 class DownloadFilesView(APIView):
@@ -96,9 +96,8 @@ class NewsView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
     def get(self, request, format=None):
-        news = News.objects.all()
-        serializer = NewsSerializer(news, many=True, context={'request': request})
-        return Response(serializer.data)
+        news = News.objects.all().order_by('-publish_time', '-create_time')
+        return _paginated_response(request, news, NewsListSerializer)
 
     def post(self, request, format=None):
         serializer = NewsSerializer(data=request.data, context={'request': request})
@@ -109,9 +108,8 @@ class NewsView(APIView):
 
 class ScrollingNewsView(APIView):
     def get(self, request, format=None):
-        news = News.objects.filter(is_scrolling=True)
-        serializer = NewsSerializer(news, many=True, context={'request': request})
-        return Response(serializer.data)
+        news = News.objects.filter(is_scrolling=True).order_by('-publish_time', '-create_time')
+        return _paginated_response(request, news, NewsListSerializer)
 
 class NewsDetailView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
@@ -395,6 +393,95 @@ class EnvironmentalFactorDetailView(APIView):
             return Response({"error": "EnvironmentalFactor not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
+class RegionalMapSiteView(APIView):
+    def get(self, request, format=None):
+        sites = RegionalMapSite.objects.select_related('region').prefetch_related('varieties', 'environment_values__factor').all()
+        region = request.query_params.get('region')
+        if region:
+            sites = sites.filter(region_id=region)
+        active = request.query_params.get('active')
+        if active in {'true', '1'}:
+            sites = sites.filter(is_active=True)
+        return _paginated_response(request, sites, RegionalMapSiteSerializer)
+
+    def post(self, request, format=None):
+        serializer = RegionalMapSiteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RegionalMapSiteDetailView(APIView):
+    def get(self, request, pk, format=None):
+        try:
+            site = RegionalMapSite.objects.prefetch_related('varieties', 'environment_values__factor').get(pk=pk)
+            return Response(RegionalMapSiteSerializer(site).data)
+        except RegionalMapSite.DoesNotExist:
+            return Response({"error": "Regional map site not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, pk, format=None):
+        try:
+            site = RegionalMapSite.objects.get(pk=pk)
+            serializer = RegionalMapSiteSerializer(site, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except RegionalMapSite.DoesNotExist:
+            return Response({"error": "Regional map site not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        try:
+            RegionalMapSite.objects.get(pk=pk).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except RegionalMapSite.DoesNotExist:
+            return Response({"error": "Regional map site not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class RegionalEnvironmentValueView(APIView):
+    def get(self, request, format=None):
+        values = RegionalEnvironmentValue.objects.select_related('site', 'factor').all()
+        site = request.query_params.get('site')
+        if site:
+            values = values.filter(site_id=site)
+        return _paginated_response(request, values, RegionalEnvironmentValueSerializer)
+
+    def post(self, request, format=None):
+        serializer = RegionalEnvironmentValueSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RegionalEnvironmentValueDetailView(APIView):
+    def get(self, request, pk, format=None):
+        try:
+            value = RegionalEnvironmentValue.objects.select_related('site', 'factor').get(pk=pk)
+            return Response(RegionalEnvironmentValueSerializer(value).data)
+        except RegionalEnvironmentValue.DoesNotExist:
+            return Response({"error": "Regional environment value not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, pk, format=None):
+        try:
+            value = RegionalEnvironmentValue.objects.get(pk=pk)
+            serializer = RegionalEnvironmentValueSerializer(value, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except RegionalEnvironmentValue.DoesNotExist:
+            return Response({"error": "Regional environment value not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        try:
+            RegionalEnvironmentValue.objects.get(pk=pk).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except RegionalEnvironmentValue.DoesNotExist:
+            return Response({"error": "Regional environment value not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
 class NutritionView(APIView):
     def get(self, request, format=None):
         nutrition = Nutrition.objects.all()
@@ -641,30 +728,6 @@ class GlobalSearchView(APIView):
             'nutrition': NutritionDataSerializer(nutrition, many=True).data,
         })
 
-SUNFLOWER_REGION_COORDS = {
-    'IM': (111.76, 40.82),
-    'NMG': (111.76, 40.82),
-    'XJ': (87.62, 43.82),
-    'HLJ': (126.64, 45.76),
-    'JL': (125.32, 43.90),
-    'LN': (123.43, 41.80),
-    'GS': (103.83, 36.06),
-    'NX': (106.23, 38.49),
-    'HB': (114.52, 38.04),
-    'SD': (117.12, 36.65),
-}
-
-SUNFLOWER_DEMO_REGIONS = [
-    {'name': 'Inner Mongolia Hetao Trial Zone', 'code': 'IM', 'country': 'China', 'climate': 'temperate semi-arid', 'variety_count': 18, 'avg_oil': 48.6, 'lat': 40.82, 'lng': 111.76},
-    {'name': 'Xinjiang Irrigated Oasis Panel', 'code': 'XJ', 'country': 'China', 'climate': 'continental arid', 'variety_count': 16, 'avg_oil': 47.9, 'lat': 43.82, 'lng': 87.62},
-    {'name': 'Heilongjiang Cool Region Nursery', 'code': 'HLJ', 'country': 'China', 'climate': 'cool temperate', 'variety_count': 12, 'avg_oil': 44.8, 'lat': 45.76, 'lng': 126.64},
-    {'name': 'Jilin Disease Resistance Nursery', 'code': 'JL', 'country': 'China', 'climate': 'temperate monsoon', 'variety_count': 10, 'avg_oil': 45.2, 'lat': 43.90, 'lng': 125.32},
-    {'name': 'Gansu Dryland Evaluation Site', 'code': 'GS', 'country': 'China', 'climate': 'dry plateau', 'variety_count': 9, 'avg_oil': 46.1, 'lat': 36.06, 'lng': 103.83},
-    {'name': 'Ningxia Salinity Screening Site', 'code': 'NX', 'country': 'China', 'climate': 'semi-arid irrigated', 'variety_count': 8, 'avg_oil': 45.7, 'lat': 38.49, 'lng': 106.23},
-    {'name': 'Hebei Adaptation Nursery', 'code': 'HB', 'country': 'China', 'climate': 'warm temperate', 'variety_count': 7, 'avg_oil': 44.4, 'lat': 38.04, 'lng': 114.52},
-    {'name': 'Shandong Quality Verification Site', 'code': 'SD', 'country': 'China', 'climate': 'warm temperate monsoon', 'variety_count': 6, 'avg_oil': 43.8, 'lat': 36.65, 'lng': 117.12},
-]
-
 SUNFLOWER_GENE_ROWS = [
     ('HaFAD2-1', 'oleic acid desaturation', [18, 32, 54, 68, 81, 74]),
     ('HaFAD3', 'linolenic acid synthesis', [12, 20, 35, 47, 62, 58]),
@@ -686,13 +749,6 @@ SUNFLOWER_PROTEIN_EDGES = [
     ('HaWRKY33', 'HaCYP707A', 0.69), ('HaMYB96', 'HaLEA14', 0.73), ('HaNAC29', 'HaMYB96', 0.66),
     ('HaWRI1', 'HaSAD6', 0.71), ('HaDGAT1', 'HaFAD3', 0.58), ('HaWRKY33', 'HaNAC29', 0.62),
 ]
-
-def _region_coordinates(region):
-    code = (region.code or '').upper()
-    for key, coords in SUNFLOWER_REGION_COORDS.items():
-        if key in code:
-            return coords
-    return (103.8, 36.5)
 
 def _demo_gene_expression():
     tissues = ['Root', 'Leaf', 'Bud', 'Flower', 'Early seed', 'Mature seed']
@@ -721,11 +777,70 @@ def _demo_protein_network():
     edges = [{'source': source, 'target': target, 'weight': weight} for source, target, weight in SUNFLOWER_PROTEIN_EDGES]
     return nodes, edges
 
+def _environment_display(value):
+    if value.display_value:
+        return value.display_value
+    unit = value.factor.unit or ''
+    if value.value_min is not None and value.value_max is not None:
+        return f"{value.value_min:g}-{value.value_max:g} {unit}".strip()
+    if value.value_min is not None:
+        return f"{value.value_min:g} {unit}".strip()
+    if value.value_max is not None:
+        return f"{value.value_max:g} {unit}".strip()
+    return ''
+
+def _factor_bucket(value):
+    text = f"{value.factor.code} {value.factor.name} {value.factor.category}".lower()
+    if any(token in text for token in ['temp', 'temperature', '温度', '气温']):
+        return 'temperature'
+    if any(token in text for token in ['precip', 'rain', '降水', '降雨']):
+        return 'precipitation'
+    if any(token in text for token in ['sun', 'light', '日照', '光照']):
+        return 'sunshine'
+    if any(token in text for token in ['soil', '土壤']):
+        return 'soil'
+    return ''
+
+def _map_site_payload(site):
+    varieties = list(site.varieties.all())
+    if not varieties:
+        varieties = list(site.region.varieties.all()[:5])
+    env_values = list(site.environment_values.all())
+    env = {bucket: _environment_display(value) for value in env_values if (bucket := _factor_bucket(value))}
+    avg_oil_values = [float(variety.oil_content) for variety in varieties if variety.oil_content is not None]
+    return {
+        'id': site.id,
+        'name': site.name,
+        'code': site.code,
+        'province': site.province,
+        'region': site.region.name,
+        'region_code': site.region.code,
+        'country': site.region.country,
+        'climate': site.region.climate,
+        'trait': site.trait,
+        'component': site.component,
+        'soil': env.get('soil') or site.soil,
+        'lng': float(site.longitude),
+        'lat': float(site.latitude),
+        'varieties': [variety.name for variety in varieties],
+        'variety_count': len(varieties),
+        'avg_oil': round(sum(avg_oil_values) / len(avg_oil_values), 2) if avg_oil_values else 0,
+        'temperature': env.get('temperature', ''),
+        'precipitation': env.get('precipitation', ''),
+        'sunshine': env.get('sunshine', ''),
+        'environment_values': RegionalEnvironmentValueSerializer(env_values, many=True).data,
+    }
+
 class VisualizationSummaryView(APIView):
     def get(self, request, format=None):
         sample_limit = _int_param(request, 'limit', 80, minimum=1, maximum=200)
         nutrition = NutritionData.objects.select_related('variety', 'variety__region')[:sample_limit]
         expressions = GeneExpression.objects.select_related('gene', 'variety')[:sample_limit]
+        map_sites = RegionalMapSite.objects.filter(is_active=True).select_related('region').prefetch_related(
+            'varieties',
+            'region__varieties',
+            'environment_values__factor',
+        )[:sample_limit]
         region_rows = [
             {
                 'id': region.id,
@@ -735,17 +850,13 @@ class VisualizationSummaryView(APIView):
                 'climate': region.climate,
                 'variety_count': region.variety_count,
                 'avg_oil': round(float(region.avg_oil or 0), 2),
-                'lng': _region_coordinates(region)[0],
-                'lat': _region_coordinates(region)[1],
             }
             for region in Region.objects.annotate(
                 variety_count=Count('varieties'),
                 avg_oil=Avg('varieties__oil_content'),
             )[:sample_limit]
         ]
-        if len(region_rows) < 6:
-            existing_codes = {row.get('code') for row in region_rows}
-            region_rows.extend([row for row in SUNFLOWER_DEMO_REGIONS if row['code'] not in existing_codes])
+        region_map = [_map_site_payload(site) for site in map_sites]
 
         tissues, expression_matrix, demo_expression = _demo_gene_expression()
         expression_rows = GeneExpressionSerializer(expressions, many=True).data
@@ -771,7 +882,7 @@ class VisualizationSummaryView(APIView):
             'expression_tissues': tissues,
             'expression_matrix': expression_matrix,
             'regions': region_rows,
-            'region_map': region_rows[:12],
+            'region_map': region_map,
             'network': db_edges or protein_edges,
             'protein_nodes': protein_nodes,
             'protein_edges': protein_edges,  

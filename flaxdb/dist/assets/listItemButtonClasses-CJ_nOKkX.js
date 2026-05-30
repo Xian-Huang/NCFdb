@@ -1,0 +1,1 @@
+import{g as e,e as s}from"./index-C8P8WIkj.js";function l(t){return e("MuiListItemButton",t)}const a=s("MuiListItemButton",["root","focusVisible","dense","alignItemsFlexStart","disabled","divider","gutters","selected"]);export{l as g,a as l};
