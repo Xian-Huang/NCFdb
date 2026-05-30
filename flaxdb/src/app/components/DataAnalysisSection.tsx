@@ -80,6 +80,22 @@ const shortRegionLabel = (row: AnyRow, fallback: string) =>
   cleanText(row.province || row.region || row.name, fallback)
     .replace(/省|市|回族自治区|维吾尔自治区|壮族自治区|自治区|特别行政区/g, "");
 const regionKey = (row: AnyRow) => normalizeProvinceName(row.province || row.region || row.name || row.code);
+const normalizeMapSite = (row: AnyRow) => ({
+  ...row,
+  region: row.region_name || row.region,
+  region_code: row.region_code,
+  lng: row.lng ?? row.longitude,
+  lat: row.lat ?? row.latitude,
+  varieties: Array.isArray(row.varieties) && row.varieties.every((item) => typeof item === "string")
+    ? row.varieties
+    : Array.isArray(row.variety_names)
+      ? row.variety_names
+      : [],
+  temperature: row.temperature || asArray(row.environment_values).find((item) => /TEMP|温度|气温/i.test(`${item.factor_code || ""} ${item.factor_name || ""} ${item.factor_category || ""}`))?.display_value || "",
+  precipitation: row.precipitation || asArray(row.environment_values).find((item) => /PRECIP|RAIN|降水|降雨/i.test(`${item.factor_code || ""} ${item.factor_name || ""} ${item.factor_category || ""}`))?.display_value || "",
+  sunshine: row.sunshine || asArray(row.environment_values).find((item) => /SUN|LIGHT|日照|光照/i.test(`${item.factor_code || ""} ${item.factor_name || ""} ${item.factor_category || ""}`))?.display_value || "",
+  soil: row.soil || asArray(row.environment_values).find((item) => /SOIL|土壤/i.test(`${item.factor_code || ""} ${item.factor_name || ""} ${item.factor_category || ""}`))?.display_value || "",
+});
 function RegionalChinaEChart({
   chinaMap,
   chinaMapFailed,
@@ -138,14 +154,20 @@ function RegionalChinaEChart({
           key,
         };
       }).filter(Boolean);
-      const provinceData = (chinaMap.features ?? []).map((feature) => {
+      const provinceRegions = (chinaMap.features ?? []).map((feature) => {
           const province = normalizeProvinceName(feature.properties?.name);
           return {
             name: feature.properties?.name,
-            value: featuredProvinceNames.has(province) ? 1 : 0,
             itemStyle: province === selectedRegionKey
-              ? { areaColor: colorWithAlpha(cropConfig.accent, 0.42), borderColor: cropConfig.accentDark, borderWidth: 1.4 }
-              : undefined,
+              ? { areaColor: colorWithAlpha(cropConfig.accent, 0.44), borderColor: cropConfig.accentDark, borderWidth: 1.6 }
+              : featuredProvinceNames.has(province)
+                ? { areaColor: colorWithAlpha(cropConfig.accent, 0.2), borderColor: colorWithAlpha(cropConfig.accentDark, 0.55), borderWidth: 1 }
+                : undefined,
+            label: {
+              show: province === selectedRegionKey,
+              color: "#0f172a",
+              fontWeight: 700,
+            },
           };
       });
 
@@ -175,6 +197,7 @@ function RegionalChinaEChart({
             layoutCenter: ["50%", "70%"],
             layoutSize: "110%",
             aspectScale: 0.75,
+            regions: provinceRegions,
             itemStyle: {
               areaColor: "#e8f5ee",
               borderColor: "#ffffff",
@@ -188,23 +211,6 @@ function RegionalChinaEChart({
             },
           },
           series: [
-            {
-              type: "map",
-              map: "flax-china",
-              geoIndex: 0,
-              data: provinceData,
-              label: { show: false },
-              itemStyle: {
-                areaColor: "#e2e8f0",
-                borderColor: "#ffffff",
-                borderWidth: 0.8,
-              },
-              emphasis: {
-                label: { show: true, color: "#0f172a", fontWeight: 700 },
-                itemStyle: { areaColor: colorWithAlpha(cropConfig.accent, 0.36) },
-              },
-              select: { disabled: true },
-            },
             {
               type: "lines",
               coordinateSystem: "geo",
@@ -251,6 +257,7 @@ function RegionalChinaEChart({
       chart.off("click", handleClick);
       chart.on("click", handleClick);
     } catch {
+      console.error("Failed to render regional China map");
       setEchartsFailed(true);
     }
 
@@ -362,9 +369,15 @@ export function DataAnalysisSection() {
     Promise.allSettled([
       apiGet("regions/?limit=100"),
       apiGet("visualizations/"),
-    ]).then(([regionData, visualData]) => {
+      apiGet("regional-map-sites/?active=1"),
+    ]).then(([regionData, visualData, mapSiteData]) => {
       if (regionData.status === "fulfilled") setRegions(asArray(regionData.value));
-      if (visualData.status === "fulfilled") setVisuals(visualData.value || {});
+      const visualPayload = visualData.status === "fulfilled" ? visualData.value || {} : {};
+      const fallbackMapSites = mapSiteData.status === "fulfilled" ? asArray(mapSiteData.value).map(normalizeMapSite) : [];
+      setVisuals({
+        ...visualPayload,
+        region_map: asArray(visualPayload.region_map).length ? visualPayload.region_map : fallbackMapSites,
+      });
     });
   }, []);
 
@@ -397,7 +410,7 @@ export function DataAnalysisSection() {
     ...expressionMatrix.flatMap((row) => asArray(row.values).map((item) => numberValue(item.value))),
     ...heatRows.map((row) => numberValue(row.expression_value || row.tpm || row.fpkm)),
   );
-  const regionalFeatureSites = asArray(visuals.region_map).slice(0, 50);
+  const regionalFeatureSites = asArray(visuals.region_map).map(normalizeMapSite).slice(0, 50);
   const network = asArray(visuals.network).slice(0, 12);
   const proteinNodes = (asArray(visuals.protein_nodes).length ? asArray(visuals.protein_nodes) : fallbackProteinNodes).slice(0, 10);
   const proteinEdges = (asArray(visuals.protein_edges).length ? asArray(visuals.protein_edges) : fallbackProteinEdges).slice(0, 16);
