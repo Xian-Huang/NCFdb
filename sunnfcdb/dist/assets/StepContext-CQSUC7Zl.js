@@ -1,0 +1,1 @@
+import{b as t}from"./index-X6-VrnLb.js";const e=t.createContext({});function r(){return t.useContext(e)}const n=t.createContext({});function s(){return t.useContext(n)}export{n as S,e as a,r as b,s as u};

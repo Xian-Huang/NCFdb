@@ -27,7 +27,7 @@ type EChartsInstance = {
 };
 
 const pageSizes = [10, 20, 50];
-const chinaMapUrl = "/data/china-map.json";
+const chinaMapUrl = "/map-assets/china-map.json";
 
 const apiGet = async (endpoint: string) => {
   const response = await fetch(`/api/${endpoint}`);
