@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Sprout } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { cropConfig } from "../cropConfig";
 
 export function Navigation() {
   const location = useLocation();
@@ -24,12 +25,12 @@ export function Navigation() {
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b border-orange-200">
+    <nav className="border-b bg-white shadow-sm" style={{ borderColor: `${cropConfig.accent}33` }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full flex items-center justify-center">
-              <Sprout className="h-8 w-8 text-orange-600" />
+              <Sprout className="h-8 w-8" style={{ color: cropConfig.accent }} />
             </div>
             <div>
               <span className="text-xl font-bold">{t("home.title")}</span>
@@ -42,11 +43,14 @@ export function Navigation() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-4 py-2 rounded-md transition-colors ${
-                  isActive(item.path)
-                    ? "bg-orange-500 text-white"
-                    : "text-gray-700 hover:bg-orange-100"
-                }`}
+                className={`rounded-md px-4 py-2 transition-colors ${isActive(item.path) ? "text-white" : "text-gray-700"}`}
+                style={isActive(item.path) ? { backgroundColor: cropConfig.accent } : undefined}
+                onMouseEnter={(event) => {
+                  if (!isActive(item.path)) event.currentTarget.style.backgroundColor = cropConfig.accentSoft;
+                }}
+                onMouseLeave={(event) => {
+                  if (!isActive(item.path)) event.currentTarget.style.backgroundColor = "";
+                }}
               >
                 {item.label}
               </Link>

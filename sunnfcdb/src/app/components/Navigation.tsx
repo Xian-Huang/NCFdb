@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Sun } from "lucide-react";
 import { Sprout, Menu, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { cropConfig } from "../cropConfig";
 
 export function Navigation() {
   const location = useLocation();
@@ -25,12 +26,12 @@ export function Navigation() {
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b border-green-200">
+    <nav className="border-b bg-white shadow-sm" style={{ borderColor: cropConfig.accentSoft }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
            <Link to="/" className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full flex items-center justify-center">
-              <Sun className="h-8 w-8 text-green-500" />
+              <Sun className="h-8 w-8" style={{ color: cropConfig.accent }} />
             </div>
             <div>
               <span className="text-xl font-bold">{t("home.title")}</span>
@@ -43,11 +44,16 @@ export function Navigation() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-4 py-2 rounded-md transition-colors ${
-                  isActive(item.path)
-                    ? "bg-green-500 text-white"
-                    : "text-gray-700 hover:bg-green-100"
-                }`}
+                className="rounded-md px-4 py-2 text-gray-700 transition-colors hover:opacity-90"
+                style={isActive(item.path)
+                  ? { backgroundColor: cropConfig.accent, color: "white" }
+                  : { backgroundColor: "transparent" }}
+                onMouseEnter={(event) => {
+                  if (!isActive(item.path)) event.currentTarget.style.backgroundColor = cropConfig.accentSoft;
+                }}
+                onMouseLeave={(event) => {
+                  if (!isActive(item.path)) event.currentTarget.style.backgroundColor = "transparent";
+                }}
               >
                 {item.label}
               </Link>

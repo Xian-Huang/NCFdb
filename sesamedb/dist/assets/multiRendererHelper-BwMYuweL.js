@@ -1,1 +1,0 @@
-import{aP as c,a1 as u,a2 as f}from"./index-D_nfjSys.js";async function d(t,a,e){const{sessionId:s,adapterConfig:i,regions:o}=a,{dataAdapter:r}=await c(t,s,i),n=o[0],g=await u(r.getFeatures(n,a).pipe(f()));return e(a,g)}export{d as renderMultiWiggle};

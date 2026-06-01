@@ -573,7 +573,7 @@ export function Admin() {
                     {item.is_published ? <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
                 </tr>
@@ -601,7 +601,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.country}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.climate}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
                 </tr>
@@ -631,7 +631,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.oil_content}%</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.maturity_days} 天</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
                 </tr>
@@ -661,7 +661,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.chromosome}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.gene_type}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
                 </tr>
@@ -691,7 +691,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.stage || "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.expression_value}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
                 </tr>
@@ -723,7 +723,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.min_value ?? "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.max_value ?? "-"}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
                 </tr>
@@ -753,7 +753,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.city}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.institution_type}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
                 </tr>
@@ -789,7 +789,7 @@ export function Admin() {
                     {item.is_published ? <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
                 </tr>
@@ -819,7 +819,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.protein ?? "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.method}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
                 </tr>
@@ -846,7 +846,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.province}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{Array.isArray(item.variety_names) && item.variety_names.length ? item.variety_names.join("、") : "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.longitude}, {item.latitude}</td>
-                  <td className="px-6 py-4 text-right"><button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button><button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button></td>
+                  <td className="px-6 py-4 text-right"><button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button><button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button></td>
                 </tr>
               ))}
             </tbody>
@@ -871,7 +871,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.value_min ?? "-"} - {item.value_max ?? "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.display_value || "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.note || "-"}</td>
-                  <td className="px-6 py-4 text-right"><button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button><button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button></td>
+                  <td className="px-6 py-4 text-right"><button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button><button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button></td>
                 </tr>
               ))}
             </tbody>
@@ -899,7 +899,7 @@ export function Admin() {
                     {item.is_published ? <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
                 </tr>
@@ -933,7 +933,7 @@ export function Admin() {
                     {item.is_published ? <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
                 </tr>

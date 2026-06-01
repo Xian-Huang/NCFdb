@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Shield, Eye, EyeOff } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { cropConfig } from "../cropConfig";
 
 export function Login() {
   const [username, setUsername] = useState("");
@@ -41,11 +42,17 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-orange-100 flex items-center justify-center px-4">
+    <div
+      className="flex min-h-screen items-center justify-center px-4"
+      style={{
+        background: `linear-gradient(135deg, ${cropConfig.accentSoft} 0%, #ffffff 48%, #fef3c7 100%)`,
+        ["--login-accent" as string]: cropConfig.accent,
+      }}
+    >
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-            <Shield className="h-8 w-8 text-green-700" />
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full" style={{ backgroundColor: cropConfig.accentSoft }}>
+            <Shield className="h-8 w-8" style={{ color: cropConfig.accentDark }} />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">{t("login.title")}</h1>
           <p className="text-gray-500 mt-2">{t("login.subtitle")}</p>
@@ -66,7 +73,7 @@ export function Login() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-[var(--login-accent)]"
               placeholder={t("login.usernamePlaceholder")}
               required
             />
@@ -81,7 +88,7 @@ export function Login() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent pr-12"
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-12 focus:border-transparent focus:ring-2 focus:ring-[var(--login-accent)]"
                 placeholder={t("login.passwordPlaceholder")}
                 required
               />
@@ -98,14 +105,15 @@ export function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-700 focus:ring-4 focus:ring-amber-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-lg py-3 font-medium text-white transition-all hover:opacity-90 focus:ring-4 focus:ring-amber-200 disabled:cursor-not-allowed disabled:opacity-50"
+            style={{ backgroundColor: cropConfig.accent }}
           >
             {loading ? t("login.signingIn") : t("login.signIn")}
           </button>
         </form>
 
         <div className="mt-6 text-center">
-          <a href="/" className="text-sm text-green-700 hover:text-green-800">
+          <a href="/" className="text-sm hover:opacity-80" style={{ color: cropConfig.accentDark }}>
             {t("common.backHome")}
           </a>
         </div>

@@ -633,7 +633,7 @@ export function Admin() {
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
                       {item.is_staff && <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">{statusText("admin")}</span>}
-                      {item.is_active ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">{statusText("active")}</span> : <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">{statusText("inactive")}</span>}
+                      {item.is_active ? <span className="px-2 py-1 text-xs bg-amber-100 text-amber-800 rounded-full">{statusText("active")}</span> : <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">{statusText("inactive")}</span>}
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{new Date(item.date_joined).toLocaleDateString()}</td>
@@ -665,7 +665,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.author}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.category}</td>
                   <td className="px-6 py-4">
-                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-amber-100 text-amber-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -823,7 +823,7 @@ export function Admin() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-amber-100 text-amber-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -883,7 +883,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.title}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.release_date}</td>
                   <td className="px-6 py-4">
-                    {item.is_published ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
+                    {item.is_published ? <span className="px-2 py-1 text-xs bg-amber-100 text-amber-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -983,7 +983,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{Array.isArray(item.variety_names) && item.variety_names.length ? item.variety_names.join("、") : "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.longitude ?? item.lng}, {item.latitude ?? item.lat}</td>
                   <td className="px-6 py-4">
-                    {item.is_active ? <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">{statusText("visible")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("hidden")}</span>}
+                    {item.is_active ? <span className="px-2 py-1 text-xs bg-amber-100 text-amber-800 rounded-full">{statusText("visible")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("hidden")}</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -1141,12 +1141,12 @@ export function Admin() {
     const wideFields = new Set(['content', 'description', 'function', 'tags', 'image', 'address', 'varieties']);
     const requiredFields = new Set(['title', 'name', 'username', 'email', 'sample_code', 'region', 'province', 'longitude', 'latitude', 'site', 'factor']);
     const fieldWrapperClass = (key: string) =>
-      `space-y-2 rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-colors focus-within:border-green-300 focus-within:bg-green-50/30 ${
+      `space-y-2 rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-colors focus-within:border-amber-300 focus-within:bg-amber-50/30 ${
         wideFields.has(key) ? 'md:col-span-2' : ''
       }`;
-    const inputClass = "w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20";
-    const paddedInputClass = "w-full rounded-md border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20";
-    const selectClass = "w-full appearance-none rounded-md border border-slate-300 bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 shadow-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20";
+    const inputClass = "w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20";
+    const paddedInputClass = "w-full rounded-md border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20";
+    const selectClass = "w-full appearance-none rounded-md border border-slate-300 bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20";
 
     return (
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -1187,7 +1187,7 @@ export function Admin() {
                         placeholder={t("admin.placeholders.text", { field: getFieldLabel(key) })}
                       />
                       {isNewsContent && (
-                        <p className={`mt-2 text-xs font-medium ${wordCount >= NEWS_CONTENT_MIN_WORDS ? 'text-green-700' : 'text-slate-500'}`}>
+                        <p className={`mt-2 text-xs font-medium ${wordCount >= NEWS_CONTENT_MIN_WORDS ? 'text-amber-700' : 'text-slate-500'}`}>
                           {t("admin.validation.wordsRequired", { count: wordCount, min: NEWS_CONTENT_MIN_WORDS })}
                         </p>
                       )}
@@ -1207,7 +1207,7 @@ export function Admin() {
                             setFormData({ ...formData, [key]: file });
                           }
                         }}
-                        className="w-full cursor-pointer rounded-lg border border-dashed border-slate-300 bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-700 file:mr-4 file:rounded-md file:border-0 file:bg-green-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:border-green-300 hover:bg-green-50/50"
+                        className="w-full cursor-pointer rounded-lg border border-dashed border-slate-300 bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-700 file:mr-4 file:rounded-md file:border-0 file:bg-amber-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:border-amber-300 hover:bg-amber-50/50"
                       />
                       {formData[key] && typeof formData[key] === 'string' && (
                         <div className="mt-2 rounded-md bg-slate-100 px-3 py-2 text-sm text-slate-600">
@@ -1215,7 +1215,7 @@ export function Admin() {
                         </div>
                       )}
                       {formData[key] && typeof formData[key] === 'object' && (
-                        <div className="mt-2 rounded-md bg-green-50 px-3 py-2 text-sm text-green-800">
+                        <div className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
                           {t("admin.placeholders.selectedImage", { name: formData[key].name })}
                         </div>
                       )}
@@ -1240,7 +1240,7 @@ export function Admin() {
                           className="sr-only peer"
                         />
                         <span
-                          className={`absolute inset-0 rounded-full transition duration-200 ease-in-out ${isChecked ? 'bg-green-500' : 'bg-gray-200'}`}
+                          className={`absolute inset-0 rounded-full transition duration-200 ease-in-out ${isChecked ? 'bg-amber-500' : 'bg-gray-200'}`}
                         >
                           <span
                             className={`absolute left-0.5 top-0.5 w-5 h-5 rounded-full bg-white transition duration-200 ease-in-out transform ${isChecked ? 'translate-x-6' : 'translate-x-0'}`}
@@ -1262,8 +1262,8 @@ export function Admin() {
                               onClick={() => setFormData({ ...formData, [key]: option.value })}
                               className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition ${
                                 selected
-                                  ? "border-green-500 bg-green-50 text-green-800 shadow-sm"
-                                  : "border-slate-200 bg-white text-slate-700 hover:border-green-300"
+                                  ? "border-amber-500 bg-amber-50 text-amber-800 shadow-sm"
+                                  : "border-slate-200 bg-white text-slate-700 hover:border-amber-300"
                               }`}
                             >
                               <span className="h-4 w-4 rounded-full border border-slate-200" style={{ backgroundColor: option.color }} />
@@ -1320,7 +1320,7 @@ export function Admin() {
                                 setFormData({ ...formData, [key]: next });
                               }}
                               className={`rounded-md border px-3 py-2 text-left text-sm transition ${
-                                selected ? "border-green-500 bg-green-50 text-green-800" : "border-slate-200 bg-white text-slate-700 hover:border-green-300"
+                                selected ? "border-amber-500 bg-amber-50 text-amber-800" : "border-slate-200 bg-white text-slate-700 hover:border-amber-300"
                               }`}
                             >
                               <div className="font-medium">{variety.name}</div>
@@ -1470,7 +1470,7 @@ export function Admin() {
                         type="date"
                         value={formData[key] || ''}
                         onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                        className="w-full rounded-md border border-slate-300 bg-white py-2.5 pl-14 pr-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20"
+                        className="w-full rounded-md border border-slate-300 bg-white py-2.5 pl-14 pr-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
                       />
                     </div>
                   );
@@ -1594,7 +1594,7 @@ export function Admin() {
                               onClick={() => toggleTag(option.value)}
                               className={`rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
                                 isSelected
-                                  ? 'bg-green-500 text-white shadow-sm'
+                                  ? 'bg-amber-500 text-white shadow-sm'
                                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                               }`}
                             >
@@ -1655,7 +1655,7 @@ export function Admin() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center justify-center gap-2 rounded-md bg-green-500 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-green-600 disabled:cursor-not-allowed disabled:bg-green-300"
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-amber-500 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:bg-amber-300"
           >
             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {isSubmitting ? t("admin.saving") : editingItem ? t("admin.saveChanges") : t("admin.add")}
@@ -1668,13 +1668,13 @@ export function Admin() {
   return (
       <div className="min-h-screen flex">
       {/* Left Sidebar */}
-      <aside className="w-64 bg-gradient-to-b from-green-600 to-green-800 text-white flex-shrink-0 flex flex-col h-screen absolute">
-        <div className="p-4 border-b border-green-500/30">
+      <aside className="w-64 bg-gradient-to-b from-amber-600 to-amber-800 text-white flex-shrink-0 flex flex-col h-screen absolute">
+        <div className="p-4 border-b border-amber-500/30">
           <div className="flex items-center gap-3">
             <Shield className="h-8 w-8" />
             <div>
               <h1 className="text-xl font-bold">SunNCFdb</h1>
-              <p className="text-xs text-green-200">{t("admin.panel")}</p>
+              <p className="text-xs text-amber-200">{t("admin.panel")}</p>
             </div>
           </div>
         </div>
@@ -1688,7 +1688,7 @@ export function Admin() {
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   activeType === key
                     ? 'bg-white/20 text-white'
-                    : 'text-green-100 hover:bg-white/10'
+                    : 'text-amber-100 hover:bg-white/10'
                 }`}
               >
                 <Icon className="h-5 w-5" />
@@ -1697,8 +1697,8 @@ export function Admin() {
             );
           })}
         </nav>
-        <div className="p-4 border-t border-green-500/30">
-          <div className="text-sm text-green-200 mb-2">{t("admin.welcome", { name: currentUser?.username || statusText("admin") })}</div>
+        <div className="p-4 border-t border-amber-500/30">
+          <div className="text-sm text-amber-200 mb-2">{t("admin.welcome", { name: currentUser?.username || statusText("admin") })}</div>
           <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg hover:bg-white/20 w-full">
             <LogOut className="h-4 w-4" /> {t("admin.logout")}
           </button>
@@ -1717,13 +1717,13 @@ export function Admin() {
                     placeholder={t("admin.search")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="rounded-md border border-slate-300 py-2 pl-10 pr-4 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20"
+                    className="rounded-md border border-slate-300 py-2 pl-10 pr-4 text-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
                   />
                 </div>
               </div>
               <button
                 onClick={() => openModal()}
-                className="inline-flex items-center gap-2 rounded-md bg-green-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-green-600"
+                className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-600"
               >
                 <Plus className="h-5 w-5" /> {t("admin.addType", { type: typeTitle(activeType) })}
               </button>
@@ -1748,7 +1748,7 @@ export function Admin() {
           <div className="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black/10">
             <div className="sticky top-0 z-10 flex items-start justify-between border-b border-slate-200 bg-white px-6 py-5">
               <div>
-                <p className="text-sm font-medium text-green-700">{typeTitle(activeType)}</p>
+                <p className="text-sm font-medium text-amber-700">{typeTitle(activeType)}</p>
                 <h2 className="text-2xl font-semibold text-slate-950">
                   {editingItem ? t("admin.editRecord") : t("admin.addRecord")}
                 </h2>
