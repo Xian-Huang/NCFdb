@@ -8,12 +8,15 @@ import { Events } from "./components/Events";
 import { EventDetail } from "./components/EventDetail";
 import { Tools } from "./components/Tools";
 import { Contact } from "./components/Contact";
-import { Admin } from "./components/Admin";
 import { Login } from "./components/Login";
 import { ChangelogDetail } from "./components/ChangelogDetail";
 import { NotFound } from "./components/NotFound";
-import { JBrowser } from "../../../packages/ui/src";
-import { useState, createContext, useContext, ReactNode } from "react";
+import { createContext, lazy, ReactNode, Suspense, useContext } from "react";
+
+const Admin = lazy(() => import("./components/Admin").then((module) => ({ default: module.Admin })));
+const JBrowser = lazy(() => import("../../../packages/ui/src").then((module) => ({ default: module.JBrowser })));
+
+const routeFallback = <div className="min-h-screen bg-slate-50 px-6 py-10 text-slate-600">页面加载中...</div>;
 
 interface User {
   username: string;
@@ -46,8 +49,18 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 function AdminWrapper() {
   return (
     <ProtectedRoute>
-      <Admin />
+      <Suspense fallback={routeFallback}>
+        <Admin />
+      </Suspense>
     </ProtectedRoute>
+  );
+}
+
+function JBrowserWrapper() {
+  return (
+    <Suspense fallback={routeFallback}>
+      <JBrowser />
+    </Suspense>
   );
 }
 
@@ -74,7 +87,7 @@ export const router = createBrowserRouter([
       { path: "events", Component: Events },
       { path: "events/:id", Component: EventDetail },
       { path: "tools", Component: Tools },
-      { path: "jbrowse", Component: JBrowser },
+      { path: "jbrowse", Component: JBrowserWrapper },
       { path: "contact", Component: Contact },
       { path: "login", Component: LoginWrapper },
       { path: "admin", Component: AdminWrapper },

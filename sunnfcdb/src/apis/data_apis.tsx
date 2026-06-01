@@ -1,6 +1,20 @@
 // Data 页面的API接口
 import { fetchRequest } from "./https";
 
+type ListParams = { page?: number; pageSize?: number; search?: string; limit?: number };
+
+const withListParams = (endpoint: string, params?: ListParams) => {
+    if (!params) return endpoint;
+    const query = new URLSearchParams();
+    if (params.page) query.set("page", String(params.page));
+    if (params.pageSize) query.set("page_size", String(params.pageSize));
+    if (params.limit) query.set("limit", String(params.limit));
+    if (params.search?.trim()) query.set("search", params.search.trim());
+    const qs = query.toString();
+    if (!qs) return endpoint;
+    return `${endpoint}${endpoint.includes("?") ? "&" : "?"}${qs}`;
+};
+
 const normalizeListResponse = <T = any,>(data: unknown): T[] => {
     if (Array.isArray(data)) return data as T[];
     if (data && typeof data === "object" && Array.isArray((data as { results?: unknown }).results)) {
@@ -9,22 +23,22 @@ const normalizeListResponse = <T = any,>(data: unknown): T[] => {
     return [];
 };
 
-export const fetchDownloadFiles = async () => {
-    const response = await fetchRequest("/api/download/files/", "GET");
+export const fetchDownloadFiles = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/download/files/", params), "GET");
     const data = await response.json();
     return data;
 }
 
-export const fetchChangelog = async () => {
-    const response = await fetchRequest("/api/changelog/", "GET");
+export const fetchChangelog = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/changelog/", params), "GET");
     const data = await response.json();
     return data;
 }
 
-export const fetchNews = async () => {
-    const response = await fetchRequest("/api/news/?limit=100", "GET");
+export const fetchNews = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/news/?limit=100", params), "GET");
     const data = await response.json();
-    return normalizeListResponse(data);
+    return params ? data : normalizeListResponse(data);
 }
 
 export const fetchNewsDetail = async (id: number) => {
@@ -33,10 +47,10 @@ export const fetchNewsDetail = async (id: number) => {
     return data;
 }
 
-export const fetchScrollingNews = async () => {
-    const response = await fetchRequest("/api/news/scrolling/?limit=10", "GET");
+export const fetchScrollingNews = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/news/scrolling/?limit=10", params), "GET");
     const data = await response.json();
-    return normalizeListResponse(data);
+    return params ? data : normalizeListResponse(data);
 }
 
 export const fetchChangelogDetail = async (id: number) => {
@@ -47,8 +61,8 @@ export const fetchChangelogDetail = async (id: number) => {
 
 // ============ Admin APIs ============
 
-export const fetchUsers = async () => {
-    const response = await fetchRequest("/api/users/", "GET");
+export const fetchUsers = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/users/", params), "GET");
     return response.json();
 }
 
@@ -96,8 +110,8 @@ export const deleteChangelog = async (id: number) => {
 }
 
 // Regions
-export const fetchRegions = async () => {
-    const response = await fetchRequest("/api/regions/", "GET");
+export const fetchRegions = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/regions/", params), "GET");
     return response.json();
 }
 
@@ -116,8 +130,8 @@ export const deleteRegion = async (id: number) => {
 }
 
 // Varieties
-export const fetchVarieties = async () => {
-    const response = await fetchRequest("/api/varieties/", "GET");
+export const fetchVarieties = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/varieties/", params), "GET");
     return response.json();
 }
 
@@ -136,8 +150,8 @@ export const deleteVariety = async (id: number) => {
 }
 
 // Genes
-export const fetchGenes = async () => {
-    const response = await fetchRequest("/api/genes/", "GET");
+export const fetchGenes = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/genes/", params), "GET");
     return response.json();
 }
 
@@ -156,8 +170,8 @@ export const deleteGene = async (id: number) => {
 }
 
 // Gene Expressions
-export const fetchGeneExpressions = async () => {
-    const response = await fetchRequest("/api/gene-expressions/", "GET");
+export const fetchGeneExpressions = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/gene-expressions/", params), "GET");
     return response.json();
 }
 
@@ -176,8 +190,8 @@ export const deleteGeneExpression = async (id: number) => {
 }
 
 // Environmental Factors
-export const fetchEnvironmentalFactors = async () => {
-    const response = await fetchRequest("/api/environmental-factors/", "GET");
+export const fetchEnvironmentalFactors = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/environmental-factors/", params), "GET");
     return response.json();
 }
 
@@ -196,10 +210,10 @@ export const deleteEnvironmentalFactor = async (id: number) => {
 }
 
 // Regional Map Sites
-export const fetchRegionalMapSites = async () => {
-    const response = await fetchRequest("/api/regional-map-sites/?limit=500", "GET");
+export const fetchRegionalMapSites = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/regional-map-sites/?limit=500", params), "GET");
     const data = await response.json();
-    return normalizeListResponse(data);
+    return params ? data : normalizeListResponse(data);
 }
 
 export const createRegionalMapSite = async (data: any) => {
@@ -217,10 +231,10 @@ export const deleteRegionalMapSite = async (id: number) => {
 }
 
 // Regional Environment Values
-export const fetchRegionalEnvironmentValues = async () => {
-    const response = await fetchRequest("/api/regional-environment-values/?limit=500", "GET");
+export const fetchRegionalEnvironmentValues = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/regional-environment-values/?limit=500", params), "GET");
     const data = await response.json();
-    return normalizeListResponse(data);
+    return params ? data : normalizeListResponse(data);
 }
 
 export const createRegionalEnvironmentValue = async (data: any) => {
@@ -238,8 +252,8 @@ export const deleteRegionalEnvironmentValue = async (id: number) => {
 }
 
 // Nutrition
-export const fetchNutrition = async () => {
-    const response = await fetchRequest("/api/nutrition/", "GET");
+export const fetchNutrition = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/nutrition/", params), "GET");
     return response.json();
 }
 
@@ -258,8 +272,8 @@ export const deleteNutrition = async (id: number) => {
 }
 
 // Institutions
-export const fetchInstitutions = async () => {
-    const response = await fetchRequest("/api/institutions/", "GET");
+export const fetchInstitutions = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/institutions/", params), "GET");
     return response.json();
 }
 
@@ -278,8 +292,8 @@ export const deleteInstitution = async (id: number) => {
 }
 
 // Announcements
-export const fetchAnnouncements = async () => {
-    const response = await fetchRequest("/api/announcements/", "GET");
+export const fetchAnnouncements = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/announcements/", params), "GET");
     return response.json();
 }
 
@@ -312,8 +326,8 @@ export const deleteDownloadFile = async (id: number) => {
     await fetchRequest(`/api/download/files/${id}/`, "DELETE");
 }
 
-export const fetchSunflowerNutritionData = async () => {
-    const response = await fetchRequest("/api/nutrition-data/", "GET");
+export const fetchSunflowerNutritionData = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/nutrition-data/", params), "GET");
     return await response.json();
 };
 

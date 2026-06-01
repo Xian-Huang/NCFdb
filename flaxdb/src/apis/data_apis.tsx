@@ -1,27 +1,42 @@
 import { fetchRequest } from "./https";
 
-export const fetchFlaxDownloadFiles = async () => {
-  const response = await fetchRequest("/api/download/files/", "GET");
+
+type ListParams = { page?: number; pageSize?: number; search?: string; limit?: number };
+
+const withListParams = (endpoint: string, params?: ListParams) => {
+  if (!params) return endpoint;
+  const [path, existingQuery = ""] = endpoint.split("?");
+  const query = new URLSearchParams(existingQuery);
+  if (params.page) query.set("page", String(params.page));
+  if (params.pageSize) query.set("page_size", String(params.pageSize));
+  if (params.limit) query.set("limit", String(params.limit));
+  const search = params.search?.trim();
+  if (search) query.set("search", search);
+  const queryString = query.toString();
+  return queryString ? path + "?" + queryString : path;
+};
+export const fetchFlaxDownloadFiles = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/download/files/", params), "GET");
   return await response.json();
 };
 
-export const fetchFlaxRegions = async () => {
-  const response = await fetchRequest("/api/regions/", "GET");
+export const fetchFlaxRegions = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/regions/", params), "GET");
   return await response.json();
 };
 
-export const fetchFlaxVarieties = async () => {
-  const response = await fetchRequest("/api/varieties/", "GET");
+export const fetchFlaxVarieties = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/varieties/", params), "GET");
   return await response.json();
 };
 
-export const fetchFlaxGenes = async () => {
-  const response = await fetchRequest("/api/genes/", "GET");
+export const fetchFlaxGenes = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/genes/", params), "GET");
   return await response.json();
 };
 
-export const fetchFlaxGeneExpressions = async () => {
-  const response = await fetchRequest("/api/gene-expressions/", "GET");
+export const fetchFlaxGeneExpressions = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/gene-expressions/", params), "GET");
   return await response.json();
 };
 
@@ -40,8 +55,8 @@ export const deleteFlaxGeneExpression = async (id: number) => {
   return await response.json();
 };
 
-export const fetchFlaxEnvironmentalFactors = async () => {
-  const response = await fetchRequest("/api/environmental-factors/", "GET");
+export const fetchFlaxEnvironmentalFactors = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/environmental-factors/", params), "GET");
   return await response.json();
 };
 
@@ -60,23 +75,23 @@ export const deleteFlaxEnvironmentalFactor = async (id: number) => {
   return await response.json();
 };
 
-export const fetchFlaxInstitutions = async () => {
-  const response = await fetchRequest("/api/institutions/", "GET");
+export const fetchFlaxInstitutions = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/institutions/", params), "GET");
   return await response.json();
 };
 
-export const fetchFlaxAnnouncements = async () => {
-  const response = await fetchRequest("/api/announcements/", "GET");
+export const fetchFlaxAnnouncements = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/announcements/", params), "GET");
   return await response.json();
 };
 
-export const fetchFlaxNews = async () => {
-  const response = await fetchRequest("/api/news/", "GET");
+export const fetchFlaxNews = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/news/", params), "GET");
   return await response.json();
 };
 
-export const fetchFlaxScrollingNews = async () => {
-  const response = await fetchRequest("/api/news/scrolling/", "GET");
+export const fetchFlaxScrollingNews = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/news/scrolling/", params), "GET");
   return await response.json();
 };
 
@@ -85,8 +100,8 @@ export const fetchFlaxNewsById = async (id: number) => {
   return await response.json();
 };
 
-export const fetchFlaxChangelogs = async () => {
-  const response = await fetchRequest("/api/changelogs/", "GET");
+export const fetchFlaxChangelogs = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/changelogs/", params), "GET");
   return await response.json();
 };
 
@@ -95,8 +110,8 @@ export const fetchFlaxChangelogById = async (id: number) => {
   return await response.json();
 };
 
-export const fetchChangelog = async () => {
-  const response = await fetchRequest("/api/changelogs/", "GET");
+export const fetchChangelog = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/changelogs/", params), "GET");
   return await response.json();
 };
 
@@ -221,8 +236,8 @@ export const deleteFlaxDownloadFile = async (id: number) => {
 };
 
 
-export const fetchFlaxNutritionData = async () => {
-    const response = await fetchRequest("/nutrition-data/", "GET", undefined, true);
+export const fetchFlaxNutritionData = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/nutrition-data/", params), "GET", undefined, true);
     return await response.json();
 };
 
@@ -241,14 +256,14 @@ export const deleteFlaxNutritionData = async (id: number) => {
     return await response.json();
 };
 
-export const fetchDownloadFiles = async () => {
-  const response = await fetch("/api/download/files/");
+export const fetchDownloadFiles = async (params?: ListParams) => {
+  const response = await fetch(`/api/download/files/${withListParams("", params)}`);
   if (!response.ok) throw new Error("download files");
   return response.json();
 };
 
-export const fetchNews = async () => {
-  const response = await fetch("/api/news/");
+export const fetchNews = async (params?: ListParams) => {
+  const response = await fetch(`/api/news/${withListParams("", params)}`);
   if (!response.ok) throw new Error("news");
   return response.json();
 };
@@ -259,8 +274,8 @@ export const fetchNewsDetail = async (id: number) => {
   return response.json();
 };
 
-export const fetchScrollingNews = async () => {
-  const response = await fetch("/api/news/scrolling/");
+export const fetchScrollingNews = async (params?: ListParams) => {
+  const response = await fetch(`/api/news/scrolling/${withListParams("", params)}`);
   if (!response.ok) throw new Error("scrolling news");
   return response.json();
 };
@@ -268,8 +283,8 @@ export const fetchScrollingNews = async () => {
 export const fetchChangelogDetail = fetchFlaxChangelogById;
 
 
-export const fetchFlaxRegionalMapSites = async () => {
-  const response = await fetchRequest("/api/regional-map-sites/", "GET");
+export const fetchFlaxRegionalMapSites = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/regional-map-sites/", params), "GET");
   return await response.json();
 };
 
@@ -288,8 +303,8 @@ export const deleteFlaxRegionalMapSite = async (id: number) => {
   return await response.json();
 };
 
-export const fetchFlaxRegionalEnvironmentValues = async () => {
-  const response = await fetchRequest("/api/regional-environment-values/", "GET");
+export const fetchFlaxRegionalEnvironmentValues = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/regional-environment-values/", params), "GET");
   return await response.json();
 };
 

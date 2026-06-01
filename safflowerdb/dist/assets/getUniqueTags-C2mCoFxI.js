@@ -1,1 +1,0 @@
-import{v as g,ap as a}from"./index-BBn9D2vY.js";async function l({self:e,tag:n,blocks:o,opts:s}){const{rpcManager:t}=g(e),{adapterConfig:r,effectiveRpcDriverName:c}=e,i=a(e);return await t.call(a(e),"PileupGetGlobalValueForTag",{adapterConfig:r,tag:n,sessionId:i,rpcDriverName:c,regions:o.contentBlocks,...s})}export{l as g};

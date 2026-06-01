@@ -8,12 +8,40 @@ from rest_framework.authentication import TokenAuthentication
 from .serializers import UserSerializer, UserCreateSerializer
 import secrets
 
+def _int_param(request, name, default, minimum=0, maximum=500):
+    try:
+        value = int(request.query_params.get(name, default))
+    except (TypeError, ValueError):
+        value = default
+    return max(minimum, min(value, maximum))
+
+def _user_list_response(request, queryset):
+    search = (request.query_params.get('search') or '').strip()
+    if search:
+        queryset = queryset.filter(username__icontains=search) | queryset.filter(email__icontains=search) | queryset.filter(first_name__icontains=search) | queryset.filter(last_name__icontains=search)
+        queryset = queryset.distinct()
+
+    page_value = request.query_params.get('page')
+    page_size_value = request.query_params.get('page_size')
+    if page_value is None and page_size_value is None:
+        return Response(UserSerializer(queryset, many=True).data)
+
+    page = _int_param(request, 'page', 1, minimum=1, maximum=1000000)
+    page_size = _int_param(request, 'page_size', 20, minimum=1, maximum=500)
+    total = queryset.count()
+    offset = (page - 1) * page_size
+    rows = queryset[offset:offset + page_size]
+    return Response({
+        'count': total,
+        'page': page,
+        'page_size': page_size,
+        'results': UserSerializer(rows, many=True).data,
+    })
 
 class UserListView(APIView):
     def get(self, request, format=None):
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
+        users = User.objects.all().order_by('id')
+        return _user_list_response(request, users)
     
     def post(self, request, format=None):
         serializer = UserCreateSerializer(data=request.data)

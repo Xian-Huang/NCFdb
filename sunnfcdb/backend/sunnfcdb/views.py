@@ -69,11 +69,47 @@ def _int_param(request, name, default, minimum=0, maximum=500):
         value = default
     return max(minimum, min(value, maximum))
 
+def _search_queryset(request, queryset):
+    search = (request.query_params.get('search') or '').strip()
+    if not search:
+        return queryset
+
+    query = Q()
+    for field in queryset.model._meta.get_fields():
+        if not getattr(field, 'concrete', False):
+            continue
+        if field.get_internal_type() in ('CharField', 'TextField', 'EmailField', 'URLField', 'SlugField'):
+            query |= Q(**{f"{field.name}__icontains": search})
+
+    if not query:
+        return queryset
+    return queryset.filter(query).distinct()
+
+def _serialize_list(serializer_class, rows, request):
+    return serializer_class(rows, many=True, context={'request': request}).data
+
 def _paginated_response(request, queryset, serializer_class, default_limit=None):
+    queryset = _search_queryset(request, queryset)
+    page_value = request.query_params.get('page')
+    page_size_value = request.query_params.get('page_size')
     limit_value = request.query_params.get('limit')
     offset_value = request.query_params.get('offset')
+
+    if page_value is not None or page_size_value is not None:
+        page = _int_param(request, 'page', 1, minimum=1, maximum=1000000)
+        page_size = _int_param(request, 'page_size', default_limit or 20, minimum=1, maximum=500)
+        total = queryset.count()
+        offset = (page - 1) * page_size
+        rows = queryset[offset:offset + page_size]
+        return Response({
+            'count': total,
+            'page': page,
+            'page_size': page_size,
+            'results': _serialize_list(serializer_class, rows, request),
+        })
+
     if limit_value is None and offset_value is None and default_limit is None:
-        return Response(serializer_class(queryset, many=True, context={'request': request}).data)
+        return Response(_serialize_list(serializer_class, queryset, request))
 
     limit = _int_param(request, 'limit', default_limit or 100, minimum=1, maximum=500)
     offset = _int_param(request, 'offset', 0, minimum=0, maximum=1000000)
@@ -83,14 +119,14 @@ def _paginated_response(request, queryset, serializer_class, default_limit=None)
         'count': total,
         'limit': limit,
         'offset': offset,
-        'results': serializer_class(rows, many=True, context={'request': request}).data,
+        'results': _serialize_list(serializer_class, rows, request),
     })
+
 
 class DownloadFilesView(APIView):
     def get(self, request, format=None):
         download_files = DownloadFile.objects.all()
-        serializer = DownloadFileSerializer(download_files, many=True)
-        return Response(serializer.data)
+        return _paginated_response(request, download_files, DownloadFileSerializer)
 
 class NewsView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
@@ -144,8 +180,7 @@ class NewsDetailView(APIView):
 class ChangelogView(APIView):
     def get(self, request, format=None):
         changelog = Changelog.objects.all()
-        serializer = ChangelogSerializer(changelog, many=True)
-        return Response(serializer.data)
+        return _paginated_response(request, changelog, ChangelogSerializer)
     
     def post(self, request, format=None):
         serializer = ChangelogSerializer(data=request.data)
@@ -227,8 +262,7 @@ class RegionDetailView(APIView):
 class VarietyView(APIView):
     def get(self, request, format=None):
         varieties = Variety.objects.all()
-        serializer = VarietySerializer(varieties, many=True)
-        return Response(serializer.data)
+        return _paginated_response(request, varieties, VarietySerializer)
     
     def post(self, request, format=None):
         serializer = VarietySerializer(data=request.data)
@@ -268,8 +302,7 @@ class VarietyDetailView(APIView):
 class GeneView(APIView):
     def get(self, request, format=None):
         genes = Gene.objects.all()
-        serializer = GeneSerializer(genes, many=True)
-        return Response(serializer.data)
+        return _paginated_response(request, genes, GeneSerializer)
     
     def post(self, request, format=None):
         serializer = GeneSerializer(data=request.data)
@@ -310,8 +343,7 @@ class GeneDetailView(APIView):
 class GeneExpressionView(APIView):
     def get(self, request, format=None):
         gene_expressions = GeneExpression.objects.all()
-        serializer = GeneExpressionSerializer(gene_expressions, many=True)
-        return Response(serializer.data)
+        return _paginated_response(request, gene_expressions, GeneExpressionSerializer)
     
     def post(self, request, format=None):
         serializer = GeneExpressionSerializer(data=request.data)
@@ -353,8 +385,7 @@ class GeneExpressionDetailView(APIView):
 class EnvironmentalFactorView(APIView):
     def get(self, request, format=None):
         factors = EnvironmentalFactor.objects.all()
-        serializer = EnvironmentalFactorSerializer(factors, many=True)
-        return Response(serializer.data)
+        return _paginated_response(request, factors, EnvironmentalFactorSerializer)
     
     def post(self, request, format=None):
         serializer = EnvironmentalFactorSerializer(data=request.data)
@@ -485,8 +516,7 @@ class RegionalEnvironmentValueDetailView(APIView):
 class NutritionView(APIView):
     def get(self, request, format=None):
         nutrition = Nutrition.objects.all()
-        serializer = NutritionSerializer(nutrition, many=True)
-        return Response(serializer.data)
+        return _paginated_response(request, nutrition, NutritionSerializer)
     
     def post(self, request, format=None):
         serializer = NutritionSerializer(data=request.data)
@@ -528,8 +558,7 @@ class NutritionDetailView(APIView):
 class DownloadFileView(APIView):
     def get(self, request, format=None):
         files = DownloadFile.objects.all()
-        serializer = DownloadFileSerializer(files, many=True)
-        return Response(serializer.data)
+        return _paginated_response(request, files, DownloadFileSerializer)
     
     def post(self, request, format=None):
         serializer = DownloadFileSerializer(data=request.data)
@@ -625,8 +654,7 @@ class InstitutionDetailView(APIView):
 class AnnouncementView(APIView):
     def get(self, request, format=None):
         announcements = Announcement.objects.all()
-        serializer = AnnouncementSerializer(announcements, many=True)
-        return Response(serializer.data)
+        return _paginated_response(request, announcements, AnnouncementSerializer)
     
     def post(self, request, format=None):
         serializer = AnnouncementSerializer(data=request.data)

@@ -1,0 +1,1 @@
+import{bc as l}from"./index-s-CsZQoH.js";function p(s){const t=s.length,n=l(s);let r=0;for(let e=0;e<t;e++){const a=s[e];r+=a*a}const o=n/t,c=Math.sqrt((t*r-n*n)/(t*t)),u=o+3*c,g=o-3*c;return{upper:u,lower:g,avg:o,sd:c}}export{p as g};

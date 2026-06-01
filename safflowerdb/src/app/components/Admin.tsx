@@ -65,6 +65,18 @@ type DataType = "news" | "changelog" | "regions" | "varieties" | "genes" | "gene
 const NEWS_CONTENT_MIN_WORDS = 600;
 const countEnglishWords = (value: unknown) => String(value ?? "").match(/\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b/g)?.length ?? 0;
 const countParagraphs = (value: unknown) => String(value ?? "").trim().split(/\r?\n\s*\r?\n/).filter(Boolean).length;
+const toArray = (value: any): any[] => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.results)) return value.results;
+  if (Array.isArray(value?.data)) return value.data;
+  if (Array.isArray(value?.items)) return value.items;
+  return [];
+};
+const getTotalCount = (value: any, fallback = 0) => {
+  if (typeof value?.count === "number") return value.count;
+  if (typeof value?.total === "number") return value.total;
+  return fallback;
+};
 
 interface NewsData {
   id: number;
@@ -150,7 +162,7 @@ interface AnnouncementData {
   publish_date: string;
 }
 
-const dataTypeConfig: Record<DataType, { title: string; icon: React.ElementType; fetchFn: () => Promise<any[]>; createFn: (data: any) => Promise<any>; updateFn: (id: number, data: any) => Promise<any>; deleteFn: (id: number) => Promise<any> }> = {
+const dataTypeConfig: Record<DataType, { title: string; icon: React.ElementType; fetchFn: (params?: any) => Promise<any>; createFn: (data: any) => Promise<any>; updateFn: (id: number, data: any) => Promise<any>; deleteFn: (id: number) => Promise<any> }> = {
   news: { 
     title: "News", 
     icon: FileText, 
@@ -266,11 +278,16 @@ export function Admin() {
   const [editingItem, setEditingItem] = useState<any>(null);
   const [formData, setFormData] = useState<any>({});
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [totalCount, setTotalCount] = useState(0);
   // Foreign key data
   const [regions, setRegions] = useState<any[]>([]);
   const [varieties, setVarieties] = useState<any[]>([]);
   const [genes, setGenes] = useState<any[]>([]);
   const [institutions, setInstitutions] = useState<any[]>([]);
+  const [foreignKeysLoaded, setForeignKeysLoaded] = useState(false);
   const navigate = useNavigate();
 
   const userStr = localStorage.getItem("user");
@@ -281,21 +298,38 @@ export function Admin() {
 
   useEffect(() => {
     fetchData();
-    fetchForeignKeyData();
-  }, [activeType]);
+  }, [activeType, currentPage, pageSize, searchQuery]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setCurrentPage(1);
+      setSearchQuery(searchTerm.trim());
+    }, 350);
+    return () => window.clearTimeout(timer);
+  }, [searchTerm]);
+
+  const handleTypeChange = (type: DataType) => {
+    if (type === activeType) return;
+    setActiveType(type);
+    setCurrentPage(1);
+  };
+  const needsForeignKeyData = (type: DataType = activeType) => ["varieties", "gene_expressions", "nutrition_data", "regional_map_sites", "regional_environment_values"].includes(type);
 
   const fetchForeignKeyData = async () => {
+    if (foreignKeysLoaded) return;
     try {
+      const optionParams = { limit: 500 };
       const [regionsData, varietiesData, genesData, institutionsData] = await Promise.all([
-        fetchSafflowerRegions(),
-        fetchSafflowerVarieties(),
-        fetchSafflowerGenes(),
-        fetchSafflowerInstitutions(),
+        fetchSafflowerRegions(optionParams),
+        fetchSafflowerVarieties(optionParams),
+        fetchSafflowerGenes(optionParams),
+        fetchSafflowerInstitutions(optionParams),
       ]);
-      setRegions(regionsData);
-      setVarieties(varietiesData);
-      setGenes(genesData);
-      setInstitutions(institutionsData);
+      setRegions(toArray(regionsData));
+      setVarieties(toArray(varietiesData));
+      setGenes(toArray(genesData));
+      setInstitutions(toArray(institutionsData));
+      setForeignKeysLoaded(true);
     } catch (err) {
       console.error("Failed to fetch foreign key data:", err);
     }
@@ -304,8 +338,10 @@ export function Admin() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const result = await dataTypeConfig[activeType].fetchFn();
-      setData(result);
+      const result = await dataTypeConfig[activeType].fetchFn({ page: currentPage, pageSize, search: searchQuery });
+      const rows = toArray(result);
+      setData(rows);
+      setTotalCount(getTotalCount(result, rows.length));
     } catch (err) {
       console.error("Failed to fetch data:", err);
     } finally {
@@ -320,6 +356,7 @@ export function Admin() {
   };
 
   const openModal = (item?: any) => {
+    if (needsForeignKeyData()) void fetchForeignKeyData();
     if (item) {
       setEditingItem(item);
       setFormData({ ...item });
@@ -541,13 +578,46 @@ export function Admin() {
     }
   };
 
-  const filteredData = data.filter((item: any) => {
-    if (!searchTerm) return true;
-    const search = searchTerm.toLowerCase();
-    return Object.values(item).some((val: any) => 
-      val && String(val).toLowerCase().includes(search)
-    );
-  });
+  const filteredData = toArray(data);
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+  const renderPagination = () => (
+    <div className="flex flex-wrap items-center justify-between gap-3 border-t px-4 py-3 text-sm text-gray-600">
+      <div>
+        第 {currentPage} / {totalPages} 页，共 {totalCount} 条
+      </div>
+      <div className="flex items-center gap-2">
+        <select
+          value={pageSize}
+          onChange={(e) => {
+            setCurrentPage(1);
+            setPageSize(Number(e.target.value));
+          }}
+          className="rounded border border-gray-300 px-2 py-1"
+        >
+          {[10, 20, 50, 100].map((size) => (
+            <option key={size} value={size}>{size} / 页</option>
+          ))}
+        </select>
+        <button
+          type="button"
+          onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+          disabled={currentPage <= 1 || loading}
+          className="rounded border border-gray-300 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          上一页
+        </button>
+        <button
+          type="button"
+          onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+          disabled={currentPage >= totalPages || loading}
+          className="rounded border border-gray-300 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          下一页
+        </button>
+      </div>
+    </div>
+  );
 
   const renderTable = () => {
     switch (activeType) {
@@ -560,7 +630,7 @@ export function Admin() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("author")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("category")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("status")}</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+                <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -572,7 +642,7 @@ export function Admin() {
                   <td className="px-6 py-4">
                     {item.is_published ? <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
                     <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
@@ -590,7 +660,7 @@ export function Admin() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("code")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("country")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("climate")}</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+                <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -600,7 +670,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.code}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.country}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.climate}</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
                     <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
@@ -619,7 +689,7 @@ export function Admin() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("region")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("oilContent")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("maturityDays")}</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+                <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -630,7 +700,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.region_name || "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.oil_content}%</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.maturity_days} 天</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
                     <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
@@ -649,7 +719,7 @@ export function Admin() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("symbol")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("chromosome")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("type")}</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+                <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -660,7 +730,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.symbol}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.chromosome}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.gene_type}</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
                     <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
@@ -679,7 +749,7 @@ export function Admin() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("tissue")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("stage")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("expressionValue")}</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+                <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -690,7 +760,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.tissue}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.stage || "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.expression_value}</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
                     <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
@@ -710,7 +780,7 @@ export function Admin() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("category")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("minValue")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("maxValue")}</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+                <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -722,7 +792,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.category || "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.min_value ?? "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.max_value ?? "-"}</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
                     <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
@@ -741,7 +811,7 @@ export function Admin() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("country")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("city")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("type")}</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+                <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -752,7 +822,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.country}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.city}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.institution_type}</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
                     <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
@@ -771,7 +841,7 @@ export function Admin() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("author")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("importance")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("status")}</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+                <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -788,7 +858,7 @@ export function Admin() {
                   <td className="px-6 py-4">
                     {item.is_published ? <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
                     <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
@@ -807,7 +877,7 @@ export function Admin() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("oil")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("protein")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("method")}</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+                <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -818,7 +888,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.oil_content ?? "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.protein ?? "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.method}</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
                     <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
@@ -836,7 +906,7 @@ export function Admin() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("province")}</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("representativeVarieties")}</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("coordinate")}</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+              <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
             </tr></thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredData.map((item: any) => (
@@ -846,7 +916,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.province}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{Array.isArray(item.variety_names) && item.variety_names.length ? item.variety_names.join("、") : "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.longitude}, {item.latitude}</td>
-                  <td className="px-6 py-4 text-right"><button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button><button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button></td>
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap"><button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button><button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button></td>
                 </tr>
               ))}
             </tbody>
@@ -861,7 +931,7 @@ export function Admin() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("range")}</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("display_value")}</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("note")}</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+              <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
             </tr></thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredData.map((item: any) => (
@@ -871,7 +941,7 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.value_min ?? "-"} - {item.value_max ?? "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.display_value || "-"}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.note || "-"}</td>
-                  <td className="px-6 py-4 text-right"><button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button><button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button></td>
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap"><button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button><button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button></td>
                 </tr>
               ))}
             </tbody>
@@ -886,7 +956,7 @@ export function Admin() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("title")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("releaseDate")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("status")}</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+                <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -898,7 +968,7 @@ export function Admin() {
                   <td className="px-6 py-4">
                     {item.is_published ? <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
                     <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
@@ -918,7 +988,7 @@ export function Admin() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("category")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("version")}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("status")}</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{column("actions")}</th>
+                <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -932,7 +1002,7 @@ export function Admin() {
                   <td className="px-6 py-4">
                     {item.is_published ? <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
                     <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
@@ -1131,7 +1201,7 @@ export function Admin() {
             return (
               <button
                 key={key}
-                onClick={() => setActiveType(key as DataType)}
+                onClick={() => handleTypeChange(key as DataType)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   activeType === key
                     ? 'bg-white/20 text-white'
@@ -1183,7 +1253,10 @@ export function Admin() {
             ) : filteredData.length === 0 ? (
               <div className="p-8 text-center text-gray-500">{t("admin.noData")}</div>
             ) : (
-              renderTable()
+              <>
+                {renderTable()}
+                {renderPagination()}
+              </>
             )}
           </div>
         </div>

@@ -38,7 +38,7 @@
       "safflowerdb",
       "sesamedb",
       "sunnfcdb",
-      "packages/*"
+      "packages/*" 
     ],
     "overrides": {
       "vite": "6.3.5"

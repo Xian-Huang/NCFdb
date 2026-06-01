@@ -1,31 +1,46 @@
 import { fetchRequest } from "./https";
 
-export const fetchSesameDownloadFiles = async () => {
-    const response = await fetchRequest("/download/files/", "GET", undefined, true);
+
+type ListParams = { page?: number; pageSize?: number; search?: string; limit?: number };
+
+const withListParams = (endpoint: string, params?: ListParams) => {
+  if (!params) return endpoint;
+  const [path, existingQuery = ""] = endpoint.split("?");
+  const query = new URLSearchParams(existingQuery);
+  if (params.page) query.set("page", String(params.page));
+  if (params.pageSize) query.set("page_size", String(params.pageSize));
+  if (params.limit) query.set("limit", String(params.limit));
+  const search = params.search?.trim();
+  if (search) query.set("search", search);
+  const queryString = query.toString();
+  return queryString ? path + "?" + queryString : path;
+};
+export const fetchSesameDownloadFiles = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/download/files/", params), "GET", undefined, true);
     const data = await response.json();
     return data;
 }
 
-export const fetchSesameRegions = async () => {
-    const response = await fetchRequest("/regions/", "GET", undefined, true);
+export const fetchSesameRegions = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/regions/", params), "GET", undefined, true);
     const data = await response.json();
     return data;
 }
 
-export const fetchSesameVarieties = async () => {
-    const response = await fetchRequest("/varieties/", "GET", undefined, true);
+export const fetchSesameVarieties = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/varieties/", params), "GET", undefined, true);
     const data = await response.json();
     return data;
 }
 
-export const fetchSesameGenes = async () => {
-    const response = await fetchRequest("/genes/", "GET", undefined, true);
+export const fetchSesameGenes = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/genes/", params), "GET", undefined, true);
     const data = await response.json();
     return data;
 }
 
-export const fetchSesameGeneExpressions = async () => {
-    const response = await fetchRequest("/gene-expressions/", "GET", undefined, true);
+export const fetchSesameGeneExpressions = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/gene-expressions/", params), "GET", undefined, true);
     const data = await response.json();
     return data;
 }
@@ -45,8 +60,8 @@ export const deleteSesameGeneExpression = async (id: number) => {
     return await response.json();
 };
 
-export const fetchSesameEnvironmentalFactors = async () => {
-    const response = await fetchRequest("/environmental-factors/", "GET", undefined, true);
+export const fetchSesameEnvironmentalFactors = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/environmental-factors/", params), "GET", undefined, true);
     const data = await response.json();
     return data;
 }
@@ -66,26 +81,26 @@ export const deleteSesameEnvironmentalFactor = async (id: number) => {
     return await response.json();
 };
 
-export const fetchSesameInstitutions = async () => {
-    const response = await fetchRequest("/institutions/", "GET", undefined, true);
+export const fetchSesameInstitutions = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/institutions/", params), "GET", undefined, true);
     const data = await response.json();
     return data;
 }
 
-export const fetchSesameAnnouncements = async () => {
-    const response = await fetchRequest("/announcements/", "GET", undefined, true);
+export const fetchSesameAnnouncements = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/announcements/", params), "GET", undefined, true);
     const data = await response.json();
     return data;
 }
 
-export const fetchSesameNews = async () => {
-    const response = await fetchRequest("/news/", "GET", undefined, true);
+export const fetchSesameNews = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/news/", params), "GET", undefined, true);
     const data = await response.json();
     return data;
 }
 
-export const fetchSesameScrollingNews = async () => {
-    const response = await fetchRequest("/news/scrolling/", "GET", undefined, true);
+export const fetchSesameScrollingNews = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/news/scrolling/", params), "GET", undefined, true);
     const data = await response.json();
     return data;
 }
@@ -96,8 +111,8 @@ export const fetchSesameNewsById = async (id: number) => {
     return data;
 }
 
-export const fetchSesameChangelogs = async () => {
-    const response = await fetchRequest("/changelogs/", "GET", undefined, true);
+export const fetchSesameChangelogs = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/changelogs/", params), "GET", undefined, true);
     const data = await response.json();
     return data;
 }
@@ -229,8 +244,8 @@ export const deleteSesameDownloadFile = async (id: number) => {
 };
 
 
-export const fetchSesameNutritionData = async () => {
-    const response = await fetchRequest("/nutrition-data/", "GET", undefined, true);
+export const fetchSesameNutritionData = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/nutrition-data/", params), "GET", undefined, true);
     return await response.json();
 };
 
@@ -249,14 +264,14 @@ export const deleteSesameNutritionData = async (id: number) => {
     return await response.json();
 };
 
-export const fetchDownloadFiles = async () => {
-  const response = await fetch("/api/download/files/");
+export const fetchDownloadFiles = async (params?: ListParams) => {
+  const response = await fetch(`/api/download/files/${withListParams("", params)}`);
   if (!response.ok) throw new Error("download files");
   return response.json();
 };
 
-export const fetchNews = async () => {
-  const response = await fetch("/api/news/");
+export const fetchNews = async (params?: ListParams) => {
+  const response = await fetch(`/api/news/${withListParams("", params)}`);
   if (!response.ok) throw new Error("news");
   return response.json();
 };
@@ -267,8 +282,8 @@ export const fetchNewsDetail = async (id: number) => {
   return response.json();
 };
 
-export const fetchScrollingNews = async () => {
-  const response = await fetch("/api/news/scrolling/");
+export const fetchScrollingNews = async (params?: ListParams) => {
+  const response = await fetch(`/api/news/scrolling/${withListParams("", params)}`);
   if (!response.ok) throw new Error("scrolling news");
   return response.json();
 };
@@ -277,8 +292,8 @@ export const fetchChangelog = fetchSesameChangelogs;
 export const fetchChangelogDetail = fetchSesameChangelogById;
 
 
-export const fetchSesameRegionalMapSites = async () => {
-    const response = await fetchRequest("/regional-map-sites/", "GET", undefined, true);
+export const fetchSesameRegionalMapSites = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/regional-map-sites/", params), "GET", undefined, true);
     return await response.json();
 };
 
@@ -297,8 +312,8 @@ export const deleteSesameRegionalMapSite = async (id: number) => {
     return await response.json();
 };
 
-export const fetchSesameRegionalEnvironmentValues = async () => {
-    const response = await fetchRequest("/regional-environment-values/", "GET", undefined, true);
+export const fetchSesameRegionalEnvironmentValues = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/regional-environment-values/", params), "GET", undefined, true);
     return await response.json();
 };
 

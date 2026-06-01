@@ -1,27 +1,42 @@
 import { fetchRequest } from "./https";
 
-export const fetchSafflowerDownloadFiles = async () => {
-  const response = await fetchRequest("/api/download/files/", "GET");
+
+type ListParams = { page?: number; pageSize?: number; search?: string; limit?: number };
+
+const withListParams = (endpoint: string, params?: ListParams) => {
+  if (!params) return endpoint;
+  const [path, existingQuery = ""] = endpoint.split("?");
+  const query = new URLSearchParams(existingQuery);
+  if (params.page) query.set("page", String(params.page));
+  if (params.pageSize) query.set("page_size", String(params.pageSize));
+  if (params.limit) query.set("limit", String(params.limit));
+  const search = params.search?.trim();
+  if (search) query.set("search", search);
+  const queryString = query.toString();
+  return queryString ? path + "?" + queryString : path;
+};
+export const fetchSafflowerDownloadFiles = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/download/files/", params), "GET");
   return await response.json();
 };
 
-export const fetchSafflowerRegions = async () => {
-  const response = await fetchRequest("/api/regions/", "GET");
+export const fetchSafflowerRegions = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/regions/", params), "GET");
   return await response.json();
 };
 
-export const fetchSafflowerVarieties = async () => {
-  const response = await fetchRequest("/api/varieties/", "GET");
+export const fetchSafflowerVarieties = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/varieties/", params), "GET");
   return await response.json();
 };
 
-export const fetchSafflowerGenes = async () => {
-  const response = await fetchRequest("/api/genes/", "GET");
+export const fetchSafflowerGenes = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/genes/", params), "GET");
   return await response.json();
 };
 
-export const fetchSafflowerGeneExpressions = async () => {
-  const response = await fetchRequest("/api/gene-expressions/", "GET");
+export const fetchSafflowerGeneExpressions = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/gene-expressions/", params), "GET");
   return await response.json();
 };
 
@@ -40,8 +55,8 @@ export const deleteSafflowerGeneExpression = async (id: number) => {
   return await response.json();
 };
 
-export const fetchSafflowerEnvironmentalFactors = async () => {
-  const response = await fetchRequest("/api/environmental-factors/", "GET");
+export const fetchSafflowerEnvironmentalFactors = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/environmental-factors/", params), "GET");
   return await response.json();
 };
 
@@ -60,23 +75,23 @@ export const deleteSafflowerEnvironmentalFactor = async (id: number) => {
   return await response.json();
 };
 
-export const fetchSafflowerInstitutions = async () => {
-  const response = await fetchRequest("/api/institutions/", "GET");
+export const fetchSafflowerInstitutions = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/institutions/", params), "GET");
   return await response.json();
 };
 
-export const fetchSafflowerAnnouncements = async () => {
-  const response = await fetchRequest("/api/announcements/", "GET");
+export const fetchSafflowerAnnouncements = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/announcements/", params), "GET");
   return await response.json();
 };
 
-export const fetchSafflowerNews = async () => {
-  const response = await fetchRequest("/api/news/", "GET");
+export const fetchSafflowerNews = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/news/", params), "GET");
   return await response.json();
 };
 
-export const fetchSafflowerScrollingNews = async () => {
-  const response = await fetchRequest("/api/news/scrolling/", "GET");
+export const fetchSafflowerScrollingNews = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/news/scrolling/", params), "GET");
   return await response.json();
 };
 
@@ -85,8 +100,8 @@ export const fetchSafflowerNewsById = async (id: number) => {
   return await response.json();
 };
 
-export const fetchSafflowerChangelogs = async () => {
-  const response = await fetchRequest("/api/changelogs/", "GET");
+export const fetchSafflowerChangelogs = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/changelogs/", params), "GET");
   return await response.json();
 };
 
@@ -95,8 +110,8 @@ export const fetchSafflowerChangelogById = async (id: number) => {
   return await response.json();
 };
 
-export const fetchSafflowerChangelog = async () => {
-  const response = await fetchRequest("/api/changelogs/", "GET");
+export const fetchSafflowerChangelog = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/changelogs/", params), "GET");
   return await response.json();
 };
 
@@ -221,8 +236,8 @@ export const deleteSafflowerDownloadFile = async (id: number) => {
 };
 
 
-export const fetchSafflowerNutritionData = async () => {
-    const response = await fetchRequest("/nutrition-data/", "GET", undefined, true);
+export const fetchSafflowerNutritionData = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/nutrition-data/", params), "GET", undefined, true);
     return await response.json();
 };
 
@@ -241,14 +256,14 @@ export const deleteSafflowerNutritionData = async (id: number) => {
     return await response.json();
 };
 
-export const fetchDownloadFiles = async () => {
-  const response = await fetch("/api/download/files/");
+export const fetchDownloadFiles = async (params?: ListParams) => {
+  const response = await fetch(`/api/download/files/${withListParams("", params)}`);
   if (!response.ok) throw new Error("download files");
   return response.json();
 };
 
-export const fetchNews = async () => {
-  const response = await fetch("/api/news/");
+export const fetchNews = async (params?: ListParams) => {
+  const response = await fetch(`/api/news/${withListParams("", params)}`);
   if (!response.ok) throw new Error("news");
   return response.json();
 };
@@ -259,8 +274,8 @@ export const fetchNewsDetail = async (id: number) => {
   return response.json();
 };
 
-export const fetchScrollingNews = async () => {
-  const response = await fetch("/api/news/scrolling/");
+export const fetchScrollingNews = async (params?: ListParams) => {
+  const response = await fetch(`/api/news/scrolling/${withListParams("", params)}`);
   if (!response.ok) throw new Error("scrolling news");
   return response.json();
 };
@@ -269,8 +284,8 @@ export const fetchChangelog = fetchSafflowerChangelog;
 export const fetchChangelogDetail = fetchSafflowerChangelogById;
 
 
-export const fetchSafflowerRegionalMapSites = async () => {
-  const response = await fetchRequest("/api/regional-map-sites/", "GET");
+export const fetchSafflowerRegionalMapSites = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/regional-map-sites/", params), "GET");
   return await response.json();
 };
 
@@ -289,8 +304,8 @@ export const deleteSafflowerRegionalMapSite = async (id: number) => {
   return await response.json();
 };
 
-export const fetchSafflowerRegionalEnvironmentValues = async () => {
-  const response = await fetchRequest("/api/regional-environment-values/", "GET");
+export const fetchSafflowerRegionalEnvironmentValues = async (params?: ListParams) => {
+  const response = await fetchRequest(withListParams("/api/regional-environment-values/", params), "GET");
   return await response.json();
 };
 
