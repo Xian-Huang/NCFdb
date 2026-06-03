@@ -1,7 +1,7 @@
 import { fetchRequest } from "./https";
 
 
-type ListParams = { page?: number; pageSize?: number; search?: string; limit?: number };
+type ListParams = { page?: number; pageSize?: number; search?: string; limit?: number; [key: string]: any };
 
 const withListParams = (endpoint: string, params?: ListParams) => {
   if (!params) return endpoint;
@@ -12,6 +12,10 @@ const withListParams = (endpoint: string, params?: ListParams) => {
   if (params.limit) query.set("limit", String(params.limit));
   const search = params.search?.trim();
   if (search) query.set("search", search);
+  Object.entries(params).forEach(([key, value]) => {
+    if (["page", "pageSize", "search", "limit"].includes(key)) return;
+    if (value !== undefined && value !== null && String(value).trim() !== "") query.set(key, String(value));
+  });
   const queryString = query.toString();
   return queryString ? path + "?" + queryString : path;
 };
@@ -38,6 +42,26 @@ export const fetchSesameGenes = async (params?: ListParams) => {
     const data = await response.json();
     return data;
 }
+
+export const fetchSesameGeneAssociations = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/gene-associations/", params), "GET", undefined, true);
+    return await response.json();
+}
+
+export const createSesameGeneAssociation = async (data: any) => {
+    const response = await fetchRequest("/gene-associations/", "POST", data, true);
+    return await response.json();
+};
+
+export const updateSesameGeneAssociation = async (id: number, data: any) => {
+    const response = await fetchRequest(`/gene-associations/${id}/`, "PUT", data, true);
+    return await response.json();
+};
+
+export const deleteSesameGeneAssociation = async (id: number) => {
+    const response = await fetchRequest(`/gene-associations/${id}/`, "DELETE", undefined, true);
+    return await response.json();
+};
 
 export const fetchSesameGeneExpressions = async (params?: ListParams) => {
     const response = await fetchRequest(withListParams("/gene-expressions/", params), "GET", undefined, true);
@@ -249,6 +273,116 @@ export const fetchSesameNutritionData = async (params?: ListParams) => {
     return await response.json();
 };
 
+export const fetchSesameGlobalSearch = async (query: string) => {
+    const response = await fetchRequest(`/search/?q=${encodeURIComponent(query)}`, "GET", undefined, true);
+    return await response.json();
+};
+
+export const fetchSesameMarkerLoci = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/marker-loci/", params), "GET", undefined, true);
+    return await response.json();
+};
+
+export const createSesameMarkerLocus = async (data: any) => {
+    const response = await fetchRequest("/marker-loci/", "POST", data, true);
+    return await response.json();
+};
+
+export const updateSesameMarkerLocus = async (id: number, data: any) => {
+    const response = await fetchRequest(`/marker-loci/${id}/`, "PUT", data, true);
+    return await response.json();
+};
+
+export const deleteSesameMarkerLocus = async (id: number) => {
+    const response = await fetchRequest(`/marker-loci/${id}/`, "DELETE", undefined, true);
+    return await response.json();
+};
+
+export const fetchSesameMolecularFingerprints = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/molecular-fingerprints/", params), "GET", undefined, true);
+    return await response.json();
+};
+
+export const createSesameMolecularFingerprint = async (data: any) => {
+    const response = await fetchRequest("/molecular-fingerprints/", "POST", data, true);
+    return await response.json();
+};
+
+export const updateSesameMolecularFingerprint = async (id: number, data: any) => {
+    const response = await fetchRequest(`/molecular-fingerprints/${id}/`, "PUT", data, true);
+    return await response.json();
+};
+
+export const deleteSesameMolecularFingerprint = async (id: number) => {
+    const response = await fetchRequest(`/molecular-fingerprints/${id}/`, "DELETE", undefined, true);
+    return await response.json();
+};
+
+export const fetchSesameSequencingData = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/sequencing-data/", params), "GET", undefined, true);
+    return await response.json();
+};
+
+export const createSesameSequencingData = async (data: any) => {
+    const response = await fetchRequest("/sequencing-data/", "POST", data, true);
+    return await response.json();
+};
+
+export const updateSesameSequencingData = async (id: number, data: any) => {
+    const response = await fetchRequest(`/sequencing-data/${id}/`, "PUT", data, true);
+    return await response.json();
+};
+
+export const deleteSesameSequencingData = async (id: number) => {
+    const response = await fetchRequest(`/sequencing-data/${id}/`, "DELETE", undefined, true);
+    return await response.json();
+};
+
+export const fetchSesameGermplasmResources = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/germplasm-resources/", params), "GET", undefined, true);
+    return await response.json();
+};
+
+export const createSesameGermplasmResource = async (data: any) => {
+    const response = await fetchRequest("/germplasm-resources/", "POST", data, true);
+    return await response.json();
+};
+
+export const updateSesameGermplasmResource = async (id: number, data: any) => {
+    const response = await fetchRequest(`/germplasm-resources/${id}/`, "PUT", data, true);
+    return await response.json();
+};
+
+export const deleteSesameGermplasmResource = async (id: number) => {
+    const response = await fetchRequest(`/germplasm-resources/${id}/`, "DELETE", undefined, true);
+    return await response.json();
+};
+
+export const fetchSesameGeneticDiversityAnalyses = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/genetic-diversity-analyses/", params), "GET", undefined, true);
+    return await response.json();
+};
+
+export const createSesameGeneticDiversityAnalysis = async (data: any) => {
+    const response = await fetchRequest("/genetic-diversity-analyses/", "POST", data, true);
+    return await response.json();
+};
+
+export const updateSesameGeneticDiversityAnalysis = async (id: number, data: any) => {
+    const response = await fetchRequest(`/genetic-diversity-analyses/${id}/`, "PUT", data, true);
+    return await response.json();
+};
+
+export const deleteSesameGeneticDiversityAnalysis = async (id: number) => {
+    const response = await fetchRequest(`/genetic-diversity-analyses/${id}/`, "DELETE", undefined, true);
+    return await response.json();
+};
+
+export const batchCreateSesameRecords = async (entity: string, rows: any[]) => {
+    const response = await fetchRequest(`/batch/${entity}/`, "POST", rows, true);
+    return await response.json();
+};
+
 export const createSesameNutritionData = async (data: any) => {
     const response = await fetchRequest("/nutrition-data/", "POST", data, true);
     return await response.json();
@@ -331,3 +465,8 @@ export const deleteSesameRegionalEnvironmentValue = async (id: number) => {
     const response = await fetchRequest(`/regional-environment-values/${id}/`, "DELETE", undefined, true);
     return await response.json();
 };
+
+export const submitEventRegistration = async (data: any) => {
+    const response = await fetchRequest("/api/event-registrations/", "POST", data);
+    return response.json();
+}

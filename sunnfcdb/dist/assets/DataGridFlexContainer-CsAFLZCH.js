@@ -1,1 +1,0 @@
-import{j as n}from"./index-bVRl4m5H.js";import{m as o}from"./index-rd22n_RR.js";const r=o()({flexContainer:{display:"flex",flexDirection:"column"}});function l({children:e,style:s}){const{classes:t}=r();return n.jsx("div",{className:t.flexContainer,style:s,children:e})}export{l as D};

@@ -7,9 +7,9 @@ from sesame.models import Announcement, Changelog, News
 CROP_NAME = "芝麻"
 DATABASE = "SesameDB"
 NEWS_IMAGES = [
-    "news_images/sesame-genome-release.png",
-    "news_images/sesame-nutrition-release.png",
-    "news_images/sesame-field-trial.png",
+    "news_images/sesame-genome-v2.png",
+    "news_images/sesame-high-oil-variety.png",
+    "news_images/sesame-production-record.png",
 ]
 NEWS_TOPICS = [
     ("高油分芝麻新品种完成数据库登记", "高油分材料、芝麻素和芝麻林素含量"),

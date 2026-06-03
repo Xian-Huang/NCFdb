@@ -11,6 +11,8 @@ import { Contact } from "./components/Contact";
 import { Login } from "./components/Login";
 import { ChangelogDetail } from "./components/ChangelogDetail";
 import { NotFound } from "./components/NotFound";
+import { AdminDataImport } from "./components/AdminDataImport";
+import { MolecularDataAdmin } from "./components/MolecularDataAdmin";
 import { createContext, lazy, ReactNode, Suspense, useContext } from "react";
 
 const Admin = lazy(() => import("./components/Admin").then((module) => ({ default: module.Admin })));
@@ -56,6 +58,30 @@ function AdminWrapper() {
   );
 }
 
+function AdminLocalWrapper() {
+  return (
+    <Suspense fallback={routeFallback}>
+      <Admin />
+    </Suspense>
+  );
+}
+
+function ProtectedAdminDataImport() {
+  return (
+    <ProtectedRoute>
+      <AdminDataImport />
+    </ProtectedRoute>
+  );
+}
+
+function ProtectedMolecularDataAdmin() {
+  return (
+    <ProtectedRoute>
+      <MolecularDataAdmin />
+    </ProtectedRoute>
+  );
+}
+
 function JBrowserWrapper() {
   return (
     <Suspense fallback={routeFallback}>
@@ -91,6 +117,11 @@ export const router = createBrowserRouter([
       { path: "contact", Component: Contact },
       { path: "login", Component: LoginWrapper },
       { path: "admin", Component: AdminWrapper },
+      { path: "admin/import", Component: ProtectedAdminDataImport },
+      { path: "admin/molecular-data", Component: ProtectedMolecularDataAdmin },
+      { path: "admin-local", Component: AdminLocalWrapper },
+      { path: "admin-local/import", Component: AdminDataImport },
+      { path: "admin-local/molecular-data", Component: MolecularDataAdmin },
       { path: "changelog/:id", Component: ChangelogDetail },
       { path: "*", Component: NotFound },
     ],

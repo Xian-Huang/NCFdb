@@ -7,33 +7,17 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import (
-    DownloadFile,
-    Region,
-    Variety,
-    Gene,
-    GeneExpression,
-    EnvironmentalFactor,
-    RegionalMapSite,
-    RegionalEnvironmentValue,
-    Institution,
-    Announcement,
-    News,
-    Changelog, NutritionData,
+    DownloadFile, Region, Variety, Gene, GeneExpression, GeneAssociation, EnvironmentalFactor,
+    RegionalMapSite, RegionalEnvironmentValue, Institution, Announcement, News, Changelog,
+    NutritionData, MarkerLocus, MolecularFingerprint, SequencingData, GermplasmResource,
+    GeneticDiversityAnalysis
 )
 from .serializers import (
-    DownloadFileSerializer,
-    RegionSerializer,
-    VarietySerializer,
-    GeneSerializer,
-    GeneExpressionSerializer,
-    EnvironmentalFactorSerializer,
-    RegionalMapSiteSerializer,
-    RegionalEnvironmentValueSerializer,
-    InstitutionSerializer,
-    AnnouncementSerializer,
-    NewsSerializer,
-    NewsListSerializer,
-    ChangelogSerializer, NutritionDataSerializer,
+    DownloadFileSerializer, RegionSerializer, VarietySerializer, GeneSerializer, GeneExpressionSerializer, GeneAssociationSerializer,
+    EnvironmentalFactorSerializer, RegionalMapSiteSerializer, RegionalEnvironmentValueSerializer, InstitutionSerializer, AnnouncementSerializer,
+    NewsSerializer, NewsListSerializer, ChangelogSerializer, NutritionDataSerializer, EventRegistrationSerializer,
+    MarkerLocusSerializer, MolecularFingerprintSerializer, SequencingDataSerializer, GermplasmResourceSerializer,
+    GeneticDiversityAnalysisSerializer
 )
 
 def _safe_download_name(name, extension):
@@ -117,18 +101,28 @@ def _paginated_response(request, queryset, serializer_class, default_limit=None)
     })
 
 
+def _batch_create_response(request, serializer_class):
+    payload = request.data
+    if not isinstance(payload, list):
+        return Response({'error': 'Expected a list of records'}, status=status.HTTP_400_BAD_REQUEST)
+    serializer = serializer_class(data=payload, many=True, context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'created': len(serializer.data), 'results': serializer.data}, status=status.HTTP_201_CREATED)
+    return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class DownloadFileView(APIView):
     def get(self, request, format=None):
         files = DownloadFile.objects.filter(is_published=True)
         return _paginated_response(request, files, DownloadFileSerializer)
-
+    
     def post(self, request, format=None):
         serializer = DownloadFileSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class DownloadFileDetailView(APIView):
     def get(self, request, pk, format=None):
@@ -137,10 +131,8 @@ class DownloadFileDetailView(APIView):
             serializer = DownloadFileSerializer(file)
             return Response(serializer.data)
         except DownloadFile.DoesNotExist:
-            return Response(
-                {"error": "File not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "File not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def put(self, request, pk, format=None):
         try:
             file = DownloadFile.objects.get(pk=pk)
@@ -150,19 +142,15 @@ class DownloadFileDetailView(APIView):
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except DownloadFile.DoesNotExist:
-            return Response(
-                {"error": "File not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "File not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def delete(self, request, pk, format=None):
         try:
             file = DownloadFile.objects.get(pk=pk)
             file.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except DownloadFile.DoesNotExist:
-            return Response(
-                {"error": "File not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "File not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class DownloadFileDownloadView(APIView):
     def get(self, request, pk, format=None):
@@ -176,19 +164,17 @@ class DownloadFileDownloadView(APIView):
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
         return response
 
-
 class RegionView(APIView):
     def get(self, request, format=None):
         regions = Region.objects.all()
         return _paginated_response(request, regions, RegionSerializer)
-
+    
     def post(self, request, format=None):
         serializer = RegionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class RegionDetailView(APIView):
     def get(self, request, pk, format=None):
@@ -197,10 +183,8 @@ class RegionDetailView(APIView):
             serializer = RegionSerializer(region)
             return Response(serializer.data)
         except Region.DoesNotExist:
-            return Response(
-                {"error": "Region not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Region not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def put(self, request, pk, format=None):
         try:
             region = Region.objects.get(pk=pk)
@@ -210,33 +194,27 @@ class RegionDetailView(APIView):
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Region.DoesNotExist:
-            return Response(
-                {"error": "Region not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Region not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def delete(self, request, pk, format=None):
         try:
             region = Region.objects.get(pk=pk)
             region.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Region.DoesNotExist:
-            return Response(
-                {"error": "Region not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Region not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class VarietyView(APIView):
     def get(self, request, format=None):
         varieties = Variety.objects.all()
         return _paginated_response(request, varieties, VarietySerializer)
-
+    
     def post(self, request, format=None):
         serializer = VarietySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class VarietyDetailView(APIView):
     def get(self, request, pk, format=None):
@@ -245,10 +223,8 @@ class VarietyDetailView(APIView):
             serializer = VarietySerializer(variety)
             return Response(serializer.data)
         except Variety.DoesNotExist:
-            return Response(
-                {"error": "Variety not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Variety not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def put(self, request, pk, format=None):
         try:
             variety = Variety.objects.get(pk=pk)
@@ -258,33 +234,27 @@ class VarietyDetailView(APIView):
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Variety.DoesNotExist:
-            return Response(
-                {"error": "Variety not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Variety not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def delete(self, request, pk, format=None):
         try:
             variety = Variety.objects.get(pk=pk)
             variety.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Variety.DoesNotExist:
-            return Response(
-                {"error": "Variety not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Variety not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class GeneView(APIView):
     def get(self, request, format=None):
         genes = Gene.objects.all()
         return _paginated_response(request, genes, GeneSerializer)
-
+    
     def post(self, request, format=None):
         serializer = GeneSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class GeneDetailView(APIView):
     def get(self, request, pk, format=None):
@@ -293,10 +263,8 @@ class GeneDetailView(APIView):
             serializer = GeneSerializer(gene)
             return Response(serializer.data)
         except Gene.DoesNotExist:
-            return Response(
-                {"error": "Gene not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Gene not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def put(self, request, pk, format=None):
         try:
             gene = Gene.objects.get(pk=pk)
@@ -306,33 +274,79 @@ class GeneDetailView(APIView):
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Gene.DoesNotExist:
-            return Response(
-                {"error": "Gene not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Gene not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def delete(self, request, pk, format=None):
         try:
             gene = Gene.objects.get(pk=pk)
             gene.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Gene.DoesNotExist:
-            return Response(
-                {"error": "Gene not found"}, status=status.HTTP_404_NOT_FOUND
+            return Response({"error": "Gene not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class GeneAssociationView(APIView):
+    def get(self, request, format=None):
+        records = GeneAssociation.objects.select_related('source_gene', 'target_gene').all()
+        search = request.query_params.get('search') or request.query_params.get('q')
+        if search:
+            records = records.filter(
+                Q(source_gene__gene_id__icontains=search) |
+                Q(source_gene__name__icontains=search) |
+                Q(target_gene__gene_id__icontains=search) |
+                Q(target_gene__name__icontains=search) |
+                Q(target_trait__icontains=search) |
+                Q(association_type__icontains=search) |
+                Q(evidence_source__icontains=search)
             )
+        return _paginated_response(request, records, GeneAssociationSerializer, default_limit=100)
+
+    def post(self, request, format=None):
+        serializer = GeneAssociationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GeneAssociationDetailView(APIView):
+    def get(self, request, pk, format=None):
+        try:
+            record = GeneAssociation.objects.select_related('source_gene', 'target_gene').get(pk=pk)
+            return Response(GeneAssociationSerializer(record).data)
+        except GeneAssociation.DoesNotExist:
+            return Response({'error': 'Gene association not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, pk, format=None):
+        try:
+            record = GeneAssociation.objects.get(pk=pk)
+            serializer = GeneAssociationSerializer(record, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except GeneAssociation.DoesNotExist:
+            return Response({'error': 'Gene association not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        try:
+            GeneAssociation.objects.get(pk=pk).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except GeneAssociation.DoesNotExist:
+            return Response({'error': 'Gene association not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class GeneExpressionView(APIView):
     def get(self, request, format=None):
         gene_expressions = GeneExpression.objects.all()
         return _paginated_response(request, gene_expressions, GeneExpressionSerializer)
-
+    
     def post(self, request, format=None):
         serializer = GeneExpressionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class GeneExpressionDetailView(APIView):
     def get(self, request, pk, format=None):
@@ -341,48 +355,38 @@ class GeneExpressionDetailView(APIView):
             serializer = GeneExpressionSerializer(gene_expr)
             return Response(serializer.data)
         except GeneExpression.DoesNotExist:
-            return Response(
-                {"error": "GeneExpression not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "GeneExpression not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def put(self, request, pk, format=None):
         try:
             gene_expr = GeneExpression.objects.get(pk=pk)
-            serializer = GeneExpressionSerializer(
-                gene_expr, data=request.data, partial=True
-            )
+            serializer = GeneExpressionSerializer(gene_expr, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except GeneExpression.DoesNotExist:
-            return Response(
-                {"error": "GeneExpression not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "GeneExpression not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def delete(self, request, pk, format=None):
         try:
             gene_expr = GeneExpression.objects.get(pk=pk)
             gene_expr.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except GeneExpression.DoesNotExist:
-            return Response(
-                {"error": "GeneExpression not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "GeneExpression not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class EnvironmentalFactorView(APIView):
     def get(self, request, format=None):
         factors = EnvironmentalFactor.objects.all()
         return _paginated_response(request, factors, EnvironmentalFactorSerializer)
-
+    
     def post(self, request, format=None):
         serializer = EnvironmentalFactorSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class EnvironmentalFactorDetailView(APIView):
     def get(self, request, pk, format=None):
@@ -391,51 +395,38 @@ class EnvironmentalFactorDetailView(APIView):
             serializer = EnvironmentalFactorSerializer(factor)
             return Response(serializer.data)
         except EnvironmentalFactor.DoesNotExist:
-            return Response(
-                {"error": "EnvironmentalFactor not found"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
+            return Response({"error": "EnvironmentalFactor not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def put(self, request, pk, format=None):
         try:
             factor = EnvironmentalFactor.objects.get(pk=pk)
-            serializer = EnvironmentalFactorSerializer(
-                factor, data=request.data, partial=True
-            )
+            serializer = EnvironmentalFactorSerializer(factor, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except EnvironmentalFactor.DoesNotExist:
-            return Response(
-                {"error": "EnvironmentalFactor not found"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
+            return Response({"error": "EnvironmentalFactor not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def delete(self, request, pk, format=None):
         try:
             factor = EnvironmentalFactor.objects.get(pk=pk)
             factor.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except EnvironmentalFactor.DoesNotExist:
-            return Response(
-                {"error": "EnvironmentalFactor not found"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
+            return Response({"error": "EnvironmentalFactor not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class InstitutionView(APIView):
     def get(self, request, format=None):
         institutions = Institution.objects.all()
         return _paginated_response(request, institutions, InstitutionSerializer)
-
+    
     def post(self, request, format=None):
         serializer = InstitutionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class InstitutionDetailView(APIView):
     def get(self, request, pk, format=None):
@@ -444,48 +435,38 @@ class InstitutionDetailView(APIView):
             serializer = InstitutionSerializer(institution)
             return Response(serializer.data)
         except Institution.DoesNotExist:
-            return Response(
-                {"error": "Institution not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Institution not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def put(self, request, pk, format=None):
         try:
             institution = Institution.objects.get(pk=pk)
-            serializer = InstitutionSerializer(
-                institution, data=request.data, partial=True
-            )
+            serializer = InstitutionSerializer(institution, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Institution.DoesNotExist:
-            return Response(
-                {"error": "Institution not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Institution not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def delete(self, request, pk, format=None):
         try:
             institution = Institution.objects.get(pk=pk)
             institution.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Institution.DoesNotExist:
-            return Response(
-                {"error": "Institution not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Institution not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class AnnouncementView(APIView):
     def get(self, request, format=None):
         announcements = Announcement.objects.filter(is_published=True)
         return _paginated_response(request, announcements, AnnouncementSerializer)
-
+    
     def post(self, request, format=None):
         serializer = AnnouncementSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class AnnouncementDetailView(APIView):
     def get(self, request, pk, format=None):
@@ -494,35 +475,26 @@ class AnnouncementDetailView(APIView):
             serializer = AnnouncementSerializer(announcement)
             return Response(serializer.data)
         except Announcement.DoesNotExist:
-            return Response(
-                {"error": "Announcement not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Announcement not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def put(self, request, pk, format=None):
         try:
             announcement = Announcement.objects.get(pk=pk)
-            serializer = AnnouncementSerializer(
-                announcement, data=request.data, partial=True
-            )
+            serializer = AnnouncementSerializer(announcement, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Announcement.DoesNotExist:
-            return Response(
-                {"error": "Announcement not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Announcement not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def delete(self, request, pk, format=None):
         try:
             announcement = Announcement.objects.get(pk=pk)
             announcement.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Announcement.DoesNotExist:
-            return Response(
-                {"error": "Announcement not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Announcement not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class NewsView(APIView):
     def get(self, request, format=None):
@@ -536,12 +508,10 @@ class NewsView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class ScrollingNewsView(APIView):
     def get(self, request, format=None):
         news = News.objects.filter(is_published=True, is_scrolling=True)
         return _paginated_response(request, news, NewsListSerializer)
-
 
 class NewsDetailView(APIView):
     def get(self, request, pk, format=None):
@@ -550,10 +520,8 @@ class NewsDetailView(APIView):
             serializer = NewsSerializer(news, context={'request': request})
             return Response(serializer.data)
         except News.DoesNotExist:
-            return Response(
-                {"error": "News not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "News not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def put(self, request, pk, format=None):
         try:
             news = News.objects.get(pk=pk)
@@ -563,33 +531,27 @@ class NewsDetailView(APIView):
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except News.DoesNotExist:
-            return Response(
-                {"error": "News not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "News not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def delete(self, request, pk, format=None):
         try:
             news = News.objects.get(pk=pk)
             news.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except News.DoesNotExist:
-            return Response(
-                {"error": "News not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "News not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class ChangelogView(APIView):
     def get(self, request, format=None):
         changelog = Changelog.objects.filter(is_published=True)
         return _paginated_response(request, changelog, ChangelogSerializer)
-
+    
     def post(self, request, format=None):
         serializer = ChangelogSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class ChangelogDetailView(APIView):
     def get(self, request, pk, format=None):
@@ -598,10 +560,8 @@ class ChangelogDetailView(APIView):
             serializer = ChangelogSerializer(changelog)
             return Response(serializer.data)
         except Changelog.DoesNotExist:
-            return Response(
-                {"error": "Changelog not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Changelog not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def put(self, request, pk, format=None):
         try:
             changelog = Changelog.objects.get(pk=pk)
@@ -611,19 +571,15 @@ class ChangelogDetailView(APIView):
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Changelog.DoesNotExist:
-            return Response(
-                {"error": "Changelog not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+            return Response({"error": "Changelog not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def delete(self, request, pk, format=None):
         try:
             changelog = Changelog.objects.get(pk=pk)
             changelog.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Changelog.DoesNotExist:
-            return Response(
-                {"error": "Changelog not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Changelog not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class RegionalMapSiteView(APIView):
@@ -715,6 +671,255 @@ class RegionalEnvironmentValueDetailView(APIView):
             return Response({"error": "Regional environment value not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
+class MarkerLocusView(APIView):
+    def get(self, request, format=None):
+        records = MarkerLocus.objects.all()
+        marker_type = request.query_params.get('marker_type')
+        if marker_type:
+            records = records.filter(marker_type=marker_type)
+        return _paginated_response(request, records, MarkerLocusSerializer)
+
+    def post(self, request, format=None):
+        serializer = MarkerLocusSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MarkerLocusDetailView(APIView):
+    def get(self, request, pk, format=None):
+        try:
+            record = MarkerLocus.objects.get(pk=pk)
+            return Response(MarkerLocusSerializer(record).data)
+        except MarkerLocus.DoesNotExist:
+            return Response({'error': 'Marker locus not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, pk, format=None):
+        try:
+            record = MarkerLocus.objects.get(pk=pk)
+            serializer = MarkerLocusSerializer(record, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except MarkerLocus.DoesNotExist:
+            return Response({'error': 'Marker locus not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        try:
+            MarkerLocus.objects.get(pk=pk).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except MarkerLocus.DoesNotExist:
+            return Response({'error': 'Marker locus not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class MolecularFingerprintView(APIView):
+    def get(self, request, format=None):
+        records = MolecularFingerprint.objects.select_related('variety', 'marker').all()
+        variety = request.query_params.get('variety')
+        marker = request.query_params.get('marker')
+        if variety:
+            records = records.filter(variety_id=variety)
+        if marker:
+            records = records.filter(marker__marker_id=marker)
+        return _paginated_response(request, records, MolecularFingerprintSerializer, default_limit=200)
+
+    def post(self, request, format=None):
+        serializer = MolecularFingerprintSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MolecularFingerprintDetailView(APIView):
+    def get(self, request, pk, format=None):
+        try:
+            record = MolecularFingerprint.objects.select_related('variety', 'marker').get(pk=pk)
+            return Response(MolecularFingerprintSerializer(record).data)
+        except MolecularFingerprint.DoesNotExist:
+            return Response({'error': 'Molecular fingerprint not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, pk, format=None):
+        try:
+            record = MolecularFingerprint.objects.get(pk=pk)
+            serializer = MolecularFingerprintSerializer(record, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except MolecularFingerprint.DoesNotExist:
+            return Response({'error': 'Molecular fingerprint not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        try:
+            MolecularFingerprint.objects.get(pk=pk).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except MolecularFingerprint.DoesNotExist:
+            return Response({'error': 'Molecular fingerprint not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class SequencingDataView(APIView):
+    def get(self, request, format=None):
+        records = SequencingData.objects.select_related('variety').all()
+        variety = request.query_params.get('variety')
+        data_type = request.query_params.get('data_type')
+        if variety:
+            records = records.filter(variety_id=variety)
+        if data_type:
+            records = records.filter(data_type=data_type)
+        return _paginated_response(request, records, SequencingDataSerializer)
+
+    def post(self, request, format=None):
+        serializer = SequencingDataSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SequencingDataDetailView(APIView):
+    def get(self, request, pk, format=None):
+        try:
+            record = SequencingData.objects.select_related('variety').get(pk=pk)
+            return Response(SequencingDataSerializer(record).data)
+        except SequencingData.DoesNotExist:
+            return Response({'error': 'Sequencing data not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, pk, format=None):
+        try:
+            record = SequencingData.objects.get(pk=pk)
+            serializer = SequencingDataSerializer(record, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except SequencingData.DoesNotExist:
+            return Response({'error': 'Sequencing data not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        try:
+            SequencingData.objects.get(pk=pk).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except SequencingData.DoesNotExist:
+            return Response({'error': 'Sequencing data not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class GermplasmResourceView(APIView):
+    def get(self, request, format=None):
+        records = GermplasmResource.objects.select_related('variety').all()
+        variety = request.query_params.get('variety')
+        if variety:
+            records = records.filter(variety_id=variety)
+        return _paginated_response(request, records, GermplasmResourceSerializer)
+
+    def post(self, request, format=None):
+        serializer = GermplasmResourceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GermplasmResourceDetailView(APIView):
+    def get(self, request, pk, format=None):
+        try:
+            record = GermplasmResource.objects.select_related('variety').get(pk=pk)
+            return Response(GermplasmResourceSerializer(record).data)
+        except GermplasmResource.DoesNotExist:
+            return Response({'error': 'Germplasm resource not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, pk, format=None):
+        try:
+            record = GermplasmResource.objects.get(pk=pk)
+            serializer = GermplasmResourceSerializer(record, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except GermplasmResource.DoesNotExist:
+            return Response({'error': 'Germplasm resource not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        try:
+            GermplasmResource.objects.get(pk=pk).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except GermplasmResource.DoesNotExist:
+            return Response({'error': 'Germplasm resource not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class GeneticDiversityAnalysisView(APIView):
+    def get(self, request, format=None):
+        records = GeneticDiversityAnalysis.objects.all()
+        analysis_type = request.query_params.get('analysis_type')
+        if analysis_type:
+            records = records.filter(analysis_type=analysis_type)
+        return _paginated_response(request, records, GeneticDiversityAnalysisSerializer)
+
+    def post(self, request, format=None):
+        serializer = GeneticDiversityAnalysisSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GeneticDiversityAnalysisDetailView(APIView):
+    def get(self, request, pk, format=None):
+        try:
+            record = GeneticDiversityAnalysis.objects.get(pk=pk)
+            return Response(GeneticDiversityAnalysisSerializer(record).data)
+        except GeneticDiversityAnalysis.DoesNotExist:
+            return Response({'error': 'Genetic diversity analysis not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, pk, format=None):
+        try:
+            record = GeneticDiversityAnalysis.objects.get(pk=pk)
+            serializer = GeneticDiversityAnalysisSerializer(record, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except GeneticDiversityAnalysis.DoesNotExist:
+            return Response({'error': 'Genetic diversity analysis not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        try:
+            GeneticDiversityAnalysis.objects.get(pk=pk).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except GeneticDiversityAnalysis.DoesNotExist:
+            return Response({'error': 'Genetic diversity analysis not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class BatchCreateView(APIView):
+    serializer_map = {
+        'regions': RegionSerializer,
+        'varieties': VarietySerializer,
+        'nutrition-data': NutritionDataSerializer,
+        'genes': GeneSerializer,
+        'gene-associations': GeneAssociationSerializer,
+        'gene-expressions': GeneExpressionSerializer,
+        'environmental-factors': EnvironmentalFactorSerializer,
+        'regional-map-sites': RegionalMapSiteSerializer,
+        'regional-environment-values': RegionalEnvironmentValueSerializer,
+        'institutions': InstitutionSerializer,
+        'announcements': AnnouncementSerializer,
+        'download-files': DownloadFileSerializer,
+        'marker-loci': MarkerLocusSerializer,
+        'molecular-fingerprints': MolecularFingerprintSerializer,
+        'sequencing-data': SequencingDataSerializer,
+        'germplasm-resources': GermplasmResourceSerializer,
+        'genetic-diversity-analyses': GeneticDiversityAnalysisSerializer,
+    }
+
+    def post(self, request, entity, format=None):
+        serializer_class = self.serializer_map.get(entity)
+        if not serializer_class:
+            return Response({'error': 'Unsupported batch entity'}, status=status.HTTP_404_NOT_FOUND)
+        return _batch_create_response(request, serializer_class)
+
+
 class NutritionDataView(APIView):
     def get(self, request, format=None):
         records = NutritionData.objects.select_related('variety', 'variety__region').all()
@@ -724,6 +929,15 @@ class NutritionDataView(APIView):
         region = request.query_params.get('region')
         if region:
             records = records.filter(variety__region_id=region)
+        variety = request.query_params.get('variety')
+        if variety:
+            records = records.filter(variety_id=variety)
+        min_oil = request.query_params.get('min_oil')
+        max_oil = request.query_params.get('max_oil')
+        if min_oil:
+            records = records.filter(oil_content__gte=min_oil)
+        if max_oil:
+            records = records.filter(oil_content__lte=max_oil)
         order = request.query_params.get('ordering')
         if order in {'oil_content', '-oil_content', 'protein', '-protein', 'fatty_acid', '-fatty_acid', 'lignan', '-lignan', 'sample_code', '-sample_code'}:
             records = records.order_by(order)
@@ -840,6 +1054,67 @@ def _map_site_payload(site):
         'environment_values': RegionalEnvironmentValueSerializer(env_values, many=True).data,
     }
 
+
+def _association_network_payload(limit):
+    associations = list(
+        GeneAssociation.objects.filter(is_active=True)
+        .select_related('source_gene', 'target_gene')
+        .order_by('-confidence_score', 'source_gene__gene_id')[:limit]
+    )
+    nodes = {}
+    edges = []
+    type_groups = {
+        'coexpression': '共表达',
+        'gwas': 'GWAS关联',
+        'pathway': '通路关联',
+        'ppi': '蛋白互作',
+        'literature': '文献证据',
+        'trait': '性状关联',
+    }
+    for item in associations:
+        source_id = item.source_gene.gene_id
+        source_label = item.source_gene.symbol or item.source_gene.gene_id
+        target_id = item.target_gene.gene_id if item.target_gene else item.target_trait
+        if not target_id:
+            continue
+        nodes[source_id] = {
+            'id': source_id,
+            'label': source_label,
+            'group': item.source_gene.pathway or item.source_gene.gene_type or '基因',
+            'score': max(30, min(100, int(float(item.confidence_score or 0) * 100))),
+            'kind': 'gene',
+        }
+        if item.target_gene:
+            nodes[target_id] = {
+                'id': target_id,
+                'label': item.target_gene.symbol or item.target_gene.gene_id,
+                'group': item.target_gene.pathway or item.target_gene.gene_type or '基因',
+                'score': max(30, min(100, int(float(item.confidence_score or 0) * 92))),
+                'kind': 'gene',
+            }
+        else:
+            nodes[target_id] = {
+                'id': target_id,
+                'label': target_id,
+                'group': type_groups.get(item.association_type, item.association_type),
+                'score': max(34, min(88, int(float(item.confidence_score or 0) * 88))),
+                'kind': 'trait',
+            }
+        edges.append({
+            'id': item.id,
+            'source': source_id,
+            'target': target_id,
+            'weight': float(item.confidence_score or 0),
+            'association_type': item.association_type,
+            'label': item.get_association_type_display(),
+            'p_value': float(item.p_value) if item.p_value is not None else None,
+            'effect_size': float(item.effect_size) if item.effect_size is not None else None,
+            'evidence_source': item.evidence_source,
+            'description': item.description,
+        })
+    return list(nodes.values()), edges
+
+
 class VisualizationSummaryView(APIView):
     def get(self, request, format=None):
         sample_limit = _int_param(request, 'limit', 80, minimum=1, maximum=200)
@@ -862,6 +1137,7 @@ class VisualizationSummaryView(APIView):
         ]
         map_sites = RegionalMapSite.objects.filter(is_active=True).select_related('region').prefetch_related('varieties', 'region__varieties', 'environment_values__factor')[:sample_limit]
         region_map = [_map_site_payload(site) for site in map_sites]
+        association_nodes, association_edges = _association_network_payload(sample_limit)
         return Response({
             'counts': {
                 'nutrition': NutritionData.objects.count(),
@@ -869,16 +1145,21 @@ class VisualizationSummaryView(APIView):
                 'varieties': Variety.objects.count(),
                 'genes': Gene.objects.count(),
                 'gene_expression': GeneExpression.objects.count(),
+                'gene_associations': GeneAssociation.objects.count(),
                 'institutions': Institution.objects.count(),
+                'marker_loci': MarkerLocus.objects.count(),
+                'molecular_fingerprints': MolecularFingerprint.objects.count(),
+                'sequencing_data': SequencingData.objects.count(),
+                'germplasm_resources': GermplasmResource.objects.count(),
+                'genetic_diversity_analyses': GeneticDiversityAnalysis.objects.count(),
             },
             'nutrition': NutritionDataSerializer(nutrition, many=True).data,
             'gene_expression': GeneExpressionSerializer(expressions, many=True).data,
             'regions': region_rows,
             'region_map': region_map,
-            'network': [
-                {'source': gene.gene_id, 'target': gene.pathway or gene.gene_type or 'trait', 'weight': index + 1}
-                for index, gene in enumerate(Gene.objects.exclude(pathway__isnull=True)[:20])
-            ],
+            'network': association_edges,
+            'protein_nodes': association_nodes,
+            'protein_edges': association_edges,
         })
 class DataExportView(APIView):
     def get(self, request, entity, format=None):
@@ -887,6 +1168,11 @@ class DataExportView(APIView):
             'varieties': (Variety.objects.select_related('region').all(), ['id', 'name', 'variety_code', 'seed_color', 'oil_content', 'maturity_days', 'yield_per_hectare']),
             'genes': (Gene.objects.all(), ['id', 'gene_id', 'name', 'symbol', 'chromosome', 'gene_type', 'pathway']),
             'nutrition': (NutritionData.objects.select_related('variety').all(), ['id', 'sample_code', 'variety_name', 'oil_content', 'protein', 'fatty_acid', 'lignan', 'method', 'test_date']),
+            'marker-loci': (MarkerLocus.objects.all(), ['id', 'marker_id', 'marker_name', 'marker_type', 'chromosome', 'position', 'associated_trait', 'pic']),
+            'molecular-fingerprints': (MolecularFingerprint.objects.select_related('variety', 'marker').all(), ['id', 'variety_name', 'marker_id', 'genotype_code', 'allele1', 'allele2', 'fragment_size', 'quality_score']),
+            'sequencing-data': (SequencingData.objects.select_related('variety').all(), ['id', 'variety_name', 'accession_number', 'data_type', 'platform', 'coverage', 'snp_count', 'indel_count', 'public_database']),
+            'germplasm-resources': (GermplasmResource.objects.select_related('variety').all(), ['id', 'variety_name', 'germplasm_number', 'germplasm_type', 'collection_site', 'collection_year', 'donor_institution']),
+            'genetic-diversity': (GeneticDiversityAnalysis.objects.all(), ['id', 'analysis_name', 'analysis_type', 'marker_type', 'marker_count', 'variety_count', 'analysis_date']),
         }
         if entity not in exporters:
             return Response({'error': 'Unsupported export entity'}, status=status.HTTP_404_NOT_FOUND)
@@ -899,6 +1185,21 @@ class DataExportView(APIView):
         for row in rows:
             values = []
             for field in fields:
-                values.append(getattr(row.variety, 'name', '') if field == 'variety_name' else getattr(row, field, ''))
+                if field == 'variety_name':
+                    values.append(getattr(row.variety, 'name', ''))
+                elif field == 'marker_id':
+                    values.append(getattr(getattr(row, 'marker', None), 'marker_id', getattr(row, field, '')))
+                else:
+                    values.append(getattr(row, field, ''))
             writer.writerow(values)
         return response
+
+
+class EventRegistrationView(APIView):
+    def post(self, request, format=None):
+        serializer = EventRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "参会意向已提交", "data": serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

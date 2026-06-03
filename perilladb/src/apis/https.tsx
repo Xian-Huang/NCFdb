@@ -1,4 +1,4 @@
-const API_BASE_URL = '/api';
+const API_BASE_URL = '/api/';
 
 function getCSRFToken() {
   const name = 'csrftoken';
@@ -17,7 +17,8 @@ function getCSRFToken() {
 }
 
 export async function fetchRequest(endpoint: string, method: string, body?: any, autoAddUrl?: boolean) {
-  let url = autoAddUrl ? `${API_BASE_URL}${endpoint}` : `${endpoint}`;
+  let url = autoAddUrl ? `${API_BASE_URL}${endpoint.replace(/^\/+/, '')}` : `${endpoint}`;
+  console.log(url);
   const csrfToken = getCSRFToken();
   
   const headers: HeadersInit = {};

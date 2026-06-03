@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .models import (
-    DownloadFile, Region, Variety, Gene, GeneExpression,
-    EnvironmentalFactor, Institution, Announcement, News, Changelog
+    DownloadFile, Region, Variety, Gene, GeneExpression, GeneAssociation,
+    EnvironmentalFactor, Institution, Announcement, News, Changelog, EventRegistration,
+    MarkerLocus, MolecularFingerprint, SequencingData, GermplasmResource, GeneticDiversityAnalysis
 )
 
 @admin.register(DownloadFile)
@@ -81,3 +82,71 @@ class ChangelogAdmin(admin.ModelAdmin):
     list_filter = ['release_date', 'is_published']
     ordering = ['-release_date']
     list_editable = ['is_published']
+
+
+@admin.register(GeneAssociation)
+class GeneAssociationAdmin(admin.ModelAdmin):
+    list_display = ['source_gene', 'target_display', 'association_type', 'confidence_score', 'p_value', 'effect_size', 'evidence_source', 'is_active']
+    search_fields = ['source_gene__gene_id', 'source_gene__name', 'target_gene__gene_id', 'target_gene__name', 'target_trait', 'evidence_source', 'description']
+    list_filter = ['association_type', 'is_active', 'evidence_source']
+    list_editable = ['is_active']
+    raw_id_fields = ['source_gene', 'target_gene']
+    ordering = ['-confidence_score', 'source_gene__gene_id']
+
+    @admin.display(description='目标')
+    def target_display(self, obj):
+        return obj.target_gene or obj.target_trait
+
+@admin.register(EventRegistration)
+class EventRegistrationAdmin(admin.ModelAdmin):
+    list_display = ['event_title', 'name', 'institution', 'attendance_mode', 'participant_count', 'status', 'create_time']
+    search_fields = ['event_title', 'name', 'institution', 'email', 'phone']
+    list_filter = ['attendance_mode', 'status', 'event_title', 'create_time']
+    readonly_fields = ['event_id', 'event_title', 'event_date', 'event_location', 'name', 'institution', 'email', 'phone', 'attendance_mode', 'participant_count', 'note', 'create_time', 'update_time']
+    list_editable = ['status']
+    ordering = ['-create_time']
+    date_hierarchy = 'create_time'
+
+
+@admin.register(MarkerLocus)
+class MarkerLocusAdmin(admin.ModelAdmin):
+    list_display = ['marker_id', 'marker_name', 'marker_type', 'chromosome', 'position', 'associated_trait', 'pic']
+    search_fields = ['marker_id', 'marker_name', 'chromosome', 'associated_trait', 'annotated_gene']
+    list_filter = ['marker_type', 'chromosome']
+    ordering = ['marker_type', 'chromosome', 'position']
+
+
+@admin.register(MolecularFingerprint)
+class MolecularFingerprintAdmin(admin.ModelAdmin):
+    list_display = ['variety', 'marker', 'genotype_code', 'allele1', 'allele2', 'fragment_size', 'quality_score']
+    search_fields = ['variety__name', 'variety__variety_code', 'marker__marker_id', 'genotype_code']
+    list_filter = ['marker__marker_type', 'quality_score']
+    raw_id_fields = ['variety', 'marker']
+    ordering = ['variety__name', 'marker__marker_id']
+
+
+@admin.register(SequencingData)
+class SequencingDataAdmin(admin.ModelAdmin):
+    list_display = ['variety', 'accession_number', 'data_type', 'platform', 'coverage', 'public_database', 'submission_date']
+    search_fields = ['variety__name', 'variety__variety_code', 'accession_number', 'platform', 'public_database']
+    list_filter = ['data_type', 'platform', 'public_database', 'submission_date']
+    raw_id_fields = ['variety']
+    ordering = ['-submission_date', 'variety__name']
+
+
+@admin.register(GermplasmResource)
+class GermplasmResourceAdmin(admin.ModelAdmin):
+    list_display = ['variety', 'germplasm_number', 'germplasm_type', 'collection_site', 'collection_year', 'has_molecular_data', 'has_sequencing_data']
+    search_fields = ['variety__name', 'variety__variety_code', 'germplasm_number', 'collection_site', 'donor_institution']
+    list_filter = ['germplasm_type', 'collection_year', 'has_molecular_data', 'has_sequencing_data']
+    raw_id_fields = ['variety']
+    ordering = ['variety__name']
+
+
+@admin.register(GeneticDiversityAnalysis)
+class GeneticDiversityAnalysisAdmin(admin.ModelAdmin):
+    list_display = ['analysis_name', 'analysis_type', 'marker_type', 'marker_count', 'variety_count', 'analysis_date']
+    search_fields = ['analysis_name', 'marker_type', 'description']
+    list_filter = ['analysis_type', 'marker_type', 'analysis_date']
+    ordering = ['-analysis_date', '-create_time']
+

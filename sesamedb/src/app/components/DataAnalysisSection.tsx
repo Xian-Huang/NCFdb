@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import * as echarts from "echarts";
-import { BarChart3, Database, Dna, Download, Droplets, Fingerprint, MapPinned, Network, Search, Sprout, SunMedium, Table2, ThermometerSun } from "lucide-react";
+import { BarChart3, Database, Dna, Download, Droplets, Fingerprint, LineChart, MapPinned, Network, PieChart, Search, Sprout, SunMedium, Table2, ThermometerSun } from "lucide-react";
 import { cropConfig } from "../cropConfig";
 
 type AnyRow = Record<string, any>;
@@ -25,6 +25,7 @@ type EChartsInstance = {
   off: (eventName: string, handler: (params: AnyRow) => void) => void;
   dispose: () => void;
 };
+type NutritionChartKind = "bar" | "line" | "pie";
 
 const pageSizes = [10, 20, 50];
 const chinaMapUrl = "/map-assets/china-map.json";
@@ -80,6 +81,112 @@ const shortRegionLabel = (row: AnyRow, fallback: string) =>
   cleanText(row.province || row.region || row.name, fallback)
     .replace(/省|市|回族自治区|维吾尔自治区|壮族自治区|自治区|特别行政区/g, "");
 const regionKey = (row: AnyRow) => normalizeProvinceName(row.province || row.region || row.name || row.code);
+function NutritionEChart({
+  kind,
+  rows,
+  title,
+  emptyText,
+}: {
+  kind: NutritionChartKind;
+  rows: AnyRow[];
+  title: string;
+  emptyText: string;
+}) {
+  const chartRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const element = chartRef.current;
+    if (!element || !rows.length) return;
+
+    const chart = echarts.init(element) as unknown as EChartsInstance;
+    const resizeObserver = new ResizeObserver(() => chart.resize());
+    resizeObserver.observe(element);
+
+    const metrics = [
+      { key: "oil_content", label: "油分", color: cropConfig.accent },
+      { key: "protein", label: "蛋白质", color: cropConfig.accentDark },
+      { key: "fatty_acid", label: "特征脂肪酸", color: "#f59e0b" },
+      { key: "lignan", label: "特征营养成分", color: "#6366f1" },
+      { key: "moisture", label: "水分", color: "#38bdf8" },
+    ];
+    const labelOf = (row: AnyRow, index: number) =>
+      cleanText(row.variety_code || row.variety_name || row.sample_code, `${index + 1}`);
+    const chartRows = rows.slice(0, kind === "pie" ? 50 : 12);
+
+    const baseOption = {
+      backgroundColor: "transparent",
+      color: metrics.map((item) => item.color),
+      tooltip: { trigger: kind === "pie" ? "item" : "axis", borderWidth: 0, backgroundColor: "rgba(15, 23, 42, 0.9)", textStyle: { color: "#fff" } },
+      grid: { left: 42, right: 18, top: 36, bottom: 46 },
+      textStyle: { fontFamily: "inherit" },
+    };
+
+    if (kind === "bar") {
+      chart.setOption({
+        ...baseOption,
+        legend: { top: 0, right: 0, textStyle: { color: "#64748b", fontSize: 11 } },
+        xAxis: { type: "category", data: chartRows.map(labelOf), axisLabel: { color: "#64748b", interval: 0, rotate: 25, fontSize: 11 }, axisTick: { show: false } },
+        yAxis: { type: "value", axisLabel: { color: "#64748b" }, splitLine: { lineStyle: { color: "#e2e8f0" } } },
+        series: metrics.slice(0, 4).map((metric) => ({
+          name: metric.label,
+          type: "bar",
+          barMaxWidth: 16,
+          data: chartRows.map((row) => numberValue(row[metric.key])),
+          itemStyle: { borderRadius: [5, 5, 0, 0] },
+        })),
+      }, true);
+    } else if (kind === "line") {
+      const trendRows = [...chartRows].sort((a, b) => String(a.test_date || "").localeCompare(String(b.test_date || "")));
+      chart.setOption({
+        ...baseOption,
+        legend: { top: 0, right: 0, textStyle: { color: "#64748b", fontSize: 11 } },
+        xAxis: { type: "category", data: trendRows.map((row, index) => cleanText(row.test_date || row.sample_code, `${index + 1}`)), axisLabel: { color: "#64748b", rotate: 25, fontSize: 11 }, axisTick: { show: false } },
+        yAxis: { type: "value", axisLabel: { color: "#64748b" }, splitLine: { lineStyle: { color: "#e2e8f0" } } },
+        series: metrics.slice(0, 3).map((metric) => ({
+          name: metric.label,
+          type: "line",
+          smooth: true,
+          symbolSize: 7,
+          lineStyle: { width: 3 },
+          areaStyle: { opacity: 0.08 },
+          data: trendRows.map((row) => numberValue(row[metric.key])),
+        })),
+      }, true);
+    } else {
+      const pieData = metrics
+        .map((metric) => ({
+          name: metric.label,
+          value: Number((chartRows.reduce((sum, row) => sum + numberValue(row[metric.key]), 0) / Math.max(1, chartRows.length)).toFixed(2)),
+        }))
+        .filter((item) => item.value > 0);
+      chart.setOption({
+        ...baseOption,
+        legend: { orient: "vertical", right: 0, top: "middle", textStyle: { color: "#64748b", fontSize: 11 } },
+        series: [{
+          name: title,
+          type: "pie",
+          radius: ["45%", "72%"],
+          center: ["38%", "52%"],
+          avoidLabelOverlap: true,
+          label: { color: "#334155", formatter: "{b}\n{d}%" },
+          labelLine: { lineStyle: { color: "#94a3b8" } },
+          data: pieData,
+        }],
+      }, true);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+      chart.dispose();
+    };
+  }, [emptyText, kind, rows, title]);
+
+  if (!rows.length) {
+    return <div className="flex h-[260px] items-center justify-center text-sm text-slate-500">{emptyText}</div>;
+  }
+
+  return <div ref={chartRef} className="h-[260px] w-full" role="img" aria-label={title} />;
+}
 function RegionalChinaEChart({
   chinaMap,
   chinaMapFailed,
@@ -387,8 +494,7 @@ export function DataAnalysisSection() {
   const nutritionRows = useMemo(() => asArray(nutritionPayload), [nutritionPayload]);
   const totalNutrition = listCount(nutritionPayload, nutritionRows.length);
   const totalPages = Math.max(1, Math.ceil(totalNutrition / pageSize));
-  const topNutrition = nutritionRows.slice(0, 8);
-  const maxOil = Math.max(1, ...topNutrition.map((row) => numberValue(row.oil_content)));
+  const nutritionChartRows = asArray(visuals.nutrition).length ? asArray(visuals.nutrition) : nutritionRows;
   const heatRows = asArray(visuals.gene_expression).slice(0, 40);
   const expressionMatrix = asArray(visuals.expression_matrix).length ? asArray(visuals.expression_matrix) : fallbackExpressionMatrix;
   const expressionTissues = Array.isArray(visuals.expression_tissues) && visuals.expression_tissues.length ? visuals.expression_tissues as string[] : fallbackTissues;
@@ -398,12 +504,12 @@ export function DataAnalysisSection() {
     ...heatRows.map((row) => numberValue(row.expression_value || row.tpm || row.fpkm)),
   );
   const regionalFeatureSites = asArray(visuals.region_map).slice(0, 50);
-  const network = asArray(visuals.network).slice(0, 12);
-  const proteinNodes = (asArray(visuals.protein_nodes).length ? asArray(visuals.protein_nodes) : fallbackProteinNodes).slice(0, 10);
-  const proteinEdges = (asArray(visuals.protein_edges).length ? asArray(visuals.protein_edges) : fallbackProteinEdges).slice(0, 16);
+  const network = asArray(visuals.network).slice(0, 24);
+  const proteinNodes = asArray(visuals.protein_nodes).slice(0, 16);
+  const proteinEdges = (network.length ? network : asArray(visuals.protein_edges)).slice(0, 24);
   const renderedProteinNodes = proteinNodes.length
     ? proteinNodes
-    : Array.from(new Set(network.flatMap((edge) => [edge.source, edge.target]).filter(Boolean))).slice(0, 10).map((id, index) => ({ id, label: id, score: 80 - index * 3 }));
+    : Array.from(new Set(proteinEdges.flatMap((edge) => [edge.source, edge.target]).filter(Boolean))).slice(0, 16).map((id, index) => ({ id, label: id, score: 80 - index * 3 }));
   const proteinNodePositions = renderedProteinNodes.map((node, index) => {
     const angle = (Math.PI * 2 * index) / Math.max(1, renderedProteinNodes.length) - Math.PI / 2;
     return {
@@ -456,17 +562,21 @@ export function DataAnalysisSection() {
         </div>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[0.82fr_1.18fr]">
-        <Panel title={t("research.sections.nutritionChart")} icon={<BarChart3 className="h-5 w-5" />} tone="soft">
-          <div className="space-y-4">
-            {topNutrition.map((row, index) => {
-              const width = Math.max(8, Math.round((numberValue(row.oil_content) / maxOil) * 100));
-              return <div key={`bar-${row.id}-${index}`}><div className="mb-1 flex justify-between gap-4 text-xs text-slate-500"><span className="truncate">{cleanText(row.variety_code || row.variety_name || row.sample_code, varietyFallback)}</span><span>{row.oil_content ?? 0}{t("research.units.percent")}</span></div><div className="h-2.5 rounded-full bg-white/80"><div className="h-2.5 rounded-full" style={{ width: `${width}%`, backgroundColor: cropConfig.accent }} /></div></div>;
-            })}
-            {!topNutrition.length && <div className="py-8 text-center text-sm text-slate-500">{t("research.noResults")}</div>}
-          </div>
+      <div className="grid gap-6 xl:grid-cols-3">
+        <Panel title={t("research.sections.nutritionDistribution")} icon={<BarChart3 className="h-5 w-5" />} tone="soft">
+          <NutritionEChart kind="bar" rows={nutritionChartRows} title={t("research.sections.nutritionDistribution")} emptyText={t("research.noResults")} />
         </Panel>
 
+        <Panel title={t("research.sections.nutritionTrend")} icon={<LineChart className="h-5 w-5" />} tone="soft">
+          <NutritionEChart kind="line" rows={nutritionChartRows} title={t("research.sections.nutritionTrend")} emptyText={t("research.noResults")} />
+        </Panel>
+
+        <Panel title={t("research.sections.nutritionComposition")} icon={<PieChart className="h-5 w-5" />} tone="soft">
+          <NutritionEChart kind="pie" rows={nutritionChartRows} title={t("research.sections.nutritionComposition")} emptyText={t("research.noResults")} />
+        </Panel>
+      </div>
+
+      <div className="grid gap-6">
         <Panel title={t("research.sections.nutritionMatrix")} icon={<Table2 className="h-5 w-5" />}>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
             <span>{t("research.showing", { shown: nutritionRows.length, total: totalNutrition })}</span>
@@ -676,7 +786,7 @@ export function DataAnalysisSection() {
           <Panel title={t("research.sections.proteinNetwork")} icon={<Network className="h-5 w-5" />}>
             <div className="relative min-h-[390px] overflow-hidden rounded-2xl bg-slate-50">
               <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                {(proteinEdges.length ? proteinEdges : network).map((edge, index) => {
+                {proteinEdges.map((edge, index) => {
                   const source = proteinPositionById.get(String(edge.source));
                   const target = proteinPositionById.get(String(edge.target));
                   if (!source || !target) return null;

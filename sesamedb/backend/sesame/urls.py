@@ -21,6 +21,8 @@ urlpatterns = [
     
     path('genes/', views.GeneView.as_view(), name='gene-list'),
     path('genes/<int:pk>/', views.GeneDetailView.as_view(), name='gene-detail'),
+    path('gene-associations/', views.GeneAssociationView.as_view(), name='gene-association-list'),
+    path('gene-associations/<int:pk>/', views.GeneAssociationDetailView.as_view(), name='gene-association-detail'),
     
     path('gene-expressions/', views.GeneExpressionView.as_view(), name='gene-expression-list'),
     path('gene-expressions/<int:pk>/', views.GeneExpressionDetailView.as_view(), name='gene-expression-detail'),
@@ -31,6 +33,17 @@ urlpatterns = [
     path('regional-map-sites/<int:pk>/', views.RegionalMapSiteDetailView.as_view(), name='regional-map-site-detail'),
     path('regional-environment-values/', views.RegionalEnvironmentValueView.as_view(), name='regional-environment-value-list'),
     path('regional-environment-values/<int:pk>/', views.RegionalEnvironmentValueDetailView.as_view(), name='regional-environment-value-detail'),
+    path('marker-loci/', views.MarkerLocusView.as_view(), name='marker-locus-list'),
+    path('marker-loci/<int:pk>/', views.MarkerLocusDetailView.as_view(), name='marker-locus-detail'),
+    path('molecular-fingerprints/', views.MolecularFingerprintView.as_view(), name='molecular-fingerprint-list'),
+    path('molecular-fingerprints/<int:pk>/', views.MolecularFingerprintDetailView.as_view(), name='molecular-fingerprint-detail'),
+    path('sequencing-data/', views.SequencingDataView.as_view(), name='sequencing-data-list'),
+    path('sequencing-data/<int:pk>/', views.SequencingDataDetailView.as_view(), name='sequencing-data-detail'),
+    path('germplasm-resources/', views.GermplasmResourceView.as_view(), name='germplasm-resource-list'),
+    path('germplasm-resources/<int:pk>/', views.GermplasmResourceDetailView.as_view(), name='germplasm-resource-detail'),
+    path('genetic-diversity-analyses/', views.GeneticDiversityAnalysisView.as_view(), name='genetic-diversity-analysis-list'),
+    path('genetic-diversity-analyses/<int:pk>/', views.GeneticDiversityAnalysisDetailView.as_view(), name='genetic-diversity-analysis-detail'),
+    path('batch/<str:entity>/', views.BatchCreateView.as_view(), name='batch-create'),
     
     path('institutions/', views.InstitutionView.as_view(), name='institution-list'),
     path('institutions/<int:pk>/', views.InstitutionDetailView.as_view(), name='institution-detail'),
@@ -41,7 +54,9 @@ urlpatterns = [
     path('news/', views.NewsView.as_view(), name='news-list'),
     path('news/<int:pk>/', views.NewsDetailView.as_view(), name='news-detail'),
     path('news/scrolling/', views.ScrollingNewsView.as_view(), name='scrolling-news'),
+    path('event-registrations/', views.EventRegistrationView.as_view(), name='event-registration-list'),
 
     path('changelogs/', views.ChangelogView.as_view(), name='changelog-list'),
     path('changelogs/<int:pk>/', views.ChangelogDetailView.as_view(), name='changelog-detail'),
 ]
+

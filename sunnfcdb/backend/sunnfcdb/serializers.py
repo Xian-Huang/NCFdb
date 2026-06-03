@@ -2,32 +2,41 @@ import re
 
 from rest_framework import serializers
 from django.conf import settings
-from .models import DownloadFile, News, Changelog, NutritionData, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, RegionalMapSite, RegionalEnvironmentValue, Institution, Announcement, Nutrition
+from .models import (
+    DownloadFile, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, RegionalMapSite,
+    RegionalEnvironmentValue, Institution, Announcement, News, Changelog, NutritionData,
+    EventRegistration, GeneAssociation, MarkerLocus, MolecularFingerprint, SequencingData,
+    GermplasmResource, GeneticDiversityAnalysis
+)
 
 DEFAULT_NEWS_IMAGE = "news_images/default-news.png"
 NEWS_IMAGE_POOL = [
     "news_images/sunn-database-update.png",
     "news_images/sunn-genome-release.png",
+    "news_images/sunn-nutrition-release.png",
     "news_images/sunn-field-network.png",
     "news_images/sunn-workshop.png",
-    "news_images/sunn-nutrition-release.png",
 ]
 NEWS_IMAGE_BY_TITLE = {
-    "sunn database update": "news_images/sunn-database-update.png",
+    "向日葵多组学数据库": "news_images/sunn-database-update.png",
+    "数据库": "news_images/sunn-database-update.png",
+    "核心种质资源": "news_images/sunn-field-network.png",
+    "种质资源": "news_images/sunn-field-network.png",
+    "候选基因": "news_images/sunn-genome-release.png",
+    "基因组": "news_images/sunn-genome-release.png",
+    "环境因子": "news_images/sunn-field-network.png",
+    "表型": "news_images/sunn-field-network.png",
+    "下载中心": "news_images/sunn-database-update.png",
+    "hplc": "news_images/sunn-nutrition-release.png",
+    "营养": "news_images/sunn-nutrition-release.png",
+    "会议": "news_images/sunn-workshop.png",
+    "培训": "news_images/sunn-workshop.png",
+    "initial release": "news_images/default-news.png",
+    "new features and improvements": "news_images/sunn-database-update.png",
+    "scheduled maintenance": "news_images/sunn-workshop.png",
+    "data submission guidelines": "news_images/sunn-workshop.png",
     "database update": "news_images/sunn-database-update.png",
-    "data curation workshop": "news_images/sunn-workshop.png",
-    "data curation": "news_images/sunn-workshop.png",
-    "workshop": "news_images/sunn-workshop.png",
-    "genome release": "news_images/sunn-genome-release.png",
-    "genome": "news_images/sunn-genome-release.png",
-    "field network": "news_images/sunn-field-network.png",
-    "field": "news_images/sunn-field-network.png",
-    "regional": "news_images/sunn-field-network.png",
-    "nutrition release": "news_images/sunn-nutrition-release.png",
-    "nutrition": "news_images/sunn-nutrition-release.png",
-    "metabolome": "news_images/sunn-nutrition-release.png",
 }
-
 NEWS_CONTENT_MIN_WORDS = 600
 NEWS_WORD_PATTERN = re.compile(r"\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b")
 NEWS_CJK_PATTERN = re.compile(r"[\u3400-\u9fff]")
@@ -66,15 +75,159 @@ def fallback_news_image(obj):
     return DEFAULT_NEWS_IMAGE
 
 class DownloadFileSerializer(serializers.ModelSerializer):
-    file_url = serializers.SerializerMethodField("get_file_url",read_only=True)
-    
-    def get_file_url(self, obj):
-        return obj.file_url
-    
     class Meta:
         model = DownloadFile
         fields = '__all__'
-        read_only_fields = ['file_url']
+
+class RegionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Region
+        fields = '__all__'
+
+class VarietySerializer(serializers.ModelSerializer):
+    region_name = serializers.CharField(source='region.name', read_only=True)
+    class Meta:
+        model = Variety
+        fields = '__all__'
+
+class GeneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Gene
+        fields = '__all__'
+
+class GeneExpressionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GeneExpression
+        fields = '__all__'
+
+
+class GeneAssociationSerializer(serializers.ModelSerializer):
+    source_gene_id = serializers.CharField(source='source_gene.gene_id', read_only=True)
+    source_gene_name = serializers.CharField(source='source_gene.name', read_only=True)
+    target_gene_id = serializers.CharField(source='target_gene.gene_id', read_only=True)
+    target_gene_name = serializers.CharField(source='target_gene.name', read_only=True)
+    source = serializers.SerializerMethodField()
+    target = serializers.SerializerMethodField()
+    label = serializers.SerializerMethodField()
+    weight = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GeneAssociation
+        fields = '__all__'
+        extra_kwargs = {
+            'target_trait': {'required': False, 'allow_blank': True, 'allow_null': True},
+            'target_gene': {'required': False, 'allow_null': True},
+            'p_value': {'required': False, 'allow_null': True},
+            'effect_size': {'required': False, 'allow_null': True},
+            'evidence_source': {'required': False, 'allow_blank': True, 'allow_null': True},
+            'description': {'required': False, 'allow_blank': True, 'allow_null': True},
+        }
+
+    def get_source(self, obj):
+        return obj.source_gene.gene_id
+
+    def get_target(self, obj):
+        return obj.target_gene.gene_id if obj.target_gene else obj.target_trait
+
+    def get_label(self, obj):
+        return obj.get_association_type_display()
+
+    def get_weight(self, obj):
+        return float(obj.confidence_score or 0)
+
+    def validate(self, attrs):
+        target_gene = attrs.get('target_gene')
+        target_trait = attrs.get('target_trait')
+        if not target_gene and not str(target_trait or '').strip():
+            raise serializers.ValidationError({'target_trait': '目标基因和目标性状至少填写一项。'})
+        return attrs
+
+
+class EnvironmentalFactorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EnvironmentalFactor
+        fields = '__all__'
+
+
+class RegionalEnvironmentValueSerializer(serializers.ModelSerializer):
+    site_name = serializers.CharField(source='site.name', read_only=True)
+    factor_name = serializers.CharField(source='factor.name', read_only=True)
+    factor_code = serializers.CharField(source='factor.code', read_only=True)
+    factor_unit = serializers.CharField(source='factor.unit', read_only=True)
+    factor_category = serializers.CharField(source='factor.category', read_only=True)
+
+    class Meta:
+        model = RegionalEnvironmentValue
+        fields = '__all__'
+
+
+class RegionalMapSiteSerializer(serializers.ModelSerializer):
+    region_name = serializers.CharField(source='region.name', read_only=True)
+    region_code = serializers.CharField(source='region.code', read_only=True)
+    variety_names = serializers.SerializerMethodField()
+    environment_values = RegionalEnvironmentValueSerializer(many=True, read_only=True)
+
+    def get_variety_names(self, obj):
+        return [variety.name for variety in obj.varieties.all()]
+
+    class Meta:
+        model = RegionalMapSite
+        fields = '__all__'
+
+
+class MarkerLocusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MarkerLocus
+        fields = '__all__'
+
+
+class MolecularFingerprintSerializer(serializers.ModelSerializer):
+    marker = serializers.SlugRelatedField(slug_field='marker_id', queryset=MarkerLocus.objects.all())
+    variety_name = serializers.CharField(source='variety.name', read_only=True)
+    variety_code = serializers.CharField(source='variety.variety_code', read_only=True)
+    marker_name = serializers.CharField(source='marker.marker_name', read_only=True)
+    marker_type = serializers.CharField(source='marker.marker_type', read_only=True)
+    chromosome = serializers.CharField(source='marker.chromosome', read_only=True)
+    marker_id = serializers.CharField(source='marker.marker_id', read_only=True)
+
+    class Meta:
+        model = MolecularFingerprint
+        fields = '__all__'
+
+
+class SequencingDataSerializer(serializers.ModelSerializer):
+    variety_name = serializers.CharField(source='variety.name', read_only=True)
+    variety_code = serializers.CharField(source='variety.variety_code', read_only=True)
+
+    class Meta:
+        model = SequencingData
+        fields = '__all__'
+
+
+class GermplasmResourceSerializer(serializers.ModelSerializer):
+    variety_name = serializers.CharField(source='variety.name', read_only=True)
+    variety_code = serializers.CharField(source='variety.variety_code', read_only=True)
+
+    class Meta:
+        model = GermplasmResource
+        fields = '__all__'
+
+
+class GeneticDiversityAnalysisSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GeneticDiversityAnalysis
+        fields = '__all__'
+
+
+class InstitutionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Institution
+        fields = '__all__'
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Announcement
+        fields = '__all__'
 
 class NewsSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
@@ -130,80 +283,6 @@ class ChangelogSerializer(serializers.ModelSerializer):
         model = Changelog
         fields = '__all__'
 
-class NutritionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Nutrition
-        fields = '__all__'
-
-class RegionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Region
-        fields = '__all__'
-
-class VarietySerializer(serializers.ModelSerializer):
-    region_name = serializers.CharField(source='region.name', read_only=True)
-    class Meta:
-        model = Variety
-        fields = '__all__'
-
-class GeneSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Gene
-        fields = '__all__'
-
-class GeneExpressionSerializer(serializers.ModelSerializer):
-    gene_name = serializers.CharField(source='gene.name', read_only=True)
-    variety_name = serializers.CharField(source='variety.name', read_only=True)
-    
-    class Meta:
-        model = GeneExpression
-        fields = '__all__'
-        extra_kwargs = {
-            'stage': {'required': False, 'allow_blank': True, 'allow_null': True},
-            'fpkm': {'required': False, 'allow_null': True},
-            'tpm': {'required': False, 'allow_null': True},
-            'sample_id': {'required': False, 'allow_blank': True, 'allow_null': True},
-        }
-
-class EnvironmentalFactorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EnvironmentalFactor
-        fields = '__all__'
-
-class RegionalEnvironmentValueSerializer(serializers.ModelSerializer):
-    site_name = serializers.CharField(source='site.name', read_only=True)
-    factor_name = serializers.CharField(source='factor.name', read_only=True)
-    factor_code = serializers.CharField(source='factor.code', read_only=True)
-    factor_unit = serializers.CharField(source='factor.unit', read_only=True)
-    factor_category = serializers.CharField(source='factor.category', read_only=True)
-
-    class Meta:
-        model = RegionalEnvironmentValue
-        fields = '__all__'
-
-class RegionalMapSiteSerializer(serializers.ModelSerializer):
-    region_name = serializers.CharField(source='region.name', read_only=True)
-    region_code = serializers.CharField(source='region.code', read_only=True)
-    variety_names = serializers.SerializerMethodField()
-    environment_values = RegionalEnvironmentValueSerializer(many=True, read_only=True)
-
-    def get_variety_names(self, obj):
-        return [variety.name for variety in obj.varieties.all()]
-
-    class Meta:
-        model = RegionalMapSite
-        fields = '__all__'
-
-class InstitutionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Institution
-        fields = '__all__'
-
-class AnnouncementSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Announcement
-        fields = '__all__'
-
 
 class NutritionDataSerializer(serializers.ModelSerializer):
     variety_name = serializers.CharField(source='variety.name', read_only=True)
@@ -212,3 +291,26 @@ class NutritionDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = NutritionData
         fields = '__all__'
+
+
+class EventRegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EventRegistration
+        fields = '__all__'
+        read_only_fields = ['status', 'create_time', 'update_time']
+
+    def validate_participant_count(self, value):
+        if value < 1:
+            raise serializers.ValidationError("参会人数至少为 1 人。")
+        if value > 20:
+            raise serializers.ValidationError("单次登记人数不能超过 20 人。")
+        return value
+
+    def validate(self, attrs):
+        required_fields = ["event_id", "event_title", "name", "institution", "email"]
+        for field in required_fields:
+            if not str(attrs.get(field, "")).strip():
+                raise serializers.ValidationError({field: "该字段不能为空。"})
+        return attrs
+
+

@@ -5,7 +5,7 @@ import {
   User, Plus, Edit, Trash2, X, Shield, LogOut,
   FileText, MapPin, Leaf, Dna, Building, Bell,
   Search, RefreshCw, Download, Beaker, Save, Loader2,
-  AlertCircle, Image as ImageIcon, ChevronDown
+  AlertCircle, Image as ImageIcon, ChevronDown, Network
 } from "lucide-react";
 import {
   fetchUsers, createUser, updateUser, deleteUser,
@@ -15,6 +15,7 @@ import {
   fetchVarieties, createVariety, updateVariety, deleteVariety,
   fetchGenes, createGene, updateGene, deleteGene,
   fetchGeneExpressions, createGeneExpression, updateGeneExpression, deleteGeneExpression,
+  fetchGeneAssociations, createGeneAssociation, updateGeneAssociation, deleteGeneAssociation,
   fetchEnvironmentalFactors, createEnvironmentalFactor, updateEnvironmentalFactor, deleteEnvironmentalFactor,
   fetchRegionalMapSites, createRegionalMapSite, updateRegionalMapSite, deleteRegionalMapSite,
   fetchRegionalEnvironmentValues, createRegionalEnvironmentValue, updateRegionalEnvironmentValue, deleteRegionalEnvironmentValue,
@@ -29,7 +30,7 @@ import {
 } from "../../apis/data_apis";
 import { cropConfig } from "../cropConfig";
 
-type DataType = "users" | "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "regional_map_sites" | "regional_environment_values" | "nutrition" | "institutions" | "announcements" | "downloads" | "nutrition_data";
+type DataType = "users" | "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_associations" | "gene_expressions" | "environmental_factors" | "regional_map_sites" | "regional_environment_values" | "nutrition" | "institutions" | "announcements" | "downloads" | "nutrition_data";
 
 const NEWS_CONTENT_MIN_WORDS = 600;
 const countEnglishWords = (value: unknown) => String(value ?? "").match(/\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b/g)?.length ?? 0;
@@ -49,6 +50,7 @@ const getTotalCount = (value: any, fallback = 0) => {
 const readOnlyFormFields = new Set([
   "region_name", "region_code", "variety_name", "variety_names", "gene_name", "institution_name",
   "site_name", "factor_name", "factor_code", "factor_unit", "factor_category", "environment_values",
+  "source_gene_id", "source_gene_name", "target_gene_id", "target_gene_name", "source", "target", "label", "weight",
 ]);
 
 interface UserData {
@@ -110,6 +112,24 @@ interface GeneData {
   chromosome: string;
   gene_type: string;
   pathway: string;
+}
+
+
+interface GeneAssociationData {
+  id: number;
+  source_gene: number;
+  source_gene_id?: string;
+  source_gene_name?: string;
+  target_gene: number | null;
+  target_gene_id?: string;
+  target_gene_name?: string;
+  target_trait: string;
+  association_type: string;
+  confidence_score: number;
+  p_value: number | null;
+  effect_size: number | null;
+  evidence_source: string;
+  is_active: boolean;
 }
 
 interface InstitutionData {
@@ -184,6 +204,7 @@ const dataTypeConfig: Record<DataType, { title: string; icon: React.ElementType;
   regions: { title: "Regions", icon: MapPin, endpoint: "regions/" },
   varieties: { title: "Varieties", icon: Leaf, endpoint: "varieties/" },
   genes: { title: "Genes", icon: Dna, endpoint: "genes/" },
+  gene_associations: { title: "Gene Associations", icon: Network, endpoint: "gene-associations/" },
   gene_expressions: { title: "Gene Expressions", icon: Dna, endpoint: "gene-expressions/" },
   environmental_factors: { title: "Environmental Factors", icon: Beaker, endpoint: "environmental-factors/" },
   regional_map_sites: { title: "Regional Map Sites", icon: MapPin, endpoint: "regional-map-sites/" },
@@ -250,7 +271,7 @@ export function Admin() {
     setActiveType(type);
     setCurrentPage(1);
   };
-  const needsForeignKeyOptions = (type: DataType = activeType) => ["varieties", "gene_expressions", "regional_map_sites", "regional_environment_values", "nutrition_data"].includes(type);
+  const needsForeignKeyOptions = (type: DataType = activeType) => ["varieties", "gene_associations", "gene_expressions", "regional_map_sites", "regional_environment_values", "nutrition_data"].includes(type);
 
   const fetchForeignKeyOptions = async () => {
     if (foreignKeysLoaded) return;
@@ -301,6 +322,9 @@ export function Admin() {
           break;
         case "genes":
           result = await fetchGenes({ page: currentPage, pageSize, search: searchQuery });
+          break;
+        case "gene_associations":
+          result = await fetchGeneAssociations({ page: currentPage, pageSize, search: searchQuery });
           break;
         case "gene_expressions":
           result = await fetchGeneExpressions({ page: currentPage, pageSize, search: searchQuery });
@@ -381,6 +405,8 @@ export function Admin() {
         return { name: "", variety_code: "", region: null, seed_color: "", oil_content: null, maturity_days: null, yield_per_hectare: null, height: null, description: "" };
       case "genes":
         return { gene_id: "", name: "", symbol: "", chromosome: "", start_position: null, end_position: null, strand: "", gene_type: "", description: "", function: "", pathway: "" };
+      case "gene_associations":
+        return { source_gene: null, target_gene: null, target_trait: "", association_type: "coexpression", confidence_score: 0.8, p_value: null, effect_size: null, evidence_source: "", description: "", is_active: true };
       case "gene_expressions":
         return { gene: null, variety: null, tissue: "", stage: "", expression_value: null, fpkm: null, tpm: null, sample_id: "" };
       case "environmental_factors":
@@ -507,6 +533,13 @@ export function Admin() {
             await createGene(submitData);
           }
           break;
+        case "gene_associations":
+          if (editingItem) {
+            await updateGeneAssociation(editingItem.id, submitData);
+          } else {
+            await createGeneAssociation(submitData);
+          }
+          break;
         case "gene_expressions":
           if (editingItem) {
             await updateGeneExpression(editingItem.id, submitData);
@@ -598,6 +631,9 @@ export function Admin() {
           break;
         case "genes":
           await deleteGene(id);
+          break;
+        case "gene_associations":
+          await deleteGeneAssociation(id);
           break;
         case "gene_expressions":
           await deleteGeneExpression(id);
@@ -954,6 +990,41 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.release_date}</td>
                   <td className="px-6 py-4">
                     {item.is_published ? <span className="px-2 py-1 text-xs bg-amber-100 text-amber-800 rounded-full">{statusText("published")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("draft")}</span>}
+                  </td>
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+
+      case "gene_associations":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("source_gene")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("target")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("association_type")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("confidence_score")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("evidence_source")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("status")}</th>
+                <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as GeneAssociationData[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.source_gene_id || genes.find(g => g.id === item.source_gene)?.gene_id || item.source_gene}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.target_gene_id || item.target_trait || item.target_gene || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.association_type}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.confidence_score}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.evidence_source || "-"}</td>
+                  <td className="px-6 py-4">
+                    {item.is_active ? <span className="px-2 py-1 text-xs bg-amber-100 text-amber-800 rounded-full">{statusText("visible")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("hidden")}</span>}
                   </td>
                   <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
                     <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
@@ -1458,6 +1529,47 @@ export function Admin() {
                         ))}
                       </select>
                       <Beaker className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                      <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
+                    </div>
+                  );
+
+                } else if (key === 'source_gene' || key === 'target_gene') {
+                  return (
+                    <div className="relative">
+                      <select
+                        id={key}
+                        value={formData[key] ?? ''}
+                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value === '' ? null : parseInt(e.target.value) })}
+                        className={selectClass}
+                      >
+                        <option value="">{t("admin.placeholders.selectGene")}</option>
+                        {genes.map((gene) => (
+                          <option key={gene.id} value={gene.id}>
+                            {gene.gene_id} - {gene.name}
+                          </option>
+                        ))}
+                      </select>
+                      <Dna className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                      <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
+                    </div>
+                  );
+                } else if (key === 'association_type') {
+                  return (
+                    <div className="relative">
+                      <select
+                        id={key}
+                        value={formData[key] || 'coexpression'}
+                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                        className={selectClass}
+                      >
+                        <option value="coexpression">{t("admin.options.coexpression")}</option>
+                        <option value="gwas">{t("admin.options.gwas")}</option>
+                        <option value="pathway">{t("admin.options.pathway")}</option>
+                        <option value="ppi">{t("admin.options.ppi")}</option>
+                        <option value="literature">{t("admin.options.literature")}</option>
+                        <option value="trait">{t("admin.options.traitAssociation")}</option>
+                      </select>
+                      <Network className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" />
                       <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-slate-400" />
                     </div>
                   );

@@ -160,7 +160,7 @@ export function Home() {
             <div className="relative overflow-hidden rounded-[2rem] border border-white bg-white p-3 shadow-2xl shadow-purple-100">
               <div className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem]">
                 <ImageWithFallback
-                  src="/hero-bg.jpg"
+                  src={cropConfig.heroImage}
                   alt={t("home.context.imageAlt")}
                   className="h-full w-full object-cover"
                 />
@@ -329,7 +329,7 @@ export function Home() {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:px-8">
           <div className="relative overflow-hidden rounded-[1.75rem]">
             <ImageWithFallback
-              src="/hero-bg.jpg"
+              src={cropConfig.heroImage}
               alt={t("home.context.fieldAlt")}
               className="h-full min-h-[300px] w-full object-cover"
             />

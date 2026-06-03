@@ -9,6 +9,12 @@ export const cropConfig = {
   traitFocus: 'oil quality, salt tolerance and broomrape resistance',
   geneCount: '52,232',
   fieldNetwork: 'Inner Mongolia and Xinjiang field stations',
+  contactProfile: {
+    name: '禹晓',
+    email: 'yuxiao@zzuli.edu.cn',
+    institution: '郑州轻工业大学',
+    address: '河南省郑州市高新技术开发区科学大道136号',
+  },
   heroImage: '/images/sunflower-field-research.webp',
   pageImages: {
     news: '/images/sunflower-field-research.webp',

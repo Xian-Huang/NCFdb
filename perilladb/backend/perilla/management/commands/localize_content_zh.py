@@ -8,8 +8,8 @@ CROP_NAME = "紫苏"
 DATABASE = "PerillaDB"
 NEWS_IMAGES = [
     "news_images/perilla-genome-release.png",
-    "news_images/perilla-nutrition-release.png",
-    "news_images/perilla-field-trial.png",
+    "news_images/perilla-metabolite-lab.png",
+    "news_images/perilla-cold-climate-variety.png",
 ]
 NEWS_TOPICS = [
     ("高油分紫苏育种材料完成入库", "高油分材料、脂肪酸组成和区域来源"),

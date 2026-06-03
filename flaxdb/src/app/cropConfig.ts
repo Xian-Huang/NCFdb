@@ -9,6 +9,12 @@ export const cropConfig = {
   traitFocus: 'ALA content, fiber quality and drought adaptation',
   geneCount: '31,522',
   fieldNetwork: 'Heilongjiang, Inner Mongolia and Canadian prairie panels',
+  contactProfile: {
+    name: '禹晓',
+    email: 'yuxiao@zzuli.edu.cn',
+    institution: '郑州轻工业大学',
+    address: '河南省郑州市高新技术开发区科学大道136号',
+  },
   heroImage: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1600&q=80',
   pageImages: {
     news: 'https://images.unsplash.com/photo-1492496913980-501348b61469?auto=format&fit=crop&w=1600&q=80',

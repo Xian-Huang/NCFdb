@@ -60,7 +60,7 @@ import {
   deletePerillaRegionalEnvironmentValue,
 } from "../../apis/data_apis";
 
-type DataType = "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "regional_map_sites" | "regional_environment_values" | "institutions" | "announcements" | "downloads" | "nutrition_data";
+type DataType = "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_associations" | "gene_expressions" | "environmental_factors" | "regional_map_sites" | "regional_environment_values" | "institutions" | "announcements" | "downloads" | "nutrition_data";
 
 const NEWS_CONTENT_MIN_WORDS = 600;
 const countEnglishWords = (value: unknown) => String(value ?? "").match(/\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b/g)?.length ?? 0;
@@ -124,6 +124,24 @@ interface GeneData {
   chromosome: string;
   gene_type: string;
   pathway: string;
+}
+
+
+interface GeneAssociationData {
+  id: number;
+  source_gene: number;
+  source_gene_id?: string;
+  source_gene_name?: string;
+  target_gene: number | null;
+  target_gene_id?: string;
+  target_gene_name?: string;
+  target_trait: string;
+  association_type: string;
+  confidence_score: number;
+  p_value: number | null;
+  effect_size: number | null;
+  evidence_source: string;
+  is_active: boolean;
 }
 
 interface InstitutionData {
@@ -313,7 +331,7 @@ export function Admin() {
     setActiveType(type);
     setCurrentPage(1);
   };
-  const needsForeignKeyData = (type: DataType = activeType) => ["varieties", "gene_expressions", "nutrition_data", "regional_map_sites", "regional_environment_values"].includes(type);
+  const needsForeignKeyData = (type: DataType = activeType) => ["varieties", "gene_associations", "gene_expressions", "nutrition_data", "regional_map_sites", "regional_environment_values"].includes(type);
 
   const fetchForeignKeyData = async () => {
     if (foreignKeysLoaded) return;
@@ -387,6 +405,8 @@ export function Admin() {
         return { name: "", variety_code: "", region: null, seed_color: "", oil_content: null, maturity_days: null, yield_per_hectare: null, height: null, description: "" };
       case "genes":
         return { gene_id: "", name: "", symbol: "", chromosome: "", start_position: null, end_position: null, strand: "", gene_type: "", description: "", function: "", pathway: "" };
+      case "gene_associations":
+        return { source_gene: null, target_gene: null, target_trait: "", association_type: "coexpression", confidence_score: 0.8, p_value: null, effect_size: null, evidence_source: "", description: "", is_active: true };
       case "gene_expressions":
         return { gene: null, variety: null, tissue: "", stage: "", expression_value: null, fpkm: null, tpm: null, sample_id: "" };
       case "environmental_factors":

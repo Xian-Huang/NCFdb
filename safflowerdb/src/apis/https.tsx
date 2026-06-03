@@ -17,7 +17,8 @@ function getCSRFToken() {
 }
 
 export async function fetchRequest(endpoint: string, method: string, body?: any, autoAddUrl?: boolean) {
-  let url = autoAddUrl ? `${API_BASE_URL}${endpoint}` : `${endpoint}`;
+  let url = autoAddUrl ? `${API_BASE_URL}${endpoint.replace(/^\/+/, '')}` : `${endpoint}`;
+  console.log(url);
   const csrfToken = getCSRFToken();
   
   const headers: HeadersInit = {};
@@ -37,10 +38,7 @@ export async function fetchRequest(endpoint: string, method: string, body?: any,
   
   if (body) {
     if (method.toUpperCase() === 'GET') {
-      const params = new URLSearchParams(body).toString();
-      if (params) {
-        url = `${url}?${params}`;
-      }
+      url = `${url}?${new URLSearchParams(body).toString()}`;
     } else if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase())) {
       // 检查是否包含文件
       const hasFile = Object.values(body).some(value => value instanceof File);

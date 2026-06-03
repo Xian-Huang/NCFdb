@@ -4,6 +4,9 @@ import { useTranslation } from "react-i18next";
 import { fetchDownloadFiles } from "../../apis/data_apis";
 import { cropConfig } from "../cropConfig";
 import { DataAnalysisSection } from "./DataAnalysisSection";
+import { GlobalSearchSection } from "./data/GlobalSearchSection";
+import { HplcDatabaseSection } from "./data/HplcDatabaseSection";
+import { MolecularFingerprintSection } from "./data/MolecularFingerprintSection";
 
 const hasCjk = (value: unknown) => /[\u3400-\u9fff]/.test(String(value ?? ""));
 const cleanText = (value: unknown, fallback: string) => {
@@ -170,7 +173,13 @@ export function Data() {
         </aside>
       </section>
 
-      <DataAnalysisSection />
+      <GlobalSearchSection />
+      <HplcDatabaseSection />
+      <MolecularFingerprintSection />
+
+      <div id="research-analysis">
+        <DataAnalysisSection />
+      </div>
 
       <section className="border-t border-slate-200 pt-8">
         <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: cropConfig.accent }}>{t("data.interpretation.eyebrow")}</p>
@@ -187,3 +196,4 @@ export function Data() {
     </div>
   );
 }
+

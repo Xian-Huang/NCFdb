@@ -284,6 +284,24 @@ export const zh = {
     location: "地点",
     attendees: "预计参会人数",
     registerInterest: "登记参会意向",
+    registration: {
+      title: "登记参会意向",
+      close: "关闭登记表单",
+      name: "姓名",
+      institution: "单位/机构",
+      email: "邮箱",
+      phone: "电话",
+      mode: "参会方式",
+      modeUndecided: "待确定",
+      modeOnline: "线上参会",
+      modeOffline: "线下参会",
+      count: "参会人数",
+      note: "备注",
+      submit: "提交意向",
+      cancel: "取消",
+      success: "参会意向已提交，管理员会根据活动安排与您联系。",
+      error: "提交失败，请稍后重试。"
+    },
     notFound: "未找到活动",
     backList: "返回活动列表"
   },
@@ -391,9 +409,12 @@ export const zh = {
     sections: {
       nutritionMatrix: "营养数据矩阵",
       nutritionChart: "营养性状图表",
+      nutritionDistribution: "营养成分柱状分布图",
+      nutritionTrend: "营养成分趋势图",
+      nutritionComposition: "营养成分占比图",
       regionHeat: "区域分布",
       expressionHeat: "基因表达热图",
-      proteinNetwork: "蛋白互作网络",
+      proteinNetwork: "基因关联网络",
       institutions: "合作机构",
       regionalMap: "区域优势品种与环境因子地图",
       fingerprint: "分子指纹图谱框架"
@@ -546,6 +567,7 @@ export const zh = {
       regions: "地区",
       varieties: "品种",
       genes: "基因",
+      gene_associations: "基因关联",
       gene_expressions: "基因表达",
       environmental_factors: "环境因子",
       regional_map_sites: "区域地图点",
@@ -656,7 +678,16 @@ export const zh = {
       soil: "土壤",
       display_order: "展示顺序",
       value_min: "最小值",
-      value_max: "最大值"
+      value_max: "最大值",
+      evidence_source: "证据来源",
+      effect_size: "效应值",
+      p_value: "P 值",
+      confidence_score: "置信度",
+      association_type: "关联类型",
+      target_trait: "目标性状/通路",
+      target: "目标",
+      target_gene: "目标基因",
+      source_gene: "源基因"
     },
     status: {
       admin: "管理员",
@@ -722,7 +753,11 @@ export const zh = {
       markerDevelopment: "标记开发",
       qtlMapping: "QTL 定位",
       genomeEditing: "基因组编辑",
-      bioinformatics: "生物信息学"
+      bioinformatics: "生物信息学",
+      traitAssociation: "性状关联",
+      literature: "文献证据",
+      ppi: "蛋白互作",
+      gwas: "GWAS 关联"
     },
     validation: {
       wordsRequired: "{{count}} / {{min}} 个英文词；请用空行分隔段落。",
@@ -741,3 +776,4 @@ export const zh = {
     copyright: "© 2026 SunNCFdb - 向日葵营养成分与功能特征数据库"
   }
 };
+

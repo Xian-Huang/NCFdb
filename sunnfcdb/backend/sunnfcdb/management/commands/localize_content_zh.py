@@ -9,7 +9,7 @@ DATABASE = "SunnFCDB"
 NEWS_IMAGES = [
     "news_images/sunn-genome-release.png",
     "news_images/sunn-nutrition-release.png",
-    "news_images/sunn-field-trial.png",
+    "news_images/sunn-field-network.png",
 ]
 NEWS_TOPICS = [
     ("高油酸向日葵材料完成数据库登记", "高油酸材料、油分品质和区域来源"),

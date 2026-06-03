@@ -2,28 +2,41 @@ import re
 
 from rest_framework import serializers
 from django.conf import settings
-from .models import DownloadFile, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, RegionalMapSite, RegionalEnvironmentValue, Institution, Announcement, News, Changelog, NutritionData
+from .models import (
+    DownloadFile, Region, Variety, Gene, GeneExpression, EnvironmentalFactor, RegionalMapSite,
+    RegionalEnvironmentValue, Institution, Announcement, News, Changelog, NutritionData,
+    EventRegistration, GeneAssociation, MarkerLocus, MolecularFingerprint, SequencingData,
+    GermplasmResource, GeneticDiversityAnalysis
+)
 
 DEFAULT_NEWS_IMAGE = "news_images/default-news.png"
 NEWS_IMAGE_POOL = [
     "news_images/perilla-cold-climate-variety.png",
-    "news_images/perilla-symposium-2026.png",
     "news_images/perilla-genome-release.png",
     "news_images/perilla-metabolite-lab.png",
+    "news_images/perilla-symposium-2026.png",
+    "news_images/default-news.png",
 ]
 NEWS_IMAGE_BY_TITLE = {
-    "new high-oil perilla variety released": "news_images/perilla-cold-climate-variety.png",
-    "cold-climate": "news_images/perilla-cold-climate-variety.png",
-    "high-oil perilla": "news_images/perilla-cold-climate-variety.png",
-    "perilla variety": "news_images/perilla-cold-climate-variety.png",
-    "international perilla research symposium 2026": "news_images/perilla-symposium-2026.png",
-    "perilla research symposium": "news_images/perilla-symposium-2026.png",
-    "changchun": "news_images/perilla-symposium-2026.png",
-    "perilla genome sequence now available": "news_images/perilla-genome-release.png",
-    "perilla genome": "news_images/perilla-genome-release.png",
-    "initial release": "news_images/perilla-metabolite-lab.png",
-    "welcome to perilladb": "news_images/perilla-metabolite-lab.png",
-    "database update": "news_images/perilla-metabolite-lab.png",
+    "紫苏候选基因": "news_images/perilla-genome-release.png",
+    "候选基因": "news_images/perilla-genome-release.png",
+    "基因组": "news_images/perilla-genome-release.png",
+    "紫苏营养": "news_images/perilla-metabolite-lab.png",
+    "营养": "news_images/perilla-metabolite-lab.png",
+    "品质": "news_images/perilla-metabolite-lab.png",
+    "芳香成分": "news_images/perilla-metabolite-lab.png",
+    "功能成分": "news_images/perilla-metabolite-lab.png",
+    "下载中心": "news_images/perilla-cold-climate-variety.png",
+    "数据库": "news_images/perilla-cold-climate-variety.png",
+    "种质资源": "news_images/perilla-cold-climate-variety.png",
+    "会议": "news_images/perilla-symposium-2026.png",
+    "交流会": "news_images/perilla-symposium-2026.png",
+    "培训": "news_images/perilla-symposium-2026.png",
+    "initial release": "news_images/default-news.png",
+    "new features and improvements": "news_images/perilla-cold-climate-variety.png",
+    "scheduled maintenance": "news_images/perilla-symposium-2026.png",
+    "data submission guidelines": "news_images/perilla-symposium-2026.png",
+    "database update": "news_images/perilla-cold-climate-variety.png",
 }
 NEWS_CONTENT_MIN_WORDS = 600
 NEWS_WORD_PATTERN = re.compile(r"\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b")
@@ -88,6 +101,49 @@ class GeneExpressionSerializer(serializers.ModelSerializer):
         model = GeneExpression
         fields = '__all__'
 
+
+class GeneAssociationSerializer(serializers.ModelSerializer):
+    source_gene_id = serializers.CharField(source='source_gene.gene_id', read_only=True)
+    source_gene_name = serializers.CharField(source='source_gene.name', read_only=True)
+    target_gene_id = serializers.CharField(source='target_gene.gene_id', read_only=True)
+    target_gene_name = serializers.CharField(source='target_gene.name', read_only=True)
+    source = serializers.SerializerMethodField()
+    target = serializers.SerializerMethodField()
+    label = serializers.SerializerMethodField()
+    weight = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GeneAssociation
+        fields = '__all__'
+        extra_kwargs = {
+            'target_trait': {'required': False, 'allow_blank': True, 'allow_null': True},
+            'target_gene': {'required': False, 'allow_null': True},
+            'p_value': {'required': False, 'allow_null': True},
+            'effect_size': {'required': False, 'allow_null': True},
+            'evidence_source': {'required': False, 'allow_blank': True, 'allow_null': True},
+            'description': {'required': False, 'allow_blank': True, 'allow_null': True},
+        }
+
+    def get_source(self, obj):
+        return obj.source_gene.gene_id
+
+    def get_target(self, obj):
+        return obj.target_gene.gene_id if obj.target_gene else obj.target_trait
+
+    def get_label(self, obj):
+        return obj.get_association_type_display()
+
+    def get_weight(self, obj):
+        return float(obj.confidence_score or 0)
+
+    def validate(self, attrs):
+        target_gene = attrs.get('target_gene')
+        target_trait = attrs.get('target_trait')
+        if not target_gene and not str(target_trait or '').strip():
+            raise serializers.ValidationError({'target_trait': '目标基因和目标性状至少填写一项。'})
+        return attrs
+
+
 class EnvironmentalFactorSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnvironmentalFactor
@@ -118,6 +174,51 @@ class RegionalMapSiteSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegionalMapSite
         fields = '__all__'
+
+
+class MarkerLocusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MarkerLocus
+        fields = '__all__'
+
+
+class MolecularFingerprintSerializer(serializers.ModelSerializer):
+    marker = serializers.SlugRelatedField(slug_field='marker_id', queryset=MarkerLocus.objects.all())
+    variety_name = serializers.CharField(source='variety.name', read_only=True)
+    variety_code = serializers.CharField(source='variety.variety_code', read_only=True)
+    marker_name = serializers.CharField(source='marker.marker_name', read_only=True)
+    marker_type = serializers.CharField(source='marker.marker_type', read_only=True)
+    chromosome = serializers.CharField(source='marker.chromosome', read_only=True)
+    marker_id = serializers.CharField(source='marker.marker_id', read_only=True)
+
+    class Meta:
+        model = MolecularFingerprint
+        fields = '__all__'
+
+
+class SequencingDataSerializer(serializers.ModelSerializer):
+    variety_name = serializers.CharField(source='variety.name', read_only=True)
+    variety_code = serializers.CharField(source='variety.variety_code', read_only=True)
+
+    class Meta:
+        model = SequencingData
+        fields = '__all__'
+
+
+class GermplasmResourceSerializer(serializers.ModelSerializer):
+    variety_name = serializers.CharField(source='variety.name', read_only=True)
+    variety_code = serializers.CharField(source='variety.variety_code', read_only=True)
+
+    class Meta:
+        model = GermplasmResource
+        fields = '__all__'
+
+
+class GeneticDiversityAnalysisSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GeneticDiversityAnalysis
+        fields = '__all__'
+
 
 class InstitutionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -191,3 +292,26 @@ class NutritionDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = NutritionData
         fields = '__all__'
+
+
+class EventRegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EventRegistration
+        fields = '__all__'
+        read_only_fields = ['status', 'create_time', 'update_time']
+
+    def validate_participant_count(self, value):
+        if value < 1:
+            raise serializers.ValidationError("参会人数至少为 1 人。")
+        if value > 20:
+            raise serializers.ValidationError("单次登记人数不能超过 20 人。")
+        return value
+
+    def validate(self, attrs):
+        required_fields = ["event_id", "event_title", "name", "institution", "email"]
+        for field in required_fields:
+            if not str(attrs.get(field, "")).strip():
+                raise serializers.ValidationError({field: "该字段不能为空。"})
+        return attrs
+
+

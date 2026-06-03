@@ -9,6 +9,12 @@ export const cropConfig = {
   traitFocus: 'floral pigment, drought tolerance and oleic acid improvement',
   geneCount: '28,740',
   fieldNetwork: 'Xinjiang, Yunnan plateau and dry-hot reference sites',
+  contactProfile: {
+    name: '陈益胜',
+    email: 'yschen@yeah.net',
+    institution: '山西农业大学',
+    address: '山西省晋中市太谷县杨家庄',
+  },
   heroImage: 'https://images.unsplash.com/photo-1508610048659-a06b669e3321?auto=format&fit=crop&w=1600&q=80',
   pageImages: {
     news: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=1600&q=80',

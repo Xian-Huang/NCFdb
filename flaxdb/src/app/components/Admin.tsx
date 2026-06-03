@@ -61,7 +61,7 @@ import {
   deleteFlaxRegionalEnvironmentValue,
 } from "../../apis/data_apis";
 
-type DataType = "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "regional_map_sites" | "regional_environment_values" | "institutions" | "announcements" | "downloads" | "nutrition_data";
+type DataType = "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_associations" | "gene_expressions" | "environmental_factors" | "regional_map_sites" | "regional_environment_values" | "institutions" | "announcements" | "downloads" | "nutrition_data";
 
 const NEWS_CONTENT_MIN_WORDS = 600;
 const countEnglishWords = (value: unknown) => String(value ?? "").match(/\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b/g)?.length ?? 0;
@@ -125,6 +125,24 @@ interface GeneData {
   chromosome: string;
   gene_type: string;
   pathway: string;
+}
+
+
+interface GeneAssociationData {
+  id: number;
+  source_gene: number;
+  source_gene_id?: string;
+  source_gene_name?: string;
+  target_gene: number | null;
+  target_gene_id?: string;
+  target_gene_name?: string;
+  target_trait: string;
+  association_type: string;
+  confidence_score: number;
+  p_value: number | null;
+  effect_size: number | null;
+  evidence_source: string;
+  is_active: boolean;
 }
 
 interface InstitutionData {
@@ -360,6 +378,8 @@ export function Admin() {
         return { name: "", variety_code: "", region: null, seed_color: "", oil_content: 0, maturity_days: 0, yield_per_hectare: 0, height: 0, description: "" };
       case "genes":
         return { gene_id: "", name: "", symbol: "", chromosome: "", start_position: 0, end_position: 0, strand: "", gene_type: "", description: "", function: "", pathway: "" };
+      case "gene_associations":
+        return { source_gene: null, target_gene: null, target_trait: "", association_type: "coexpression", confidence_score: 0.8, p_value: null, effect_size: null, evidence_source: "", description: "", is_active: true };
       case "gene_expressions":
         return { gene: null, variety: null, tissue: "", stage: "", expression_value: 0, fpkm: 0, tpm: 0, sample_id: "" };
       case "environmental_factors":

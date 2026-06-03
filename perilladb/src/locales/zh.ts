@@ -284,6 +284,24 @@ export const zh = {
     location: "地点",
     attendees: "预计参会人数",
     registerInterest: "登记参会意向",
+    registration: {
+      title: "登记参会意向",
+      close: "关闭登记表单",
+      name: "姓名",
+      institution: "单位/机构",
+      email: "邮箱",
+      phone: "电话",
+      mode: "参会方式",
+      modeUndecided: "待确定",
+      modeOnline: "线上参会",
+      modeOffline: "线下参会",
+      count: "参会人数",
+      note: "备注",
+      submit: "提交意向",
+      cancel: "取消",
+      success: "参会意向已提交，管理员会根据活动安排与您联系。",
+      error: "提交失败，请稍后重试。"
+    },
     notFound: "未找到活动",
     backList: "返回活动列表"
   },
@@ -391,9 +409,12 @@ export const zh = {
     sections: {
       nutritionMatrix: "营养数据矩阵",
       nutritionChart: "营养性状图表",
+      nutritionDistribution: "营养成分柱状分布图",
+      nutritionTrend: "营养成分趋势图",
+      nutritionComposition: "营养成分占比图",
       regionHeat: "区域分布",
       expressionHeat: "基因表达热图",
-      proteinNetwork: "蛋白互作网络",
+      proteinNetwork: "基因关联网络",
       institutions: "合作机构",
       regionalMap: "区域优势品种与环境因子地图",
       fingerprint: "分子指纹图谱框架"
@@ -544,6 +565,7 @@ export const zh = {
       regions: "地区",
       varieties: "品种",
       genes: "基因",
+      gene_associations: "基因关联",
       gene_expressions: "基因表达",
       environmental_factors: "环境因子",
       regional_map_sites: "区域地图点",
@@ -691,7 +713,11 @@ export const zh = {
       markerDevelopment: "标记开发",
       qtlMapping: "QTL 定位",
       genomeEditing: "基因组编辑",
-      bioinformatics: "生物信息学"
+      bioinformatics: "生物信息学",
+      traitAssociation: "性状关联",
+      literature: "文献证据",
+      ppi: "蛋白互作",
+      gwas: "GWAS 关联"
     },
     validation: {
       wordsRequired: "{{count}} / {{min}} 个英文词；请用空行分隔段落。",
@@ -710,3 +736,4 @@ export const zh = {
     copyright: "© 2026 PerillaDB - 紫苏芳香代谢物、籽粒油分、叶色与区域适应性数据库"
   }
 };
+

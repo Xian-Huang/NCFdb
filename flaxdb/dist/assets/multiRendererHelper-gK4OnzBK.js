@@ -1,0 +1,1 @@
+import{aM as c,_ as p,$ as u}from"./index-vudt5n7Q.js";import"./index-cuyK9OJH.js";async function m(a,t,e){const{sessionId:i,adapterConfig:o,regions:r}=t,{dataAdapter:s}=await c(a,i,o),n=r[0],g=await p(s.getFeatures(n,t).pipe(u()));return e(t,g)}export{m as renderMultiWiggle};

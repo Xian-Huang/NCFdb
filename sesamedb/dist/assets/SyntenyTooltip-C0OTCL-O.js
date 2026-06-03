@@ -1,0 +1,1 @@
+import{j as t}from"./index-C22XrGEz.js";import{o as n,w as r,ar as s}from"./index-CoOC7F98.js";const l=n(function({title:o}){return o?t.jsx(r,{children:t.jsx(s,{html:o})}):null});export{l as default};

@@ -60,7 +60,7 @@ import {
   deleteSafflowerRegionalEnvironmentValue,
 } from "../../apis/data_apis";
 
-type DataType = "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_expressions" | "environmental_factors" | "regional_map_sites" | "regional_environment_values" | "institutions" | "announcements" | "downloads" | "nutrition_data";
+type DataType = "news" | "changelog" | "regions" | "varieties" | "genes" | "gene_associations" | "gene_expressions" | "environmental_factors" | "regional_map_sites" | "regional_environment_values" | "institutions" | "announcements" | "downloads" | "nutrition_data";
 
 const NEWS_CONTENT_MIN_WORDS = 600;
 const countEnglishWords = (value: unknown) => String(value ?? "").match(/\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b/g)?.length ?? 0;
@@ -124,6 +124,24 @@ interface GeneData {
   chromosome: string;
   gene_type: string;
   pathway: string;
+}
+
+
+interface GeneAssociationData {
+  id: number;
+  source_gene: number;
+  source_gene_id?: string;
+  source_gene_name?: string;
+  target_gene: number | null;
+  target_gene_id?: string;
+  target_gene_name?: string;
+  target_trait: string;
+  association_type: string;
+  confidence_score: number;
+  p_value: number | null;
+  effect_size: number | null;
+  evidence_source: string;
+  is_active: boolean;
 }
 
 interface InstitutionData {
@@ -313,7 +331,7 @@ export function Admin() {
     setActiveType(type);
     setCurrentPage(1);
   };
-  const needsForeignKeyData = (type: DataType = activeType) => ["varieties", "gene_expressions", "nutrition_data", "regional_map_sites", "regional_environment_values"].includes(type);
+  const needsForeignKeyData = (type: DataType = activeType) => ["varieties", "gene_associations", "gene_expressions", "nutrition_data", "regional_map_sites", "regional_environment_values"].includes(type);
 
   const fetchForeignKeyData = async () => {
     if (foreignKeysLoaded) return;
@@ -387,6 +405,8 @@ export function Admin() {
         return { name: "", variety_code: "", region: null, seed_color: "", oil_content: null, maturity_days: null, yield_per_hectare: null, height: null, description: "" };
       case "genes":
         return { gene_id: "", name: "", symbol: "", chromosome: "", start_position: null, end_position: null, strand: "", gene_type: "", description: "", function: "", pathway: "" };
+      case "gene_associations":
+        return { source_gene: null, target_gene: null, target_trait: "", association_type: "coexpression", confidence_score: 0.8, p_value: null, effect_size: null, evidence_source: "", description: "", is_active: true };
       case "gene_expressions":
         return { gene: null, variety: null, tissue: "", stage: "", expression_value: null, fpkm: null, tpm: null, sample_id: "" };
       case "environmental_factors":
@@ -732,6 +752,41 @@ export function Admin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.gene_type}</td>
                   <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
                     <button onClick={() => openModal(item)} className="text-red-600 hover:text-red-900 mr-4"><Edit className="h-5 w-5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+
+      case "gene_associations":
+        return (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("source_gene")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("target")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("association_type")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("confidence_score")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("evidence_source")}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{column("status")}</th>
+                <th className="w-28 min-w-28 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{column("actions")}</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {(filteredData as GeneAssociationData[]).map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.source_gene_id || genes.find(g => g.id === item.source_gene)?.gene_id || item.source_gene}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.target_gene_id || item.target_trait || item.target_gene || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.association_type}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.confidence_score}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.evidence_source || "-"}</td>
+                  <td className="px-6 py-4">
+                    {item.is_active ? <span className="px-2 py-1 text-xs bg-amber-100 text-amber-800 rounded-full">{statusText("visible")}</span> : <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{statusText("hidden")}</span>}
+                  </td>
+                  <td className="w-28 min-w-28 px-6 py-4 text-right whitespace-nowrap">
+                    <button onClick={() => openModal(item)} className="text-blue-600 hover:text-blue-900 mr-4"><Edit className="h-5 w-5" /></button>
                     <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-5 w-5" /></button>
                   </td>
                 </tr>

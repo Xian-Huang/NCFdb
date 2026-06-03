@@ -14,19 +14,19 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/api/users': {
-        target: 'http://localhost:8105',
+        target: 'http://127.0.0.1:8105',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/api/media': {
-        target: 'http://localhost:8105',
+        target: 'http://127.0.0.1:8105',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/api': {
-        target: 'http://localhost:8105',
+        target: 'http://127.0.0.1:8105',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),

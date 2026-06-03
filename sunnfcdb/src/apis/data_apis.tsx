@@ -10,6 +10,10 @@ const withListParams = (endpoint: string, params?: ListParams) => {
     if (params.pageSize) query.set("page_size", String(params.pageSize));
     if (params.limit) query.set("limit", String(params.limit));
     if (params.search?.trim()) query.set("search", params.search.trim());
+    Object.entries(params).forEach(([key, value]) => {
+        if (["page", "pageSize", "search", "limit"].includes(key)) return;
+        if (value !== undefined && value !== null && String(value).trim() !== "") query.set(key, String(value));
+    });
     const qs = query.toString();
     if (!qs) return endpoint;
     return `${endpoint}${endpoint.includes("?") ? "&" : "?"}${qs}`;
@@ -167,6 +171,28 @@ export const updateGene = async (id: number, data: any) => {
 
 export const deleteGene = async (id: number) => {
     await fetchRequest(`/api/genes/${id}/`, "DELETE");
+}
+
+
+
+// Gene Associations
+export const fetchGeneAssociations = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/gene-associations/", params), "GET");
+    return response.json();
+}
+
+export const createGeneAssociation = async (data: any) => {
+    const response = await fetchRequest("/api/gene-associations/", "POST", data);
+    return response.json();
+}
+
+export const updateGeneAssociation = async (id: number, data: any) => {
+    const response = await fetchRequest(`/api/gene-associations/${id}/`, "PUT", data);
+    return response.json();
+}
+
+export const deleteGeneAssociation = async (id: number) => {
+    await fetchRequest(`/api/gene-associations/${id}/`, "DELETE");
 }
 
 // Gene Expressions
@@ -344,3 +370,123 @@ export const updateSunflowerNutritionData = async (id: number, data: any) => {
 export const deleteSunflowerNutritionData = async (id: number) => {
     await fetchRequest(`/api/nutrition-data/${id}/`, "DELETE");
 };
+
+export const submitEventRegistration = async (data: any) => {
+    const response = await fetchRequest("/api/event-registrations/", "POST", data);
+    return response.json();
+}
+
+// Molecular fingerprint, HPLC search and local batch import APIs
+export const fetchSunflowerGlobalSearch = async (query: string) => {
+    const response = await fetchRequest(`/api/search/?q=${encodeURIComponent(query)}`, "GET");
+    return await response.json();
+};
+
+export const fetchSunflowerMarkerLoci = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/marker-loci/", params), "GET");
+    return await response.json();
+};
+
+export const createSunflowerMarkerLocus = async (data: any) => {
+    const response = await fetchRequest("/api/marker-loci/", "POST", data);
+    return await response.json();
+};
+
+export const updateSunflowerMarkerLocus = async (id: number, data: any) => {
+    const response = await fetchRequest(`/api/marker-loci/${id}/`, "PUT", data);
+    return await response.json();
+};
+
+export const deleteSunflowerMarkerLocus = async (id: number) => {
+    const response = await fetchRequest(`/api/marker-loci/${id}/`, "DELETE");
+    return response.ok ? { success: true } : await response.json();
+};
+
+export const fetchSunflowerMolecularFingerprints = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/molecular-fingerprints/", params), "GET");
+    return await response.json();
+};
+
+export const createSunflowerMolecularFingerprint = async (data: any) => {
+    const response = await fetchRequest("/api/molecular-fingerprints/", "POST", data);
+    return await response.json();
+};
+
+export const updateSunflowerMolecularFingerprint = async (id: number, data: any) => {
+    const response = await fetchRequest(`/api/molecular-fingerprints/${id}/`, "PUT", data);
+    return await response.json();
+};
+
+export const deleteSunflowerMolecularFingerprint = async (id: number) => {
+    const response = await fetchRequest(`/api/molecular-fingerprints/${id}/`, "DELETE");
+    return response.ok ? { success: true } : await response.json();
+};
+
+export const fetchSunflowerSequencingData = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/sequencing-data/", params), "GET");
+    return await response.json();
+};
+
+export const createSunflowerSequencingData = async (data: any) => {
+    const response = await fetchRequest("/api/sequencing-data/", "POST", data);
+    return await response.json();
+};
+
+export const updateSunflowerSequencingData = async (id: number, data: any) => {
+    const response = await fetchRequest(`/api/sequencing-data/${id}/`, "PUT", data);
+    return await response.json();
+};
+
+export const deleteSunflowerSequencingData = async (id: number) => {
+    const response = await fetchRequest(`/api/sequencing-data/${id}/`, "DELETE");
+    return response.ok ? { success: true } : await response.json();
+};
+
+export const fetchSunflowerGermplasmResources = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/germplasm-resources/", params), "GET");
+    return await response.json();
+};
+
+export const createSunflowerGermplasmResource = async (data: any) => {
+    const response = await fetchRequest("/api/germplasm-resources/", "POST", data);
+    return await response.json();
+};
+
+export const updateSunflowerGermplasmResource = async (id: number, data: any) => {
+    const response = await fetchRequest(`/api/germplasm-resources/${id}/`, "PUT", data);
+    return await response.json();
+};
+
+export const deleteSunflowerGermplasmResource = async (id: number) => {
+    const response = await fetchRequest(`/api/germplasm-resources/${id}/`, "DELETE");
+    return response.ok ? { success: true } : await response.json();
+};
+
+export const fetchSunflowerGeneticDiversityAnalyses = async (params?: ListParams) => {
+    const response = await fetchRequest(withListParams("/api/genetic-diversity-analyses/", params), "GET");
+    return await response.json();
+};
+
+export const createSunflowerGeneticDiversityAnalysis = async (data: any) => {
+    const response = await fetchRequest("/api/genetic-diversity-analyses/", "POST", data);
+    return await response.json();
+};
+
+export const updateSunflowerGeneticDiversityAnalysis = async (id: number, data: any) => {
+    const response = await fetchRequest(`/api/genetic-diversity-analyses/${id}/`, "PUT", data);
+    return await response.json();
+};
+
+export const deleteSunflowerGeneticDiversityAnalysis = async (id: number) => {
+    const response = await fetchRequest(`/api/genetic-diversity-analyses/${id}/`, "DELETE");
+    return response.ok ? { success: true } : await response.json();
+};
+
+export const batchCreateSunflowerRecords = async (entity: string, rows: any[]) => {
+    const response = await fetchRequest(`/api/batch/${entity}/`, "POST", { rows });
+    return await response.json();
+};
+
+export const fetchSunflowerRegions = fetchRegions;
+export const fetchSunflowerVarieties = fetchVarieties;
+export const fetchSunflowerGenes = fetchGenes;
