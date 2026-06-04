@@ -1,1 +1,0 @@
-import{j as a}from"./index-Cqt3yWLz.js";import{bx as o,by as i,b4 as s}from"./index-DbO8iIwB.js";async function m(n,e){const r=o(n),t=await i({...r,exportSVG:e,theme:e.theme||r.renderProps.theme});return a.jsx(s,{rendering:t})}export{m as renderSvg};

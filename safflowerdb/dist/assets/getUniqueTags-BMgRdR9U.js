@@ -1,0 +1,1 @@
+import{s as g,am as a}from"./index-nCEClnvJ.js";async function l({self:e,tag:s,blocks:n,opts:o}){const{rpcManager:t}=g(e),{adapterConfig:r,effectiveRpcDriverName:c}=e,i=a(e);return await t.call(a(e),"PileupGetGlobalValueForTag",{adapterConfig:r,tag:s,sessionId:i,rpcDriverName:c,regions:n.contentBlocks,...o})}export{l as g};

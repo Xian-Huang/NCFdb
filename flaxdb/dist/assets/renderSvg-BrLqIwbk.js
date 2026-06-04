@@ -1,0 +1,1 @@
+import{j as a}from"./index-beT6sOfd.js";import{aK as o}from"./index-CEMomVNQ.js";import{m}from"./makeSidebarSvg-DUbFKZjk.js";import"./MultiVariantLegendBar-CukCF2oa.js";async function p(r,e,t){await o(()=>!!r.regionCannotBeRenderedText);const n=await t(e),i=await m(r);return a.jsxs(a.Fragment,{children:[a.jsx("g",{id:"data-layer",children:n}),i]})}export{p as renderSvg};

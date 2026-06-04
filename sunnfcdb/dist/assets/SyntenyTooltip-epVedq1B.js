@@ -1,0 +1,1 @@
+import{j as t}from"./index-Cfkx_GiN.js";import{o as n,w as r,ar as s}from"./index-DirQGSbG.js";const l=n(function({title:o}){return o?t.jsx(r,{children:t.jsx(s,{html:o})}):null});export{l as default};

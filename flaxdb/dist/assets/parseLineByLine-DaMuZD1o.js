@@ -1,0 +1,1 @@
+import{X as r}from"./index-CEMomVNQ.js";function p(n,l,c=()=>{}){const a=new TextDecoder("utf8");let e=0,t=0;for(;e<n.length;){const o=n.indexOf(10,e),i=o===-1?n.length:o,d=n.subarray(e,i),s=a.decode(d).trim();if(s&&l(s,t)===!1)break;t++%1e4===0&&c(`Loading ${r(e,n.length)}`),e=i+1}}export{p};

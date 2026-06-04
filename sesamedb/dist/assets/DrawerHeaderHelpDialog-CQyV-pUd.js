@@ -1,1 +1,0 @@
-import{j as e}from"./index-C22XrGEz.js";import{a8 as l,a9 as i,m as n}from"./index-CoOC7F98.js";const r=n()({max:{minWidth:"40em"}});function x({onClose:a,helpText:s}){const{classes:t}=r();return e.jsx(l,{open:!0,onClose:a,title:"Help",maxWidth:"xl",onClick:o=>{o.stopPropagation()},children:e.jsx(i,{className:t.max,children:s})})}export{x as default};

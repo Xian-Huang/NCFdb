@@ -1,0 +1,1 @@
+import{b0 as n,b1 as t}from"./index-BJio3jvl.js";import{s as a,c as o}from"./createRPCRenderingSetup-BgLHGVNS.js";import"./index-BEojcHba.js";function d(r){const e=o({self:r,rpcMethodName:"RenderLinearReadArcsDisplay",getRPCParams:()=>r.renderProps(),onResult:()=>{}});n(r,async()=>{t(r)&&e()},{delay:1e3,name:"PerformRender"}),a(r)}export{d as doAfterAttachRPC};

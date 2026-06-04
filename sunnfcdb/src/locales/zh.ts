@@ -455,8 +455,8 @@ export const zh = {
     },
     fingerprint: {
       status: "数据状态",
-      title: "预留品种身份识别与核心种质比对入口",
-      desc: "当前暂未接入真实分子标记矩阵。后续可导入 SSR、SNP、InDel、KASP 等标记数据，形成品种指纹条带、相似性聚类和核心种质校验功能。",
+      title: "品种身份识别与核心种质比对",
+      desc: "当前已接入演示分子标记矩阵，可展示 SSR、SNP、InDel、KASP 等标记数据形成的品种指纹条带、相似性聚类和核心种质校验结果。",
       sample: "样品编号",
       markerSite: "标记位点",
       allele: "等位基因",
