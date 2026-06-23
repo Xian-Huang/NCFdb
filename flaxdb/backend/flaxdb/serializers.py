@@ -11,31 +11,26 @@ from .models import (
 
 DEFAULT_NEWS_IMAGE = "news_images/default-news.png"
 NEWS_IMAGE_POOL = [
-    "news_images/sesame-high-oil-variety.png",
-    "news_images/sesame-consortium-meeting.png",
-    "news_images/sesame-genome-v2.png",
-    "news_images/sesame-breeding-workshop.png",
-    "news_images/sesame-production-record.png",
+    "news_images/flax-ala-variety.png",
+    "news_images/flax-conference-2026.png",
+    "news_images/flax-genome-release.png",
+    "news_images/flax-database-curation.png",
 ]
 NEWS_IMAGE_BY_TITLE = {
-    "new high-oil content sesame variety released": "news_images/sesame-high-oil-variety.png",
-    "high-oil content sesame": "news_images/sesame-high-oil-variety.png",
-    "zhongzhi": "news_images/sesame-high-oil-variety.png",
-    "international sesame genomics consortium meeting 2026": "news_images/sesame-consortium-meeting.png",
-    "sesame genomics consortium": "news_images/sesame-consortium-meeting.png",
-    "sesame genome sequence v2.0 now available": "news_images/sesame-genome-v2.png",
-    "genome sequence v2.0": "news_images/sesame-genome-v2.png",
-    "sesame genome": "news_images/sesame-genome-v2.png",
-    "workshop on sesame breeding technologies": "news_images/sesame-breeding-workshop.png",
-    "sesame breeding technologies": "news_images/sesame-breeding-workshop.png",
-    "global sesame production reaches record high": "news_images/sesame-production-record.png",
-    "global sesame production": "news_images/sesame-production-record.png",
-    "record high": "news_images/sesame-production-record.png",
+    "flax": "news_images/flax-ala-variety.png",
+    "alpha-linolenic": "news_images/flax-ala-variety.png",
+    "ala": "news_images/flax-ala-variety.png",
+    "nutrition": "news_images/flax-database-curation.png",
+    "database": "news_images/flax-database-curation.png",
+    "genome": "news_images/flax-genome-release.png",
+    "conference": "news_images/flax-conference-2026.png",
+    "meeting": "news_images/flax-conference-2026.png",
+    "workshop": "news_images/flax-conference-2026.png",
     "initial release": "news_images/default-news.png",
-    "new features and improvements": "news_images/sesame-genome-v2.png",
-    "scheduled maintenance": "news_images/sesame-consortium-meeting.png",
-    "data submission guidelines": "news_images/sesame-breeding-workshop.png",
-    "database update": "news_images/sesame-production-record.png",
+    "new features and improvements": "news_images/flax-database-curation.png",
+    "scheduled maintenance": "news_images/flax-conference-2026.png",
+    "data submission guidelines": "news_images/flax-conference-2026.png",
+    "database update": "news_images/flax-database-curation.png",
 }
 NEWS_CONTENT_MIN_WORDS = 600
 NEWS_WORD_PATTERN = re.compile(r"\b[A-Za-z]+(?:[-'][A-Za-z]+)*\b")

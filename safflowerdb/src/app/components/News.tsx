@@ -29,11 +29,14 @@ const cleanText = (value: unknown, fallback: string) => {
   const text = String(value ?? "").trim();
   return text && hasCjk(text) ? text : fallback;
 };
-const isMediaImage = (value: string) => value.includes("/media/") && !value.includes("/media/http") && !hasCjk(value);
-const newsMediaFallback = "/api/media/news_images/default-news.png";
+const isNewsImage = (value: string) => {
+  const source = String(value || "").trim();
+  return Boolean(source) && !source.includes("/media/http");
+};
+const newsMediaFallback = "/hero-bg.jpg";
 const imageSrc = (item: NewsItem, index = 0) => {
   const source = item.image_url || item.image || "";
-  if (source && isMediaImage(source)) return resolveMediaUrl(source, newsMediaFallback);
+  if (isNewsImage(source)) return resolveMediaUrl(source, newsMediaFallback);
   return resolveMediaUrl(newsMediaFallback);
 };
 
