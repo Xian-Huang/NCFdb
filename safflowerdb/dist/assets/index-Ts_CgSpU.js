@@ -1,0 +1,1 @@
+import{S as m}from"./Stack-BGJlK6zo.js";import{d as t}from"./index-DHmapkHS.js";import"./index-DLHsEA4g.js";import"./styled-BF6KDE2h.js";const a=t("MuiStack",["root"]);export{m as default,a as stackClasses};

@@ -1,1 +1,0 @@
-import{j as t}from"./index-beT6sOfd.js";import{o as n,w as r,ar as s}from"./index-CEMomVNQ.js";const l=n(function({title:o}){return o?t.jsx(r,{children:t.jsx(s,{html:o})}):null});export{l as default};
