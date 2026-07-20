@@ -1,7 +1,11 @@
 import csv
+import io
+import os
 import re
+import zipfile
 
-from django.http import HttpResponse
+from django.conf import settings
+from django.http import FileResponse, HttpResponse
 from django.db.models import Avg, Count, Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,23 +26,142 @@ from .serializers import (
 
 def _safe_download_name(name, extension):
     base = re.sub(r"[^A-Za-z0-9._-]+", "_", name or "dataset").strip("._")
+    base = base or "dataset"
     ext = re.sub(r"[^A-Za-z0-9]+", "", extension or "txt").lower() or "txt"
+    if base.lower().endswith(f".{ext}"):
+        return base
     return f"{base}.{ext}"
 
-def _build_fake_file(file):
-    lines = [
-        f"# {file.file_name}",
-        f"type: {file.file_type}",
-        f"size: {file.file_size}",
-        f"category: {file.category}",
-        f"version: {file.version or 'v1.0'}",
-        "",
-        file.description or "This is a placeholder download generated from the database record.",
-        "",
-        "record_id,name,value",
-        f"{file.id},{file.file_name},placeholder",
+def _download_meta(file):
+    return {
+        "id": file.id,
+        "name": getattr(file, "title", None) or getattr(file, "file_name", None) or "dataset",
+        "format": getattr(file, "format", None) or getattr(file, "file_type", None) or "csv",
+        "size": getattr(file, "size", None) or getattr(file, "file_size", None) or "",
+        "category": getattr(file, "category", None) or "dataset",
+        "version": getattr(file, "version", None) or "v1.0",
+        "description": getattr(file, "description", None) or "Generated from the database download record.",
+        "downloads": getattr(file, "downloads", None),
+    }
+
+def _existing_download_path(file):
+    candidates = []
+    model_path = getattr(file, "path", None)
+    if model_path:
+        candidates.append(model_path)
+    download_url = getattr(file, "download_url", None)
+    if download_url and not str(download_url).startswith(("http://", "https://")):
+        candidates.append(str(download_url).replace(settings.MEDIA_URL, "", 1).lstrip("/"))
+    for candidate in candidates:
+        path = candidate if os.path.isabs(candidate) else os.path.join(settings.MEDIA_ROOT, candidate)
+        if os.path.exists(path) and os.path.isfile(path):
+            return path
+    return None
+
+def _download_rows(file):
+    meta = _download_meta(file)
+    headers = ["record_id", "name", "format", "category", "version", "size", "description", "downloads"]
+    rows = [[meta["id"], meta["name"], meta["format"], meta["category"], meta["version"], meta["size"], meta["description"], meta["downloads"] if meta["downloads"] is not None else ""]]
+    return headers, rows
+
+def _text_table(file, delimiter=","):
+    output = io.StringIO()
+    writer = csv.writer(output, delimiter=delimiter)
+    headers, rows = _download_rows(file)
+    writer.writerow(headers)
+    writer.writerows(rows)
+    return "\ufeff" + output.getvalue()
+
+def _xlsx_payload(file):
+    try:
+        from openpyxl import Workbook
+    except ImportError:
+        return None
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "dataset"
+    headers, rows = _download_rows(file)
+    sheet.append(headers)
+    for row in rows:
+        sheet.append(row)
+    stream = io.BytesIO()
+    workbook.save(stream)
+    stream.seek(0)
+    return stream.getvalue()
+
+def _zip_payload(file):
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("manifest.csv", _text_table(file).encode("utf-8-sig"))
+        archive.writestr("README.txt", _download_meta(file)["description"])
+    stream.seek(0)
+    return stream.getvalue()
+
+def _pdf_payload(file):
+    meta = _download_meta(file)
+    text = f"{meta['name']}\\nVersion: {meta['version']}\\nFormat: {meta['format']}\\n{meta['description']}"
+    safe_text = re.sub(r"[^\x20-\x7E\n]", "?", text)
+    lines = safe_text.splitlines()[:24]
+    commands = ["BT", "/F1 12 Tf", "72 760 Td"]
+    for index, line in enumerate(lines):
+        escaped = line.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+        if index:
+            commands.append("0 -18 Td")
+        commands.append(f"({escaped}) Tj")
+    commands.append("ET")
+    stream_data = "\n".join(commands).encode("latin-1")
+    objects = [
+        b"1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n",
+        b"2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n",
+        b"3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >> endobj\n",
+        b"4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj\n",
+        b"5 0 obj << /Length " + str(len(stream_data)).encode("ascii") + b" >> stream\n" + stream_data + b"\nendstream endobj\n",
     ]
-    return "\n".join(lines) + "\n"
+    payload = io.BytesIO()
+    payload.write(b"%PDF-1.4\n")
+    offsets = [0]
+    for obj in objects:
+        offsets.append(payload.tell())
+        payload.write(obj)
+    xref = payload.tell()
+    payload.write(f"xref\n0 {len(objects) + 1}\n".encode("ascii"))
+    payload.write(b"0000000000 65535 f \n")
+    for offset in offsets[1:]:
+        payload.write(f"{offset:010d} 00000 n \n".encode("ascii"))
+    payload.write(f"trailer << /Size {len(objects) + 1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n".encode("ascii"))
+    return payload.getvalue()
+
+def _generated_download_response(file):
+    meta = _download_meta(file)
+    ext = re.sub(r"[^A-Za-z0-9]+", "", meta["format"]).lower() or "csv"
+    if ext in {"excel", "xls"}:
+        ext = "xlsx"
+    content_type = "text/csv; charset=utf-8"
+    payload = _text_table(file)
+    if ext == "zip":
+        payload = _zip_payload(file)
+        content_type = "application/zip"
+    elif ext == "xlsx":
+        payload = _xlsx_payload(file)
+        if payload is None:
+            ext = "csv"
+            payload = _text_table(file)
+        else:
+            content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    elif ext == "tsv":
+        payload = _text_table(file, delimiter="\t")
+        content_type = "text/tab-separated-values; charset=utf-8"
+    elif ext == "pdf":
+        payload = _pdf_payload(file)
+        content_type = "application/pdf"
+    elif ext in {"txt", "text"}:
+        payload = _text_table(file)
+        ext = "txt"
+        content_type = "text/plain; charset=utf-8"
+    filename = _safe_download_name(meta["name"], ext)
+    response = HttpResponse(payload, content_type=content_type)
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response
 
 def _int_param(request, name, default, minimum=0, maximum=500):
     try:
@@ -103,6 +226,8 @@ def _paginated_response(request, queryset, serializer_class, default_limit=None)
 
 def _batch_create_response(request, serializer_class):
     payload = request.data
+    if isinstance(payload, dict) and isinstance(payload.get("rows"), list):
+        payload = payload["rows"]
     if not isinstance(payload, list):
         return Response({'error': 'Expected a list of records'}, status=status.HTTP_400_BAD_REQUEST)
     serializer = serializer_class(data=payload, many=True, context={'request': request})
@@ -159,10 +284,10 @@ class DownloadFileDownloadView(APIView):
         except DownloadFile.DoesNotExist:
             return Response({"error": "File not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        filename = _safe_download_name(file.file_name, file.file_type)
-        response = HttpResponse(_build_fake_file(file), content_type="application/octet-stream")
-        response["Content-Disposition"] = f'attachment; filename="{filename}"'
-        return response
+        existing_path = _existing_download_path(file)
+        if existing_path:
+            return FileResponse(open(existing_path, "rb"), as_attachment=True, filename=os.path.basename(existing_path))
+        return _generated_download_response(file)
 
 class RegionView(APIView):
     def get(self, request, format=None):
