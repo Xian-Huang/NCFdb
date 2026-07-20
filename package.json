@@ -23,6 +23,8 @@
     "migrate:safflower": "pnpm --filter safflowerdb run backend:migrate",
     "migrate:sesame": "pnpm --filter sesamedb run backend:migrate",
     "migrate:sunnfc": "pnpm --filter sunnfcdb run backend:migrate",
+    "migrate": "pnpm run migrate:flax && pnpm run migrate:perilla && pnpm run migrate:safflower && pnpm run migrate:sesame && pnpm run migrate:sunnfc",
+    "migrate:all": "pnpm run migrate",
     "build": "pnpm -r run build",
     "build:all": "pnpm -r run build",
     "build:flax": "pnpm --filter flaxdb run build",
